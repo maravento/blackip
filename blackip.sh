@@ -23,15 +23,15 @@ git clone https://github.com/maravento/blackip
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 if [ ! -d $route ]; then mkdir -p $route; fi
 
+# DOWNLOAD GEOZONES
+echo "Download GeoIps for Ipset..."
+wget -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz 2>/dev/null && tar -C $zone -zxvf all-zones.tar.gz 2>/dev/null && rm -f all-zones.tar.gz 2>/dev/null
+
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
 function downloadbl() {
     wget -c --retry-connrefused -t 0 "$1" -O - 2>/dev/null | grep -oP "$ipRegExp" | sort -u >> $blackIpPath
 }
-
-# DOWNLOAD GEOZONES
-echo "Download GeoIps for Ipset..."
-wget -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz 2>/dev/null && tar -C $zone -zxvf all-zones.tar.gz 2>/dev/null && rm -f all-zones.tar.gz 2>/dev/null
 
 # BLACKIPS
 echo "Download Blacklist..."
@@ -50,9 +50,13 @@ downloadbl 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt'
 downloadbl 'https://check.torproject.org/exit-addresses'
 downloadbl 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist'
 downloadbl 'http://malc0de.com/bl/IP_Blacklist.txt'
+#downloadbl 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
-wget -c --retry-connrefused -t 0 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' 2>/dev/null && unzip full_blacklist_database.zip 2>/dev/null && grep -oP "$ipRegExp" full_blacklist_database.txt 2>/dev/null | sort -u >> $blackIpPath && rm -f full_blacklist_database* 2>/dev/null
-#wget -c --retry-connrefused -t 0 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt' 2>/dev/null >> $blackIpPath
+# BLZIP
+function blzip() {
+    wget -c --retry-connrefused -t 0 "$1" 2>/dev/null && unzip -p full_blacklist_database.zip > bltmp && grep -oP "$ipRegExp" bltmp | sort -u >> $blackIpPath && rm -f bltmp
+}
+blzip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
 
 # DEBUGGED
 echo "Debugged blackip (exclude whiteip)..."
