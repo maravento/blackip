@@ -20,8 +20,8 @@ echo "Descargando Proyecto Blackip..."
 git clone https://github.com/maravento/blackip
 
 # CREATE $zone and $route
-if [ ! -d $zone ]; then mkdir -p $zone; fi
-if [ ! -d $route ]; then mkdir -p $route; fi
+if [ -d $zone ]; then mkdir -p $zone; fi
+if [ -d $route ]; then mkdir -p $route; fi
 
 # DOWNLOAD GEOZONES
 echo "Download GeoIps for Ipset..."
