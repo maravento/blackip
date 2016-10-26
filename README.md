@@ -6,37 +6,39 @@
 
 El script incluido descarga varias listas negras públicas, tales como las "geozones" de [IPDeny] (http://www.ipdeny.com/ipblocks/), entre otras, y las compila en una sola megalista resultante, la cual es filtrada con una lista blanca (whitelist) para eliminar falsos positivos y finalmente ser utilizada con el módulo [IPSET] (http://ipset.netfilter.org/) para [Iptables] (http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html), ambos de [Netfilter] (http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización] (http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark] (http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
 
-### Dependencias
+### Dependencias/Dependencies
 
 ```
 ipset bash
 ```
 
-### Modo de Uso
+### Modo de uso - How to use
 
-Descargue el repositorio **Blackip**, copie el script a **init.d** y ejecútelo:
+Descargue/Download:
 ```
 git clone https://github.com/maravento/blackip.git
+```
+Copie el script y ejecútelo - Copy the script and run:
+```
 sudo cp -f blackip/blackip.sh /etc/init.d
 sudo chown root:root /etc/init.d/blackip.sh
 sudo chmod +x /etc/init.d/blackip.sh
 sudo /etc/init.d/blackip.sh
 ```
-Puede programar su ejecución semanal en el **cron**:
+Cron task:
 ```
 sudo crontab -e
 @weekly /etc/init.d/blackip.sh
 ```
-Verifique la ejecución programada del script en **/var/log/syslog.log**. Ejemplo:
+Verifique la ejecución/Check execution: /var/log/syslog.log:
 ```
-Blackip for Ipset: ejecucion 14/06/2016 15:47:14
+Blackip for Ipset: 14/06/2016 15:47:14
 ```
-Agregue la siguiente regla **Ipset** a su script de iptables:
+Agregue la regla **Ipset** a su script de iptables/Add the rule **Ipset** to your iptables script:
 ```
-# Parametros
 ipset=/sbin/ipset
 iptables=/sbin/iptables
-route=/etc/acl #la ruta es a criterio del usuario
+route=/etc/acl
 zone=/etc/zones
 
 # BLACKZONE RULE (select country to block and ip/range)
@@ -48,26 +50,26 @@ $ipset -N -! blackzone hash:net maxelem 1000000
 $iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
 $iptables -A FORWARD -m set --match-set blackzone dst -j DROP
 ```
-Adicionalmente puede bloquear rangos completos de países (ej: China, Rusia, etc), reemplazando la línea "for ip..." por:
+Puede bloquear rangos completos de países/You can block entire countries ranges (e.g. China, Rusia, etc):
 ```
 for ip in $(cat $zone/{cn,ru}.zone $route/blackips); do
 ```
-Para mayor información sobre cómo añadir más países para bloquear, visite [IPDeny] (http://www.ipdeny.com/ipblocks/).
+Para mayor información visite/For more information visit [IPDeny] (http://www.ipdeny.com/ipblocks/).
 
-Si se presenta algún error y/o conflicto con **Ipset** durante la ejecución del script de **iptables**, se recomienda vaciar la zona creada:
+En caso de error o conflicto/In case of error or conflict **Ipset** con/with **iptables**:
 ```
 sudo ipset flush blackzone
 o
 sudo ipset flush
 ```
 
-### Edición
+### Edición/Edit
 
-Puede editar manualmente la alc **blackip** y agregarle las IPs que quiera bloquear con **Ipset** y que no se encuentren incluidas en **blackip**. Adicionalmente, se recomienda bloquear rangos de [IPs Privadas] (https://es.wikipedia.org/wiki/Red_privada) que no vaya a utilizar dentro de su red local. También puede excluir IPs en la acl **whiteip**
+Edite la alc **blackip** para agregarle las IPs que quiera bloquear con **Ipset**, que no se encuentren incluidas (se recomienda bloquear rangos de [IPs Privadas] (https://es.wikipedia.org/wiki/Red_privada) que no vaya a utilizar). Puede excluir IPs con la acl [whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt)
 
-Si ya tiene su propia lista negra de IPs, unifiquela con blackip, descomentando en el script "ADD OWN LIST" y reemplazando la línea **/ruta/blacklist_propia.txt** por la ruta a su lista.
+Edit alc **blackip** to add the IPs you want to lock with ipset, which are not included (recommended block ranges [Private IP] (https://es.wikipedia.org/wiki/Red_privada) not to be used) . You can exclude IPs with the acl [whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt).
 
-### Importante
+### Important
 
 - El uso excesivo de los programas, reglas y ACLs descritas, pueden llevar al colapso de su sistema, debido a la gran cantidad de recursos que consumen. Úselas con moderación.
 - Blackip solo da soporte IPv4
@@ -75,7 +77,14 @@ Si ya tiene su propia lista negra de IPs, unifiquela con blackip, descomentando 
 - Si cuenta con pocos recursos de servidor y utiliza un proxy no-transparente basado en [Squid-Cache] (http://www.squid-cache.org/), en reemplazo de Blackip, puede utilizar el proyecto [Whiteip] (http://www.maravento.com/p/whiteip.html). No se recomienda usar ambos proyectos al tiempo en el mismo servidor (doble filtrado)
 - Si usa rangos completos de IPs (CIDR) para realizar bloqueos, tenga especial cuidado de no generar conflictos de IPs en la misma lista.
 
-### Ficha Técnica (BLs IPs incluidas)
+
+- Overuse of programs, rules and ACLs described, can lead to collapse of its system due to the large amount of resources they consume. Use them sparingly.
+- Blackip only supports IPv4
+- The route used by blackip.sh to store ACLs (route = / etc / acl) is optional. Replace path by your choice.
+- If you have limited resources and server uses a non-transparent proxy based on [Squid-Cache] (http://www.squid-cache.org/), replacing Blackip, you can use the [Whiteip] project ( http://www.maravento.com/p/whiteip.html). It is not recommended to use both projects at the same time on the same server (double filtering)
+- If using full IP ranges (CIDR) for locks, take special care to avoid conflicts of IPs on the same list.
+
+### Data sheet (BLs IPs incluidas)
 
 [IPDeny] (http://www.ipdeny.com/ipblocks/)
 
@@ -119,10 +128,18 @@ Si ya tiene su propia lista negra de IPs, unifiquela con blackip, descomentando 
 
 [whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt)
 
-blackip
+[blackip] (https://github.com/maravento/blackip/raw/master/blackip.txt)
 
-### Legal
+### Licence
 
-This Project is educational purposes. Este proyecto es con fines educativos. Agradecemos a todos los que han contribuido a este proyecto, en especial a [Netfilter] (http://www.netfilter.org/) y [novatoz.com] (http://www.novatoz.com)
+[GPL-3.0] (https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-© 2016 [Blackip] (http://www.maravento.com/p/blackip.html) por [maravento] (http://www.maravento.com), es un componente del proyecto [Gateproxy] (http://www.gateproxy.com)
+This Project is educational purposes. Este proyecto es con fines educativos. Agradecemos a todos aquellos que han contribuido a este proyecto. We thank all those who contributed to this project. Special thanks to [novatoz.com] (http://www.novatoz.com)
+
+© 2016 [Gateproxy] (http://www.gateproxy.com) by [maravento] (http://www.maravento.com)
+
+## Disclaimer
+
+Este script puede dañar su sistema si se usa incorrectamente. Úselo bajo su propio riesgo. This script can damage your system if used incorrectly. Use it at your own risk. [HowTO Gateproxy] (https://goo.gl/ZT4LTi)
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -68,7 +68,7 @@ sort -u blackip/tmp.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n > $blackIpPa
 
 # LOG
 date=`date +%d/%m/%Y" "%H:%M:%S`
-echo "Blackip for Ipset: ejecucion $date" >> /var/log/syslog.log
+echo "Blackip for Ipset: $date" >> /var/log/syslog.log
 
 # END
 cp -f $blackIpPath $route
