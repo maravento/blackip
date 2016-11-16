@@ -44,7 +44,7 @@ zone=/etc/zones
 # BLACKZONE RULE (select country to block and ip/range)
 $ipset -F
 $ipset -N -! blackzone hash:net maxelem 1000000
- for ip in $(cat $route/blackips.txt); do
+ for ip in $(cat $route/blackip.txt); do
   $ipset -A blackzone $ip
  done
 $iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
@@ -52,7 +52,7 @@ $iptables -A FORWARD -m set --match-set blackzone dst -j DROP
 ```
 Puede bloquear rangos completos de países/You can block entire countries ranges (e.g. China, Rusia, etc):
 ```
-for ip in $(cat $zone/{cn,ru}.zone $route/blackips); do
+for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
 Para mayor información visite/For more information visit [IPDeny] (http://www.ipdeny.com/ipblocks/).
 

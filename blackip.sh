@@ -9,7 +9,8 @@
 # Authors:           Maravento.com and Novatoz.com
 # used:              host -t a or dig +short -f
 ### END INIT INFO
-
+clear
+echo
 # PATH
 route=/etc/acl
 zone=/etc/zones
