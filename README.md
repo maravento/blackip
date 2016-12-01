@@ -2,14 +2,20 @@
 
 <a target="_blank" href=""><img src="https://img.shields.io/badge/Development-ALPHA-blue.svg"></a>
 
-[Blackip] (http://www.maravento.com/p/blackip.html) es una lista negra (blacklist) de IPs/CIDR, que contiene sitios porno, descargas, drogas, malware, spyware, trackers, bots, redes sociales, warez, venta de armas, etc, y adicionalmente puede incluirle IPs/CIDR para bloquear zonas geográficas. El script descarga varias listas negras públicas, tales como las "geozones" de [IPDeny] (http://www.ipdeny.com/ipblocks/), entre otras, y las compila en una sola megalista resultante, la cual es filtrada con una lista blanca (whitelist) para eliminar falsos positivos y finalmente ser utilizada con el módulo [IPSET] (http://ipset.netfilter.org/) para [Iptables] (http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html), ambos de [Netfilter] (http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización] (http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark] (http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
+[Blackip] (http://www.maravento.com/p/blackip.html) es una lista negra (blacklist) de IPs IPv4, que contiene sitios porno, descargas, drogas, malware, spyware, trackers, bots, redes sociales, warez, venta de armas, etc, y adicionalmente puede incluirle IPs para bloquear zonas geográficas. El script descarga varias listas negras públicas, tales como las "geozones" de [IPDeny] (http://www.ipdeny.com/ipblocks/), entre otras, y las compila en una sola megalista resultante, la cual es filtrada con una lista blanca (whitelist) para eliminar falsos positivos y finalmente ser utilizada con el módulo [IPSET] (http://ipset.netfilter.org/) para [Iptables] (http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html), ambos de [Netfilter] (http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización] (http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark] (http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
 
-[Blackip] (http://www.maravento.com/p/blackip.html) is a blacklist of IPs/CIDR containing porn sites, downloads, drugs, malware, spyware, trackers, bots, social networks, warez, arms sales, etc., and may additionally include him IPs/CIDR to block geographical areas. The script download several public blacklists such as "geozones" of [IPDeny] (http://www.ipdeny.com/ipblocks/), among others, and compiles them into a single resulting megalista, which is filtered with a white list (whitelist) to eliminate false positives and eventually be used with the [IPSET] (http://ipset.netfilter.org/) module for [Iptables] (http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html), [Netfilter] (http://www.netfilter.org/) both. This module allows us to perform filtering mass (See [Filtering by Geolocation](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), at a rate much higher than other solutions (See [benchmark] (http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)) processing.
+[Blackip] (http://www.maravento.com/p/blackip.html) is a blacklist of IPs IPv4, containing porn sites, downloads, drugs, malware, spyware, trackers, bots, social networks, warez, arms sales, etc., and may additionally include him IPs to block geographical areas. The script download several public blacklists such as "geozones" of [IPDeny] (http://www.ipdeny.com/ipblocks/), among others, and compiles them into a single resulting megalista, which is filtered with a white list (whitelist) to eliminate false positives and eventually be used with the [IPSET] (http://ipset.netfilter.org/) module for [Iptables] (http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html), [Netfilter] (http://www.netfilter.org/) both. This module allows us to perform filtering mass (See [Filtering by Geolocation](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), at a rate much higher than other solutions (See [benchmark] (http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)) processing.
+
+### Descripción/Description
+
+|File|BL IPs|
+|----|------|
+|blackip.txt|4.847.688|
 
 ### Dependencias/Dependencies
 
 ```
-ipset bash
+git ipset iptables bash tar zip wget
 ```
 
 ### Modo de uso/How to use
@@ -62,18 +68,33 @@ sudo ipset flush blackzone
 o
 sudo ipset flush
 ```
-
-### Edición/Edit
-
-Edite la alc **blackip** para agregarle las IPs que quiera bloquear con **Ipset**, que no se encuentren incluidas (se recomienda bloquear rangos de [IPs Privadas] (https://es.wikipedia.org/wiki/Red_privada) que no vaya a utilizar). Puede excluir IPs con la acl [whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt) / Edit alc **blackip** to add the IPs you want to lock with ipset, which are not included (recommended block ranges [Private IP] (https://es.wikipedia.org/wiki/Red_privada) not to be used). You can exclude IPs with the acl [whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt).
-
 ### Importante/Important
 
 - El uso excesivo de los programas, reglas y ACLs descritas, pueden llevar al colapso de su sistema, debido a la gran cantidad de recursos que consumen. Úselas con moderación / Overuse of programs, rules and ACLs described, can lead to collapse of its system due to the large amount of resources they consume. Use them sparingly
-- Blackip solo da soporte IPv4 / Blackip only supports IPv4
+- Blackip solo da soporte a IPs IPv4 / Blackip only supports IPs IPv4
 - La ruta usadas por **blackip.sh** para almacenar las ACLs (route=/etc/acl) es opcional. Reemplace el path por su elección / The route used by blackip.sh to store ACLs (route = /etc/acl) is optional. Replace path by your choice.
 - Si cuenta con pocos recursos de servidor y utiliza un proxy no-transparente basado en [Squid-Cache] (http://www.squid-cache.org/), en reemplazo de Blackip, puede utilizar el proyecto [Whiteip] (http://www.maravento.com/p/whiteip.html). No se recomienda usar ambos proyectos al tiempo en el mismo servidor (doble filtrado) / If you have limited resources and server uses a non-transparent proxy based on [Squid-Cache] (http://www.squid-cache.org/), replacing Blackip, you can use the [Whiteip] (http://www.maravento.com/p/whiteip.html) project. It is not recommended to use both projects at the same time on the same server (double filtering)
-- Si usa rangos completos de IPs (CIDR) para realizar bloqueos, tenga especial cuidado de no generar conflictos de IPs en la misma lista / If using full IP ranges (CIDR) for locks, take special care to avoid conflicts of IPs on the same list
+
+### Lista propia/Own list
+
+Puede incluir su propia Blacklist IPs, que quiera bloquear con **Ipset**, y que no se encuentre en **blackip.txt**, editando **blackip.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista / You can include your own Blacklist IPs, which you want to block with **Ipset**, and that is not on **blackip.txt**, editing **blackip.sh** and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list
+
+### IPs vs CIDR
+
+Blackip es una acl que solo incluye IPs. Si va a incluir rangos CIDR (dentro de **blackip.txt** o en su propia lista **blackip_own.txt**), para evitar conflictos IPs vs CIDR, utilice el bash script **cleancidr.sh**. También se recomienda excluir los rangos [RFC1918] (https://es.wikipedia.org/wiki/Red_privada) / Blackip is an acl that only includes IPs. If you are going to include CIDR ranges (within **blackip.txt** or in your own list **blackip_own.txt**), to avoid IPs vs. CIDR conflicts, use the bash script **cleancidr.sh**. It is also recommended to exclude the ranges [RFC1918] (https://es.wikipedia.org/wiki/Red_private)
+
+#### Depurando conflictos CIDR/Debugging conflicts CIDR
+
+- Unir las listas (**blackip.txt**, **RFC1918.txt** and **blackip_own.txt**), ejecutar **cleancidr.sh** y el resultado es **clearcidr.txt**  / Join the lists (**blackip.txt**, **RFC1918.txt** and **blackip_own.txt**), run **cleancidr.sh** and result is **clearcidr.txt**
+- Elimine los rangos privados CIDR [RFC1918] (https://es.wikipedia.org/wiki/Red_privada) / Delete private ranges CIDR  [RFC1918] (https://es.wikipedia.org/wiki/Red_private)
+
+```
+cat blackip.txt blackip_own.txt RFC1918.txt > capture.txt && chmod +x clearcidr.sh && ./clearcidr.sh capture.txt
+cat RFC1918.txt | while read output; do
+  sed -i "\|$output|d" cidrclean.txt && sort -u cidrclean.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n > blackip.txt
+done
+```
+El proceso de depuración de conflictos IPs/CIDR consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar más de 24 horas / The IPs/CIDR Debugging Process consumes a large amount of hardware resources during processing and can take more than 24 hours
 
 ### Data sheet (BLs IPs including)
 
@@ -113,13 +134,21 @@ Edite la alc **blackip** para agregarle las IPs que quiera bloquear con **Ipset*
 
 [Malc0de IP Blacklist] (http://malc0de.com/bl/IP_Blacklist.txt)
 
+[The LashBack UBL] (http://www.unsubscore.com/blacklist.txt)
+
+[MyIP BL] (https://myip.ms/files/blacklist/general/latest_blacklist.txt)
+
+[Open BL] (http://www.openbl.org/lists/base.txt)
+
+[Project Honeypot] (https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
+
 **Own lists (inside project)**
 
 [whiteurls] (https://github.com/maravento/blackweb/raw/master/whiteurls.txt)
 
-[whiteip] (https://github.com/maravento/whiteip/raw/master/whiteip.txt)
+[whiteip] (https://github.com/maravento/whiteip)
 
-[blackip] (https://github.com/maravento/blackip/raw/master/blackip.txt)
+[blackip] (https://github.com/maravento/blackip)
 
 ### Licence
 

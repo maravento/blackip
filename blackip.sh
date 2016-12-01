@@ -6,19 +6,25 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Description:       capture cidr from acl
-# Authors:           Maravento.com and Novatoz.com
-# used:              host -t a or dig +short -f
+# Authors:           Maravento.com
 ### END INIT INFO
 clear
+echo
+echo "Blackip Project"
+echo "This process can take a long time. Be patient..."
+echo "Este proceso puede tardar mucho tiempo. Sea paciente..."
 echo
 # PATH
 route=/etc/acl
 zone=/etc/zones
-blip=~/blackip
+bip=~/blackip
+
+# DEL OLD REPOSITORY
+if [ -d $bip ]; then rm -rf $bip; fi
 
 # GIT CLONE BLACKIP
-echo "Descargando Proyecto Blackip..."
-git clone https://github.com/maravento/blackip.git
+echo "Download Blackip..."
+git clone https://github.com/maravento/blackip.git >/dev/null 2>&1
 echo "OK"
 
 # CREATE $zone and $route
@@ -26,55 +32,54 @@ if [ ! -d $zone ]; then mkdir -p $zone; fi
 if [ ! -d $route ]; then mkdir -p $route; fi
 
 # DOWNLOAD GEOZONES
-echo "Download GeoIps for Ipset..."
+echo "Download GeoIps..."
 wget -q -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
 echo "OK"
 
+# BLACKIPS
+cd $bip
+tar -xvzf blackip.tar.gz >/dev/null 2>&1
+echo "Download Blacklist IPs..."
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
 function downloadbl() {
-    wget -q -c --retry-connrefused -t 0 "$1" -O - | grep -oP "$ipRegExp" | sort -u >> $blip/blackip.txt
+    wget -q -c --retry-connrefused -t 0 "$1" -O - | grep -oP "$ipRegExp" | sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' >> blackip.txt
 }
+downloadbl 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
+downloadbl 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
+downloadbl 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
+downloadbl 'https://lists.blocklist.de/lists/all.txt' && sleep 1
+downloadbl 'https://www.openbl.org/lists/base.txt' && sleep 1
+downloadbl 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
+downloadbl 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
+downloadbl 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
+downloadbl 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
+downloadbl 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
+downloadbl 'https://check.torproject.org/exit-addresses' && sleep 1
+downloadbl 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+downloadbl 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt' && sleep 1
+downloadbl 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
+downloadbl 'http://www.projecthoneypot.org/list_of_ips.php' && sleep 1
+downloadbl 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
+downloadbl 'http://www.openbl.org/lists/base.txt' && sleep 1
+downloadbl 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
+downloadbl 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+downloadbl 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
 
-# BLACKIPS
-echo "Download Blacklist IPs..."
-downloadbl 'https://zeustracker.abuse.ch/blocklist.php?download=badips' 
-downloadbl 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
-downloadbl 'http://blocklist.greensnow.co/greensnow.txt'
-downloadbl 'https://lists.blocklist.de/lists/all.txt'
-downloadbl 'https://www.openbl.org/lists/base.txt'
-downloadbl 'http://cinsscore.com/list/ci-badguys.txt'
-downloadbl 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt'
-downloadbl 'https://www.spamhaus.org/drop/drop.lasso'
-downloadbl 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php'
-downloadbl 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt'
-downloadbl 'https://check.torproject.org/exit-addresses'
-downloadbl 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist'
-downloadbl 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
-downloadbl 'https://www.maxmind.com/es/proxy-detection-sample-list'
-downloadbl 'http://www.projecthoneypot.org/list_of_ips.php'
-downloadbl 'http://malc0de.com/bl/IP_Blacklist.txt'
-
-# BLZIP
+cd $bip
 function blzip() {
-    wget -q -c --retry-connrefused -t 0 "$1" && unzip -p full_blacklist_database.zip > $blip/bltmp && grep -oP "$ipRegExp" $blip/bltmp | sort -u >> $blip/blackip.txt
+    wget -q -c --retry-connrefused -t 0 "$1" && unzip -p full_blacklist_database.zip >/dev/null 2>&1 > tmp.txt && grep -oP "$ipRegExp" tmp.txt >> blackip.txt
 }
-blzip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+blzip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' && sleep 1
 echo "OK"
 
-echo "Download Whiteip (exclude)..."
-wget -q -c --retry-connrefused -t 0 https://github.com/maravento/whiteip/raw/master/whiteip.txt -O $blip/whiteip.txt
-echo "OK"
-
+# BLACKIP DEBUGGING
+echo "Blackip Debugging..."
+cd $bip
 # ADD OWN LIST
-# cat $blip/blackip.txt /path/black_ip_user.txt > $blip/tmp.txt && sed '/^$/d; / *#/d' $blip/tmp.txt | sort -u | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n > $blip/blackip.txt
-
-# DEBUGGED
-echo "Debugged Blackip..."
-cd $blip
-chmod +x filter.py
-python filter.py whiteip.txt | grep -Fxvf - blackip.txt > tmp.txt
-sort -u tmp.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n > blackip.txt
+#sed '/^$/d; / *#/d' /path/blackip_own.txt >> blackip.txt
+# CLEAN BLACKIP
+awk -F'[.]' '{w=$1+0; x=$2+0; y=$3+0; z=$4+0; print w"."x"."y"."z}' blackip.txt > capture.txt && sort -u capture.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n > blackip.txt
 echo "OK"
 
 # LOG
@@ -82,6 +87,6 @@ date=`date +%d/%m/%Y" "%H:%M:%S`
 echo "Blackip for Ipset: $date" >> /var/log/syslog.log
 
 # END
-cp -f $blip/blackip.txt $route
-rm -rf $blip
+cp -f $bip/blackip.txt $route
+rm -rf $bip
 echo "Done"
