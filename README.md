@@ -144,11 +144,9 @@ El proceso de depuración de conflictos IPs/CIDR consume gran cantidad de recurs
 
 **Own lists (inside project)**
 
-[whiteurls] (https://github.com/maravento/blackweb/raw/master/whiteurls.txt)
+[RFC1918] (https://github.com/maravento/blackip/raw/master/RFC1918.txt)
 
-[whiteip] (https://github.com/maravento/whiteip)
-
-[blackip] (https://github.com/maravento/blackip)
+[blackip] (https://github.com/maravento/blackip/raw/master/blackip.tar.gz)
 
 ### Licence
 
