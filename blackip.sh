@@ -8,11 +8,16 @@
 # Description:       capture cidr from acl
 # Authors:           Maravento.com
 ### END INIT INFO
+# Language spa-eng
+cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
+cm2=("Verifique su conexion a internet y reinicie el script" "Check your internet connection and restart the script")
+test "${LANG:0:2}" == "es"
+es=$?
+
 clear
 echo
 echo "Blackip Project"
-echo "This process can take a long time. Be patient..."
-echo "Este proceso puede tardar mucho tiempo. Sea paciente..."
+echo "${cm1[${es}]}"
 echo
 # PATH
 route=/etc/acl
@@ -31,6 +36,22 @@ echo "OK"
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 if [ ! -d $route ]; then mkdir -p $route; fi
 
+echo "Checking Sum..."
+a=$(md5sum $bw/blackip.tar.gz | awk '{print $1}')
+b=$(cat $bw/blackip.md5 | awk '{print $1}')
+	if [ "$a" = "$b" ]
+	then 
+		echo "Sum Matches"
+		cd $bip
+		tar -xvzf blackip.tar.gz >/dev/null 2>&1
+		echo "OK"
+	else
+		echo "Bad Sum. Abort"
+		echo "${cm2[${es}]}"
+		rm -rf $bw
+		exit
+fi
+
 # DOWNLOAD GEOZONES
 echo "Download GeoIps..."
 wget -q -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
@@ -38,7 +59,6 @@ echo "OK"
 
 # BLACKIPS
 cd $bip
-tar -xvzf blackip.tar.gz >/dev/null 2>&1
 echo "Download Blacklist IPs..."
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
@@ -84,7 +104,7 @@ echo "OK"
 
 # LOG
 date=`date +%d/%m/%Y" "%H:%M:%S`
-echo "Blackip for Ipset: $date" >> /var/log/syslog.log
+echo "Blackip for Ipset $date" >> /var/log/syslog.log
 
 # END
 cp -f $bip/blackip.txt $route
