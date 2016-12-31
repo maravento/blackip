@@ -10,7 +10,7 @@
 
 |File|BL IPs|
 |----|------|
-|blackip.txt|4.847.688|
+|blackip.txt|7.760.426|
 
 ### Dependencias/Dependencies
 
