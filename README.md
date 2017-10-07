@@ -147,7 +147,7 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 
-[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist) ([domains-list (RAW)](https://hosts.ubuntu101.co.za/domains.list))
+[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist) ([ip-list (RAW)](https://hosts.ubuntu101.co.za/ips.list))
 
 [blackip](https://github.com/maravento/blackip/raw/master/blackip.tar.gz)
 

@@ -112,6 +112,7 @@ echo "OK"
 echo
 echo "Debugging Blackip..."
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' blackip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > bl.txt
+sed -e '/^#/d' {cidr,bl}.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > ipscidr.txt
 chmod +x debug.py && python debug.py
 echo "OK"
 
