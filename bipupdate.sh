@@ -86,6 +86,10 @@ blips 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
 blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
 blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
 blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
+blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
+#blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
+#blips 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt' && sleep 1
 #blips 'https://www.openbl.org/lists/base.txt' # SERVER DOWN
 
 function myip() {
@@ -94,31 +98,21 @@ function myip() {
 }
 myip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' && sleep 1
 
-# BLACKIPS-CIDR
-function blipscidr() {
-    wget -q -c --retry-connrefused -t 0 "$1" -O - | grep -P "^[0-9]" | awk '{print $1}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > cidr.txt
-}
-	blipscidr 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-	blipscidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
-	blipscidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt' && sleep 1
-	blipscidr 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
-
-echo "OK"
-
 # ADD OWN LIST
 #sed '/^$/d; / *#/d' /path/blackip_own.txt >> blackip.txt
 
 # DEBBUGGING BLACKIP
 echo
 echo "Debugging Blackip..."
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' blackip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > bl.txt
-sed -e '/^#/d' {cidr,bl}.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > ipscidr.txt
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' blackip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > bl.txt
 chmod +x debug.py && python debug.py
 echo "OK"
 
-# DEBBUGGING CIDR
+# DEBBUGGING IANA
 echo
-echo "Debugging CIDR..."
+echo "Debugging IANA Reserved IP Addresses"
+echo "It may take hours/days. Be patient..."
+# https://en.wikipedia.org/wiki/Reserved_IP_addresses
 # From http://stackoverflow.com/a/35114656/3776858
 
 common() {

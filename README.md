@@ -9,8 +9,8 @@
 
 ### Descripción / Description
 
-|File|BL IPs|File size|
-|----|----------|---------|
+|File|IPs|File size|
+|----|---|---------|
 |blackip.txt|13.488.848|192,3 Mb|
 
 ### Dependencias / Dependencies
@@ -99,7 +99,7 @@ sudo ipset flush blackzone or sudo ipset flush
 
 ### Data Sheet (Sources - Repositories)
 
-##### Blacklists (IPs/CIDR)
+##### IPs Blacklists
 
 [IPDeny](http://www.ipdeny.com/ipblocks/)
 
@@ -111,13 +111,7 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 
-[Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
-
 [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
-
-[Blocklist](https://lists.blocklist.de/lists/all.txt)
-
-[OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
 
 [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
 
@@ -130,8 +124,6 @@ sudo ipset flush blackzone or sudo ipset flush
 [Project Honeypot](http://www.projecthoneypot.org/list_of_ips.php)
 
 [Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
-
-[StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
 
 [Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 
@@ -147,13 +139,19 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 
-[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist) ([ip-list (RAW)](https://hosts.ubuntu101.co.za/ips.list))
+[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist) ([ip-list (RAW)](https://hosts.ubuntu101.co.za/ips.list)) (It includes [Blocklist](https://lists.blocklist.de/lists/all.txt))
 
 [blackip](https://github.com/maravento/blackip/raw/master/blackip.tar.gz)
 
+[OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
+
+[Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
+
+[StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
+
 ##### Debugging
 
-[IANA reserved addresses](https://github.com/maravento/blackip/raw/master/iana.txt)
+[Reserved IP addresses](https://en.wikipedia.org/wiki/Reserved_IP_addresses)([iana.txt](https://github.com/maravento/blackip/raw/master/iana.txt))
 
 ### Contributions
 
