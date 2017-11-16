@@ -11,20 +11,21 @@
 
 |File|IPs|File size|
 |----|---|---------|
-|blackip.txt|13.488.848|192,3 Mb|
+|blackip.txt|14.967.942|213,3 Mb|
 
 ### Dependencias / Dependencies
 
 ```
-git ipset iptables bash tar zip wget squid
+git ipset iptables bash tar zip wget squid subversion python
 ```
 ### Modo de uso / How to use
 
 La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por defecto, la ruta de **blackip.txt** es **/etc/acl** y del script **blackip.sh** es **/etc/init.d** / The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl** and the script **blackip.sh** is **/etc/init.d**
 
 ```
-wget https://raw.githubusercontent.com/maravento/blackip/master/blackip.sh -O /etc/init.d/blackip.sh
-sudo chown root:root /etc/init.d/blackip.sh && sudo chmod +x /etc/init.d/blackip.sh
+sudo wget https://raw.githubusercontent.com/maravento/blackip/master/blackip.sh -O /etc/init.d/blackip.sh
+sudo chown root:root /etc/init.d/blackip.sh
+sudo chmod +x /etc/init.d/blackip.sh
 sudo /etc/init.d/blackip.sh
 ```
 ### Actualización BLs / Update BLs
@@ -53,9 +54,18 @@ Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 ##### Importante sobre la actualización BLs / Important about update BLs
 
 - Blackip solo da soporte IPv4 / Blackip only supports IPv4
-- Blackip excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) / Blackip excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network)
 - Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list
-- El bash **bipupdate.sh** realiza captura, depuración y limpieza de IPs/CIDR para evitar conflictos, sin embargo consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días / The bash script **bipupdate.sh** performs capturing, debugging and IPs/CIDR cleanup to avoid conflicts, however it consumes a large amount of hardware resources during processing and can take hours or days
+
+### CIDR-IANA Clean
+
+El bash **cidrclean.sh** realiza la depuración de IPs/CIDR de **blackip.txt** (/etc/acl), para evitar conflictos en [Squid-Cache](http://www.squid-cache.org/), y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar varios días (Requisitos Mínimos: 64GB RAM, Corei5, HD 40GB free), por tanto se recomienda hacer este proceso de depuración manualmente / The bash **cidrclean.sh** performs debugging of IPs/CIDR in **blackip.txt** (/etc/acl), to avoid conflicts in [Squid-Cache](http://www.squid-cache.org/), and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it consumes a large amount of hardware resources during processing and can take several days (Minimum Requirements: 64GB RAM, Corei5, HD 40GB free), therefore it is recommended to do this debugging process manually
+
+```
+sudo wget -c https://raw.githubusercontent.com/maravento/blackip/master/cidrclean.sh -O /etc/init.d/cidrclean.sh
+sudo chown root:root /etc/init.d/cidrclean.sh
+sudo chmod +x /etc/init.d/cidrclean.sh
+sudo /etc/init.d/cidrclean.sh
+```
 
 ### Reglas / Rules
 
@@ -148,10 +158,6 @@ sudo ipset flush blackzone or sudo ipset flush
 [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
 
 [StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
-
-##### Debugging
-
-[Reserved IP addresses](https://en.wikipedia.org/wiki/Reserved_IP_addresses)([iana.txt](https://github.com/maravento/blackip/raw/master/iana.txt))
 
 ### Contributions
 
