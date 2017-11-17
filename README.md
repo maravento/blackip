@@ -61,7 +61,7 @@ Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 El bash **cidrclean.sh** realiza la depuración de IPs/CIDR de **blackip.txt** (/etc/acl), para evitar conflictos en [Squid-Cache](http://www.squid-cache.org/), y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar varios días (Requisitos Mínimos: 64GB RAM, Corei5, HD 40GB free), por tanto se recomienda hacer este proceso de depuración manualmente / The bash **cidrclean.sh** performs debugging of IPs/CIDR in **blackip.txt** (/etc/acl), to avoid conflicts in [Squid-Cache](http://www.squid-cache.org/), and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it consumes a large amount of hardware resources during processing and can take several days (Minimum Requirements: 64GB RAM, Corei5, HD 40GB free), therefore it is recommended to do this debugging process manually
 
 ```
-sudo wget -c https://raw.githubusercontent.com/maravento/blackip/master/cidrclean.sh -O /etc/init.d/cidrclean.sh
+sudo wget -c https://raw.githubusercontent.com/maravento/blackip/cidr/master/cidrclean.sh -O /etc/init.d/cidrclean.sh
 sudo chown root:root /etc/init.d/cidrclean.sh
 sudo chmod +x /etc/init.d/cidrclean.sh
 sudo /etc/init.d/cidrclean.sh

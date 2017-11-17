@@ -12,17 +12,17 @@
 # by:	maravento.com and novatoz.com
 
 route=/etc/acl
-cc=~/cc
+cidr=~/cidr
 
 clear
 
 # DOWNLOAD CIDRCLEAN
 echo
 echo "Download Path..."
-svn export "https://github.com/maravento/blackip/trunk/cc" >/dev/null 2>&1
+svn export "https://github.com/maravento/blackip/trunk/cidr" >/dev/null 2>&1
 echo "OK"
 
-cd $cc
+cd $cidr
 
 # IANA CIDR2IP
 echo
@@ -31,12 +31,31 @@ echo "Warning: This operation consumes a lot of resources..."
 chmod +x cidr2ip.py && python cidr2ip.py iana.txt > ianaip.txt
 echo "OK"
 
+# DOWNLOAD
+echo
+echo "Download Blackip..."
+wget -q -c --retry-connrefused -t 0 https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz
+wget -q -c --retry-connrefused -t 0 https://raw.githubusercontent.com/maravento/blackip/master/blackip.md5
+echo "OK"
+echo
+echo "Checking Sum..."
+a=$(md5sum blackip.tar.gz | awk '{print $1}')
+b=$(cat blackip.md5 | awk '{print $1}')
+	if [ "$a" = "$b" ]
+	then 
+		echo "Sum Matches"
+        cat blackip.tar.gz | tar xzf -
+	else
+		echo "Bad Sum. Abort"
+		echo "Blackip: Abort $date Check Internet Connection" >> /var/log/syslog
+		exit
+fi
+
 # DEBBUGGING IANA
 # https://en.wikipedia.org/wiki/Reserved_IP_addresses
 # http://stackoverflow.com/a/35114656/3776858
 echo
 echo "Debugging IANA Reserved IP Addresses"
-sudo cp -f $route/blackip.txt blackip.txt
 chmod +x debug.py && python debug.py
 echo "OK"
 
@@ -76,10 +95,10 @@ common() {
   echo "$new"
 }
 
-cidr="out.txt"
+out="out.txt"
 grep -vxFf <(
-  grep -v / "$cidr" | while IFS= read -r ip1; do
-    grep / "$cidr" | while IFS=/ read -r ip2 mask2; do
+  grep -v / "$out" | while IFS= read -r ip1; do
+    grep / "$out" | while IFS=/ read -r ip2 mask2; do
       out=$(common "$ip2/$mask2" "$ip1/32")
       out_mask="${out#*/}"
       if [[ $out_mask -ge $mask2 ]]; then   # -ge: greater-than-or-equal
@@ -87,6 +106,8 @@ grep -vxFf <(
       fi
     done
   done
-) "$cidr" > clean.txt
+) "$out" > clean.txt
 sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n clean.txt | uniq > $route/blackip.txt
+cd ..
+rm -rf $cidr
 echo "Done"
