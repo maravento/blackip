@@ -1,44 +1,53 @@
 ## [Blackip](http://www.maravento.com/p/blackip.html)
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
-[![Version](https://img.shields.io/badge/Development-ALPHA-blue.svg)](https://img.shields.io/badge/Development-ALPHA-blue.svg)
+[![Version](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)
 
 [Blackip](http://www.maravento.com/p/blackip.html) es un proyecto que pretende recopilar la mayor cantidad de listas negras públicas de IPs IPv4 (incluyendo bloqueo de zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/)) utilizando el módulo [IPSET](http://ipset.netfilter.org/) de [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). [Blackip](http://www.maravento.com/p/blackip.html) también puede ser utilizada en [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
 
 [Blackip](http://www.maravento.com/p/blackip.html) is a project that aims to collect as many public blacklists of IPv4 IPs (including blocking geographic zones with [IPDeny](http://www.ipdeny.com/ipblocks/)) using the [IPSET](http://ipset.netfilter.org/) module from [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). This module allows us to perform mass filtering (See [Geolocation Filtering](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). [Blackip](http://www.maravento.com/p/blackip.html) can also be used in [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
 
-### Descripción / Description
+### Ficha Técnica / Data Sheet
+---
 
 |File|IPs|File size|
 |----|---|---------|
-|blackip.txt|14.967.942|213,3 Mb|
+|blackip.txt|16.013.404|228,2 Mb|
 
 ### Dependencias / Dependencies
+---
 
 ```
 git ipset iptables bash tar zip wget squid subversion python
 ```
-### Modo de uso / How to use
 
-La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por defecto, la ruta de **blackip.txt** es **/etc/acl** y del script **blackip.sh** es **/etc/init.d** / The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl** and the script **blackip.sh** is **/etc/init.d**
-
-```
-sudo wget https://raw.githubusercontent.com/maravento/blackip/master/blackip.sh -O /etc/init.d/blackip.sh
-sudo chown root:root /etc/init.d/blackip.sh
-sudo chmod +x /etc/init.d/blackip.sh
-sudo /etc/init.d/blackip.sh
-```
-### Actualización BLs / Update BLs
-
-También puede descargar el proyecto Blackip y actualizar la ACL **blackip.txt** en dependencia de sus necesidades / You can also download the Blackip project and update the **blackip.txt** ACL depending on your needs
-
+### Descarga / Download
+---
 ```
 git clone --depth=1 https://github.com/maravento/blackip.git
-sudo cp -f blackip/bipupdate.sh /etc/init.d
-sudo chown root:root /etc/init.d/blackip.sh
-sudo chmod +x /etc/init.d/bipupdate.sh
-sudo /etc/init.d/bipupdate.sh
 ```
+
+### Modo de Uso / How to Use
+---
+
+La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por defecto, la ruta de **blackip.txt** es **/etc/acl**
+
+The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl**
+
+```
+wget https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
+```
+### Actualización / Update
+---
+
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
+
+The **bipupdate.sh** script updates **blackweb.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
+
+```
+wget https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+```
+
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
 
 Ejecución exitosa / Successful execution
@@ -51,25 +60,19 @@ Ejecución fallida / Execution failed
 Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 ```
 
-##### Importante sobre la actualización BLs / Important about update BLs
+##### Importante Antes de Usar / Important Before Use
 
-- Blackip solo da soporte IPv4 / Blackip only supports IPv4
-- Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list
-
-### CIDR-IANA Clean
-
-El bash **cidrclean.sh** realiza la depuración de IPs/CIDR de **blackip.txt** (/etc/acl), para evitar conflictos en [Squid-Cache](http://www.squid-cache.org/), y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar varios días (Requisitos Mínimos: 64GB RAM, Corei5, HD 40GB free), por tanto se recomienda hacer este proceso de depuración manualmente / The bash **cidrclean.sh** performs debugging of IPs/CIDR in **blackip.txt** (/etc/acl), to avoid conflicts in [Squid-Cache](http://www.squid-cache.org/), and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it consumes a large amount of hardware resources during processing and can take several days (Minimum Requirements: 64GB RAM, Corei5, HD 40GB free), therefore it is recommended to do this debugging process manually
-
-```
-sudo wget -c https://raw.githubusercontent.com/maravento/blackip/master/cidr/cidrclean.sh -O /etc/init.d/cidrclean.sh
-sudo chown root:root /etc/init.d/cidrclean.sh
-sudo chmod +x /etc/init.d/cidrclean.sh
-sudo /etc/init.d/cidrclean.sh
-```
+- Este proyecto solo da soporte IPv4 / This project only supports IPv4
+- Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista. / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list.
+- Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
+- La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
 
 ### Reglas / Rules
+---
 
-Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado) / Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate)
+Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
+
+Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate)
 
 ##### Regla de [Squid-Cache](http://www.squid-cache.org/) / [Squid-Cache](http://www.squid-cache.org/) Rule
 
@@ -98,16 +101,21 @@ $ipset -N -! blackzone hash:net maxelem 1000000
 $iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
 $iptables -A FORWARD -m set --match-set blackzone dst -j DROP
 ```
-Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) / You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/)
+Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea:
+
+You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line:
 ```
 for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
-En caso de error o conflicto, ejecute: / In case of error or conflict, execute:
+En caso de error o conflicto, ejecute:
+
+In case of error or conflict, execute:
 ```
 sudo ipset flush blackzone or sudo ipset flush
 ```
 
-### Data Sheet (Sources - Repositories)
+### Fuentes / Sources
+---
 
 ##### IPs Blacklists
 
@@ -160,15 +168,26 @@ sudo ipset flush blackzone or sudo ipset flush
 [StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
 
 ### Contributions
+---
 
 Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blacklist", para ser incluidas en este proyecto / We thank all those who contributed to this project. Those interested may contribute sending us new "Blacklist" links to be included in this project
 
+### Donate
+---
+
+BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
+
 ### Licence
+---
 
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-© 2017 [Maravento Studio](http://www.maravento.com)
+[![License](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+[maravento.com](http://www.maravento.com), [gateproxy.com](http://www.gateproxy.com) and [dextroyer.com](http://www.dextroyer.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-#### Disclaimer
+© 2018 [Maravento Studio](http://www.maravento.com)
+
+### Disclaimer
+---
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
