@@ -66,3 +66,4 @@ b=$(cat blackip.md5 | awk '{print $1}')
 		echo "Abort"
 		exit
 fi
+exit

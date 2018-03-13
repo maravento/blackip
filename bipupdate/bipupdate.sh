@@ -24,8 +24,8 @@ cm7=("Descargando GeoIP..." "Downloading GeoIP...")
 cm8=("Descargando Listas Negras..." "Downloading Blacklists...")
 cm9=("Depurando Blackip..." "Debugging Blackip...")
 cm10=("Depurando IANA..." "Debugging IANA...")
-cm10=("Recargando Squid..." "Squid Reload...")
-cm11=("Terminado" "Done")
+cm11=("Recargando Squid..." "Squid Reload...")
+cm12=("Terminado" "Done")
 test "${LANG:0:2}" == "es"
 es=$?
 
@@ -39,6 +39,8 @@ echo
 route=/etc/acl
 zone=/etc/zones
 bipd=$(pwd)/blackip
+ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
+reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n"
 
 # DELETE OLD REPOSITORY
 if [ -d $bipd ]; then rm -rf $bipd; fi
@@ -80,7 +82,6 @@ echo "OK"
 # DOWNLOADING BLACKIPS
 echo
 echo "${cm8[${es}]}"
-ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 
 function blips() {
     wget -q -c --retry-connrefused -t 0 "$1" -O - | grep -oP "$ipRegExp" >> blackip.txt
@@ -102,9 +103,20 @@ blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
 blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
 blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
 blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
-#blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
-#blips 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt' && sleep 1
-#blips 'https://www.openbl.org/lists/base.txt' # SERVER DOWN
+# blips 'https://www.openbl.org/lists/base.txt' # SERVER DOWN
+
+# CIDR2IP consumes all the resources of the PC and collapses
+#function cidr() {
+#    wget -q -c --retry-connrefused -t 0 "$1" -O - | sed '/^$/d; / *#/d' | $reorganize | uniq >> cidrtmp.txt
+#    python cidr2ip.py cidrtmp.txt >> blackip.txt
+#}
+#cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
+#cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
+
+function cidr2() {
+    wget -q -c --retry-connrefused -t 0 "$1" -O - | sed '/^$/d; / *#/d' | sed '/\//d' | $reorganize | uniq >> blackip.txt
+}
+cidr2 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
 
 function myip() {
     wget -q -c --retry-connrefused -t 0 "$1" && unzip -o full_blacklist_database.zip >/dev/null 2>&1 > full_blacklist_database.txt
@@ -118,7 +130,7 @@ echo "OK"
 echo
 echo "${cm9[${es}]}"
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' blackip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' > bl.txt
-sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n bl.txt | uniq > blackip.txt
+$reorganize bl.txt | uniq > blackip.txt
 echo "OK"
 
 # DEBBUGGING BLACKIP and IANA (CIDR)
@@ -137,11 +149,10 @@ cat ianacidr.txt >> blackip.txt
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> squiderror.txt
 ## Debbugging squiderror.txt
-ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
-grep -oP "$ipRegExp" squiderror.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > clean.txt
+grep -oP "$ipRegExp" squiderror.txt | $reorganize | uniq > clean.txt
 ## Remove conflicts from blackip.txt
-chmod +x debug-bip.py && python debug-bip.py
-sed '/\//d' biptmp.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n | uniq > blackip.txt
+python debugbip.py
+sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH
 cp -f blackip.txt $route/blackip.txt
 echo "OK"

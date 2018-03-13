@@ -12,7 +12,7 @@
 
 |File|IPs|File size|
 |----|---|---------|
-|blackip.txt|16.013.404|228,2 Mb|
+|blackip.txt|16.033.346|228,5 Mb|
 
 ### Dependencias / Dependencies
 ---
@@ -35,17 +35,17 @@ La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por
 The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl**
 
 ```
-wget https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
+wget -N https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
 ```
 ### Actualización / Update
 ---
 
 El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
 
-The **bipupdate.sh** script updates **blackweb.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
+The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
 
 ```
-wget https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+wget -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
 ```
 
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
@@ -163,9 +163,9 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
 
-[Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
+[Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)  (Excluded CIDR)
 
-[StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
+[StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded CIDR)
 
 ### Contributions
 ---
