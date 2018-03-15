@@ -13,13 +13,11 @@
 
 # by:	maravento.com and novatoz.com
 
-# DATE
-date=`date +%d/%m/%Y" "%H:%M:%S`
-
-# PATH
+# VARIABLES
 route=/etc/acl
 zone=/etc/zones
 bipu=$(pwd)/bipupdate
+date=`date +%d/%m/%Y" "%H:%M:%S`
 
 # DEL OLD REPOSITORY
 if [ -d $bipu ]; then rm -rf $bipu; fi
@@ -41,29 +39,28 @@ echo "Checking Sum..."
 a=$(md5sum blackip.txt | awk '{print $1}')
 b=$(cat blackip.md5 | awk '{print $1}')
 	if [ "$a" = "$b" ]
-	then 
+	then
 		echo "Sum Matches"
-        # ADD OWN LIST
+		# ADD OWN LIST
 		#sed '/^$/d; / *#/d' /path/blackip_own.txt >> blackip.txt
-		cp -f  blackip.txt $route >/dev/null 2>&1
-        echo
+		cp -f  blackip.txt $route/blackip.txt >/dev/null 2>&1
+		echo
 		# DOWNLOAD GEOZONES
 		echo "Download Geozones..."
 		wget -q -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
 		tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
 		echo "OK"
 		echo "Blackip: Done $date" >> /var/log/syslog
-        cd
+		cd
 		rm -rf $bipu
-        echo
+echo
 		echo "Done"
-	else
+		else
 		echo "Bad Sum"
 		echo "Blackip: Abort $date Check Internet Connection" >> /var/log/syslog
-        cd
+		cd
 		rm -rf $bipu
 		echo
 		echo "Abort"
 		exit
 fi
-exit
