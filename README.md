@@ -1,33 +1,33 @@
 ## [Blackip](http://www.maravento.com/p/blackip.html)
 
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
-[![Version](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)
+[![GitHub version](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)](http://www.maravento.com/p/blackip.html)
 
 [Blackip](http://www.maravento.com/p/blackip.html) es un proyecto que pretende recopilar la mayor cantidad de listas negras públicas de IPs IPv4 (incluyendo bloqueo de zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/)) utilizando el módulo [IPSET](http://ipset.netfilter.org/) de [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). [Blackip](http://www.maravento.com/p/blackip.html) también puede ser utilizada en [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
 
 [Blackip](http://www.maravento.com/p/blackip.html) is a project that aims to collect as many public blacklists of IPv4 IPs (including blocking geographic zones with [IPDeny](http://www.ipdeny.com/ipblocks/)) using the [IPSET](http://ipset.netfilter.org/) module from [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). This module allows us to perform mass filtering (See [Geolocation Filtering](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). [Blackip](http://www.maravento.com/p/blackip.html) can also be used in [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
 
-### Ficha Técnica / Data Sheet
+### FICHA TECNICA / DATA SHEET
 ---
 
 |File|IPs|File size|
 |----|---|---------|
 |blackip.txt|16.033.346|228,5 Mb|
 
-### Dependencias / Dependencies
+### DEPENDENCIAS / DEPENDENCIES
 ---
 
 ```
 git ipset iptables bash tar zip wget squid subversion python
 ```
 
-### Descarga / Download
+### DESCARGA / DOWNLOAD
 ---
 ```
 git clone --depth=1 https://github.com/maravento/blackip.git
 ```
 
-### Modo de Uso / How to Use
+### MODO DE USO / HOW TO USE
 ---
 
 La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por defecto, la ruta de **blackip.txt** es **/etc/acl**
@@ -35,9 +35,9 @@ La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por
 The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl**
 
 ```
-wget -N https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
+wget -q -N https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
 ```
-### Actualización / Update
+### ACTUALIZACIÓN / UPDATE
 ---
 
 El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
@@ -45,7 +45,7 @@ El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captu
 The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
 
 ```
-wget -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
 ```
 
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
@@ -67,12 +67,12 @@ Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 - Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
 - La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
 
-### Reglas / Rules
+### REGLAS / RULES
 ---
 
-Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
+Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado).
 
-Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate)
+Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate).
 
 ##### Regla de [Squid-Cache](http://www.squid-cache.org/) / [Squid-Cache](http://www.squid-cache.org/) Rule
 
@@ -107,14 +107,16 @@ You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](htt
 ```
 for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
-En caso de error o conflicto, ejecute:
-
-In case of error or conflict, execute:
+En caso de error o conflicto, ejecute: / In case of error or conflict, execute:
 ```
-sudo ipset flush blackzone or sudo ipset flush
+sudo ipset flush blackzone
+```
+or
+```
+sudo ipset flush
 ```
 
-### Fuentes / Sources
+### FUENTES / SOURCES
 ---
 
 ##### IPs Blacklists
@@ -167,17 +169,17 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded CIDR)
 
-### Contributions
+### CONTRIBUCIONES / CONTRIBUTIONS
 ---
 
 Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blacklist", para ser incluidas en este proyecto / We thank all those who contributed to this project. Those interested may contribute sending us new "Blacklist" links to be included in this project
 
-### Donate
+### DONACION / DONATE
 ---
 
 BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 
-### Licence
+### LICENCIA / LICENCE
 ---
 
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
@@ -187,7 +189,7 @@ BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 
 © 2018 [Maravento Studio](http://www.maravento.com)
 
-### Disclaimer
+### EXENCION DE RESPONSABILIDAD / DISCLAIMER
 ---
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
