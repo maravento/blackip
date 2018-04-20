@@ -12,7 +12,7 @@
 
 |File|IPs|File size|
 |----|---|---------|
-|blackip.txt|16.033.346|228,5 Mb|
+|blackip.txt|575.130|8,2 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -37,17 +37,6 @@ The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. B
 ```
 wget -q -N https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
 ```
-### ACTUALIZACIÓN / UPDATE
----
-
-El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
-
-The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
-
-```
-wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
-```
-
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
 
 Ejecución exitosa / Successful execution
@@ -60,9 +49,21 @@ Ejecución fallida / Execution failed
 Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 ```
 
+### ACTUALIZACIÓN / UPDATE
+---
+
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
+
+The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
+
+```
+wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+```
+
 ##### Importante Antes de Usar / Important Before Use
 
-- Este proyecto solo da soporte IPv4 / This project only supports IPv4
+- Blackip solo incluye IPv4 / Blackip only includes IPv4
+- Por el momento, Blackip no incluye CIDR / At the moment, Blackip does not include CIDR
 - Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista. / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list.
 - Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
 - La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
@@ -119,7 +120,7 @@ sudo ipset flush
 ### FUENTES / SOURCES
 ---
 
-##### IPs Blacklists
+##### IPs Public Blacklists
 
 [IPDeny](http://www.ipdeny.com/ipblocks/)
 
@@ -127,9 +128,7 @@ sudo ipset flush
 
 [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 
-[TOR exit addresses](https://check.torproject.org/exit-addresses)
-
-[BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+[TOR exit addresses](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
 
 [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 
@@ -139,13 +138,13 @@ sudo ipset flush
 
 [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 
-[Emergingthreats](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
+[Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 
-[Project Honeypot](http://www.projecthoneypot.org/list_of_ips.php)
+[Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 
 [Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
 
-[Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
+[Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 
 [Malc0de IP Blacklist](http://malc0de.com/bl/IP_Blacklist.txt)
 
@@ -159,15 +158,25 @@ sudo ipset flush
 
 [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 
-[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist) ([ip-list (RAW)](https://hosts.ubuntu101.co.za/ips.list)) (It includes [Blocklist](https://lists.blocklist.de/lists/all.txt))
+[Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 
-[blackip](https://github.com/maravento/blackip/raw/master/blackip.tar.gz)
+[Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
+
+##### IPs Blacklists (compressed)
+
+[BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+
+[StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
+
+##### IPs Blacklists (Discontinued or Replaced)
+
+[Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
+
+[Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
+
+[StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
 
 [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
-
-[Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)  (Excluded CIDR)
-
-[StopForumSpam](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded CIDR)
 
 ### CONTRIBUCIONES / CONTRIBUTIONS
 ---

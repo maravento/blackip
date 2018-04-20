@@ -15,23 +15,21 @@
 
 # VARIABLES
 route=/etc/acl
-zone=/etc/zones
-bipu=$(pwd)/bipupdate
+bip=$(pwd)/bip
 date=`date +%d/%m/%Y" "%H:%M:%S`
 
 # DEL OLD REPOSITORY
-if [ -d $bipu ]; then rm -rf $bipu; fi
+if [ -d $bip ]; then rm -rf $bip; fi
 
 # CREATE PATH
-if [ ! -d $zone ]; then mkdir -p $zone; fi
 if [ ! -d $route ]; then mkdir -p $route; fi
 
 # DOWNLOAD
 clear
 echo
 echo "Download Blackip..."
-svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
-cd $bipu
+svn export "https://github.com/maravento/blackip/trunk/bip" >/dev/null 2>&1
+cd $bip
 cat blackip.tar.gz* | tar xzf -
 echo "OK"
 echo
@@ -45,21 +43,17 @@ b=$(cat blackip.md5 | awk '{print $1}')
 		#sed '/^$/d; / *#/d' /path/blackip_own.txt >> blackip.txt
 		cp -f  blackip.txt $route/blackip.txt >/dev/null 2>&1
 		echo
-		# DOWNLOAD GEOZONES
-		echo "Download Geozones..."
-		wget -q -c --retry-connrefused -t 0 http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-		tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
 		echo "OK"
 		echo "Blackip: Done $date" >> /var/log/syslog
 		cd
-		rm -rf $bipu
+		rm -rf $bip
 echo
 		echo "Done"
 		else
 		echo "Bad Sum"
 		echo "Blackip: Abort $date Check Internet Connection" >> /var/log/syslog
 		cd
-		rm -rf $bipu
+		rm -rf $bip
 		echo
 		echo "Abort"
 		exit
