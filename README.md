@@ -12,7 +12,7 @@
 
 |File|IPs|File size|
 |----|---|---------|
-|blackip.txt|575.130|8,2 Mb|
+|blackip.txt|624.640|8,9 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -52,9 +52,9 @@ Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 ### ACTUALIZACIÓN / UPDATE
 ---
 
-El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar horas o días
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento.
 
-The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and can take hours or days. 
+The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing. 
 
 ```
 wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
@@ -62,8 +62,7 @@ wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.s
 
 ##### Importante Antes de Usar / Important Before Use
 
-- Blackip solo incluye IPv4 / Blackip only includes IPv4
-- Por el momento, Blackip no incluye CIDR / At the moment, Blackip does not include CIDR
+- Blackip es una ACL solamente para IPv4. No incluye CIDR (pero puede agregarlos manualmente). / Blackip is an ACL only for IPv4. Does not include CIDR (but you can add them manually).
 - Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista. / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list.
 - Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
 - La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
