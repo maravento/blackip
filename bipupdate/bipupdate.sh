@@ -99,9 +99,6 @@ zip 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip' && sleep 1
 #cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
 #cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
-# ADD OWN LIST
-#sed '/^$/d; / *#/d' /path/blackip_own.txt >> bip.txt
-
 echo "OK"
 
 echo
@@ -121,7 +118,7 @@ echo "${cm10[${es}]}"
 function ianacidr() {
     $wgetd "$1" -O - | sort -u >> blackip.txt
 }
-	ianacidr 'https://github.com/maravento/whiteip/raw/master/ianacidr.txt' && sleep 1
+	ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
 ## Reload Squid with Out
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> SquidError.txt

@@ -62,8 +62,7 @@ wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.s
 
 ##### Importante Antes de Usar / Important Before Use
 
-- Blackip es una ACL solamente para IPv4. No incluye CIDR (pero puede agregarlos manualmente). / Blackip is an ACL only for IPv4. Does not include CIDR (but you can add them manually).
-- Puede incluir su propia Blacklist IPs, que quiera bloquear y que no se encuentre en **blackip.txt**, editando el script **bipupdate.sh** y descomentando en **ADD OWN LIST** la línea **/path/blackip_own.txt** y reemplazandola por la ruta hacia su propia lista. / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**, editing **bipupdate.sh** script and uncommenting in **ADD OWN LIST** line **/path/blackip_own.txt** and replacing it with the path to your own list.
+- Blackip es una ACL IPv4. No incluye CIDR. / Blackip is an ACL IPv4. Does not include CIDR.
 - Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
 - La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
 
@@ -80,6 +79,15 @@ Edit /etc/squid/squid.conf:
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 acl blackip dst "/etc/acl/blackip.txt"
+http_access deny blackip
+```
+Puede incluir su propia Blacklist IPs/CIDR, que quiera bloquear y que no se encuentre en **blackip.txt**. Tenga cuidado con los conflictos CIDR que pueda generar su propia lista en [Squid-Cache](http://www.squid-cache.org/)  / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**. Beware of CIDR conflicts that you may generate in [Squid-Cache](http://www.squid-cache.org/)
+
+```
+# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+acl blackip_own dst "/etc/acl/blackip_own.txt"
+acl blackip dst "/etc/acl/blackip.txt"
+http_access deny blackip_own
 http_access deny blackip
 ```
 
@@ -176,6 +184,12 @@ sudo ipset flush
 [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
 
 [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
+
+##### Internal Tools
+
+[cidr2ip](https://github.com/maravento/blackip/raw/master/bipupdate/cidr2ip.py)
+
+[Debug IPs](https://github.com/maravento/blackip/raw/master/bipupdate/debugbip.py)
 
 ### CONTRIBUCIONES / CONTRIBUTIONS
 ---
