@@ -10,9 +10,9 @@
 ### FICHA TECNICA / DATA SHEET
 ---
 
-|File|IPs|File size|
-|----|---|---------|
-|blackip.txt|624.640|8,9 Mb|
+|ACL|IPs|Size|
+|---|---|----|
+|blackip.txt|818.993|11,7 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -52,9 +52,9 @@ Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
 ### ACTUALIZACIÓN / UPDATE
 ---
 
-El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento.
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar mucho tiempo.
 
-The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing. 
+The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time. 
 
 ```
 wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
@@ -161,13 +161,13 @@ sudo ipset flush
 
 [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
 
-##### IPs Blacklists (compressed)
+##### IPs Public Blacklists (compressed)
 
 [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 
 [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
 
-##### IPs Blacklists (Discontinued or Replaced)
+##### IPs Public Blacklists (Discontinued or Replaced)
 
 [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
 

@@ -20,8 +20,7 @@ cm7=("Descargando GeoIP..." "Downloading GeoIP...")
 cm8=("Descargando Listas Negras..." "Downloading Blacklists...")
 cm9=("Depurando Blackip..." "Debugging Blackip...")
 cm10=("Depurando IANA..." "Debugging IANA...")
-cm11=("Recargando Squid..." "Squid Reload...")
-cm12=("Terminado" "Done")
+cm11=("Terminado" "Done")
 test "${LANG:0:2}" == "es"
 es=$?
 
@@ -118,30 +117,22 @@ echo "OK"
 echo
 echo "${cm10[${es}]}"
 ## Add ianacidr.txt to blackip.txt
-cat ianacidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt
+# Load ianacidr
+function ianacidr() {
+    $wgetd "$1" -O - | sort -u >> blackip.txt
+}
+	ianacidr 'https://github.com/maravento/whiteip/raw/master/ianacidr.txt' && sleep 1
 ## Reload Squid with Out
 cp -f blackip.txt $route/blackip.txt
-squid -k reconfigure 2> SquidError.txt && sort -o SquidError.txt -u SquidError.txt
-grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log | grep -oP "$ipRegExp" | $reorganize | uniq >> SquidError.txt
+squid -k reconfigure 2> SquidError.txt
+grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
 ## Remove conflicts from blackip.txt
-python debugbip.py
-sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
-# COPY ACL TO PATH
+python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+# COPY ACL TO PATH AND LOG
 cp -f blackip.txt $route/blackip.txt
-
-echo "OK"
-
-# RELOAD SQUID
-echo
-echo "${cm11[${es}]}"
-squid -k reconfigure
 echo "Blackip $date" >> /var/log/syslog
-
-echo "OK"
-
 # END
 cd
 rm -rf $bipupdate
-echo
-echo "${cm12[${es}]}"
+echo "${cm11[${es}]}"
