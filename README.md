@@ -12,7 +12,7 @@
 
 |ACL|IPs|Size|
 |---|---|----|
-|blackip.txt|818.993|11,7 Mb|
+|blackip.txt|786.269|11,2 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
