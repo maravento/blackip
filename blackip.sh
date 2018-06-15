@@ -36,9 +36,9 @@ echo
 echo "Checking Sum..."
 a=$(md5sum blackip.txt | awk '{print $1}')
 b=$(cat blackip.md5 | awk '{print $1}')
-	if [ "$a" = "$b" ]
-	then
-		echo "Sum Matches"
+        if [ "$a" = "$b" ]
+        then
+                echo "Sum Matches"
 		# ADD OWN LIST
 		#sed '/^$/d; / *#/d' /path/blackip_own.txt >> blackip.txt
 		cp -f  blackip.txt $route/blackip.txt >/dev/null 2>&1
@@ -47,7 +47,7 @@ b=$(cat blackip.md5 | awk '{print $1}')
 		echo "Blackip: Done $date" >> /var/log/syslog
 		cd
 		rm -rf $bip
-echo
+        echo
 		echo "Done"
 		else
 		echo "Bad Sum"
