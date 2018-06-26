@@ -63,47 +63,47 @@ echo
 echo "${cm8[${es}]}"
 
 function blips() {
-        $wgetd "$1" -O - | grep -oP "$ipRegExp" >> bip.txt
+	$wgetd "$1" -O - | grep -oP "$ipRegExp" >> bip.txt
 }
-                blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
-                blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
-                blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
-                blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
-                blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
-                blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
-                blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
-                blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
-                blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
-                blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
-                blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
-                blips 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
-                blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
-                blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
-                blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
-                blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-                blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
-                blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
-                blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
+        blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
+        blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
+        blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
+        blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
+        blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
+        blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
+        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
+        blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+        blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
+        blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
+        blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
+        blips 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
+        blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
+        blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
+        blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+        blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
+        blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
+        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
+        blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
 
 function zip() {
         $wgetd "$1" && unzip -p '*.zip' | grep -oP "$ipRegExp" | uniq >> bip.txt
 }
-                zip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' && sleep 1
-                zip 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip' && sleep 1
+        zip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' && sleep 1
+        zip 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip' && sleep 1
 
 # CIDR2IP consumes all the resources of the PC and collapses
 #function cidr() {
 #       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt
 #       python cidr2ip.py cidr.txt >> blackip.txt
 #}
-#               cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
-#               cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
+#       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
+#       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
 echo "OK"
 
 echo
 echo "${cm9[${es}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq > blackip.txt
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d'> blackip.txt
 echo "OK"
 
 # DEBBUGGING BLACKIP and IANA (CIDR)
@@ -118,7 +118,7 @@ echo "${cm10[${es}]}"
 function ianacidr() {
         $wgetd "$1" -O - | sort -u >> blackip.txt
 }
-                ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
+        ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
 ## Reload Squid with Out
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> SquidError.txt

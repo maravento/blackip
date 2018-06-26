@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 def ip2int(ip):
     ip = [int(p) for p in ip.split(".")]
     return ip[0] << 24 | ip[1] << 16 | ip[2] << 8 | ip[3]
@@ -10,7 +9,6 @@ def int2ip(i):
         i >> 16 & 0xff,
         i >> 8  & 0xff,
         i       & 0xff)
-
 
 def toRange(ip):
     if "-" in ip:
