@@ -30,13 +30,15 @@ echo "Blackip Project"
 echo "${cm1[${es}]}"
 
 # VARIABLES
-route=/etc/acl
-zone=/etc/zones
 bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n"
 date=`date +%d/%m/%Y" "%H:%M:%S`
 wgetd="wget -q -c --retry-connrefused -t 0"
+
+# PATH_TO_ACL (Change it to the directory of your preference)
+route=/etc/acl
+zone=/etc/zones
 
 # DELETE OLD REPOSITORY
 if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
@@ -71,7 +73,6 @@ function blips() {
         blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
-        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
         blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
         blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
@@ -84,6 +85,8 @@ function blips() {
         blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
+        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
+        blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
 
 function zip() {
         $wgetd "$1" && unzip -p '*.zip' | grep -oP "$ipRegExp" | uniq >> bip.txt
@@ -103,7 +106,7 @@ echo "OK"
 
 echo
 echo "${cm9[${es}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d'> blackip.txt
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > blackip.txt
 echo "OK"
 
 # DEBBUGGING BLACKIP and IANA (CIDR)
@@ -111,21 +114,25 @@ echo "OK"
 # And add line:
 # acl blackip dst "/etc/acl/blackip.txt"
 # http_access deny blackip
-echo
-echo "${cm10[${es}]}"
+#echo
+#echo "${cm10[${es}]}"
+
 ## Add ianacidr.txt to blackip.txt
 # Load ianacidr
-function ianacidr() {
-        $wgetd "$1" -O - | sort -u >> blackip.txt
-}
-        ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
+#function ianacidr() {
+#        $wgetd "$1" -O - | sort -u >> blackip.txt
+#}
+#        ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
+
 ## Reload Squid with Out
-cp -f blackip.txt $route/blackip.txt
-squid -k reconfigure 2> SquidError.txt
-grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
-grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
+#cp -f blackip.txt $route/blackip.txt
+#squid -k reconfigure 2> SquidError.txt
+#grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
+#grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
+
 ## Remove conflicts from blackip.txt
-python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+#python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+
 # COPY ACL TO PATH AND LOG
 cp -f blackip.txt $route/blackip.txt
 echo "Blackip $date" >> /var/log/syslog

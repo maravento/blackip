@@ -12,7 +12,7 @@
 
 |ACL|IPs|Size|
 |---|---|----|
-|blackip.txt|784.369|11,2 Mb|
+|blackip.txt|1.144.956|16,4 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -30,75 +30,66 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 ### MODO DE USO / HOW TO USE
 ---
 
-La ACL **blackip.txt** ya viene optimizada. Descárguela con **blackip.sh**. Por defecto, la ruta de **blackip.txt** es **/etc/acl**
+La ACL **blackip.txt** ya viene optimizada. Descárguela en la ruta de su preferencia:
 
-The ACL **blackip.txt** is already optimized. Download it with **blackip.sh**. By default, **blackip.txt** path is **/etc/acl**
+The ACL **blackip.txt** is already optimized. Download it in the path of your preference:
 
 ```
-wget -q -N https://github.com/maravento/blackip/raw/master/blackip.sh && sudo chmod +x blackip.sh && sudo ./blackip.sh
+wget -q -N https://github.com/maravento/blackip/raw/master/blackip.txt
 ```
+
+### ACTUALIZACIÓN / UPDATE
+---
+
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs, sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar mucho tiempo.
+
+The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains, however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time.
+
+```
+wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+```
+
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
 
 Ejecución exitosa / Successful execution
 ```
 Blackip: Done 06/05/2017 15:47:14
 ```
-Ejecución fallida / Execution failed
-
-```
-Blackip: Abort 06/05/2017 15:47:14 Check Internet Connection
-```
-
-### ACTUALIZACIÓN / UPDATE
----
-
-El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs y excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada), sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar mucho tiempo.
-
-The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains and excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network), however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time.
-
-```
-wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
-```
 
 ##### Importante Antes de Usar / Important Before Use
 
-- Blackip es una ACL IPv4. No incluye CIDR. / Blackip is an ACL IPv4. Does not include CIDR.
-- Antes de utilizar **bipupdate.sh** debe activar la regla en [Squid-Cache](http://www.squid-cache.org/). / You must activate the rule in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**.
-- La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción. / The update must run on test equipment designed for this purpose. Never on servers in production.
+- Blackip es una ACL IPv4. No incluye CIDR / Blackip is an ACL IPv4. Does not include CIDR
+- Antes de utilizar **bipupdate.sh** debe activar las reglas en [Squid-Cache](http://www.squid-cache.org/) / You must activate the rules in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**
+- La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción / The update must run on test equipment designed for this purpose. Never on servers in production
+- Se recomienda excluir rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) (descomente las líneas en **bipupdate.sh** referentes a las [IPs reservadas](https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt)) / It is recommended to excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) (uncomment the lines in **bipupdate.sh** referring to the [reserved IPs](https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt))
+- Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado) / Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate).
+- Puede agregar su propia Blacklist IPs/CIDR a **blackip.txt**, pero tenga cuidado con los conflictos que pueda generar / You can add your own Blacklist IPs/CIDR to **blackip.txt**, but be careful with conflicts that may arise
 
 ### REGLAS / RULES
 ---
 
-Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado).
+##### Para [Squid-Cache](http://www.squid-cache.org/) / For [Squid-Cache](http://www.squid-cache.org/)
 
-Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate).
-
-##### Regla de [Squid-Cache](http://www.squid-cache.org/) / [Squid-Cache](http://www.squid-cache.org/) Rule
-
-Edit /etc/squid/squid.conf:
+Edite / Edit:
 ```
-# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-acl blackip dst "/etc/acl/blackip.txt"
-http_access deny blackip
+/etc/squid/squid.conf
 ```
-Puede incluir su propia Blacklist IPs/CIDR, que quiera bloquear y que no se encuentre en **blackip.txt**. Tenga cuidado con los conflictos CIDR que pueda generar su propia lista en [Squid-Cache](http://www.squid-cache.org/)  / You can include your own Blacklist IPs, which you want to block, and that is not on **blackip.txt**. Beware of CIDR conflicts that you may generate in [Squid-Cache](http://www.squid-cache.org/)
+Y agregue las siguientes líneas: / And add the following lines:
 
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-acl blackip_own dst "/etc/acl/blackip_own.txt"
-acl blackip dst "/etc/acl/blackip.txt"
-http_access deny blackip_own
+acl blackip dst "/path_to_acl/blackip.txt"
 http_access deny blackip
 ```
 
-##### Regla de [IPSET](http://ipset.netfilter.org/) / [IPSET](http://ipset.netfilter.org/) Rule
+##### Para [IPSET](http://ipset.netfilter.org/) / For [IPSET](http://ipset.netfilter.org/)
 
-Edite su script de Iptables y agregue: / Edit your Iptables script and add:
+Edite su script de Iptables y agregue las siguientes líneas: / Edit your Iptables script and add the following lines:
 ```
 ipset=/sbin/ipset
 iptables=/sbin/iptables
-route=/etc/acl
-zone=/etc/zones
+route=/path_to_acl_blackip/
+zone=/path_to_acl_zones/zones
 
 # BLACKZONE RULE (select country to block and ip/range)
 $ipset -F
@@ -109,19 +100,13 @@ $ipset -N -! blackzone hash:net maxelem 1000000
 $iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
 $iptables -A FORWARD -m set --match-set blackzone dst -j DROP
 ```
-Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea:
-
-You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line:
+Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea: / You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line:
 ```
 for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
 En caso de error o conflicto, ejecute: / In case of error or conflict, execute:
 ```
-sudo ipset flush blackzone
-```
-or
-```
-sudo ipset flush
+sudo ipset flush blackzone or sudo ipset flush
 ```
 
 ### FUENTES / SOURCES
@@ -134,8 +119,6 @@ sudo ipset flush
 [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
 [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
-
-[TOR exit addresses](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
 
 [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 
@@ -168,6 +151,12 @@ sudo ipset flush
 [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 
 [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
+
+##### TOR
+
+[TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
+
+[TOR Node List](https://www.dan.me.uk/torlist/?exit)
 
 ##### IPs Public Blacklists (compressed)
 
