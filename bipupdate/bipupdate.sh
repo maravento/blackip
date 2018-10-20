@@ -88,11 +88,14 @@ function blips() {
         blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
 
-function zip() {
-        $wgetd "$1" && unzip -p '*.zip' | grep -oP "$ipRegExp" | uniq >> bip.txt
-}
-        zip 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip' && sleep 1
-        zip 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip' && sleep 1
+$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
+$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
+$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz'
+gunzip -c *.gz  | grep -oP "$ipRegExp" | uniq >> bip.txt
+
+$wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+$wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
+unzip -p *.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 
 # CIDR2IP consumes all the resources of the PC and collapses
 #function cidr() {
@@ -122,7 +125,7 @@ echo "OK"
 #function ianacidr() {
 #        $wgetd "$1" -O - | sort -u >> blackip.txt
 #}
-#        ianacidr 'https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt' && sleep 1
+#        ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
 
 ## Reload Squid with Out
 #cp -f blackip.txt $route/blackip.txt

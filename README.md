@@ -12,7 +12,7 @@
 
 |ACL|IPs|Size|
 |---|---|----|
-|blackip.txt|1.144.956|16,4 Mb|
+|blackip.txt|1.297.012|18,5 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -151,6 +151,8 @@ sudo ipset flush blackzone or sudo ipset flush
 [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 
 [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
+
+[uceprotect.net](http://wget-mirrors.uceprotect.net/)
 
 ##### TOR
 
