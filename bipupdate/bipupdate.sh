@@ -65,7 +65,7 @@ echo
 echo "${cm8[${es}]}"
 
 function blips() {
-	$wgetd "$1" -O - | grep -oP "$ipRegExp" >> bip.txt
+	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> bip.txt
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
         blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
@@ -94,8 +94,10 @@ $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz
 gunzip -c *.gz  | grep -oP "$ipRegExp" | uniq >> bip.txt
 
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
+
 $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
-unzip -p *.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
+unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 
 # CIDR2IP consumes all the resources of the PC and collapses
 #function cidr() {
@@ -122,19 +124,19 @@ echo "OK"
 
 ## Add ianacidr.txt to blackip.txt
 # Load ianacidr
-#function ianacidr() {
-#        $wgetd "$1" -O - | sort -u >> blackip.txt
-#}
-#        ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
+function ianacidr() {
+        $wgetd "$1" -O - | sort -u >> blackip.txt
+}
+        ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
 
 ## Reload Squid with Out
-#cp -f blackip.txt $route/blackip.txt
-#squid -k reconfigure 2> SquidError.txt
-#grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
-#grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
+cp -f blackip.txt $route/blackip.txt
+squid -k reconfigure 2> SquidError.txt
+grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
+grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
 
 ## Remove conflicts from blackip.txt
-#python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
 
 # COPY ACL TO PATH AND LOG
 cp -f blackip.txt $route/blackip.txt

@@ -10,9 +10,9 @@
 ### FICHA TECNICA / DATA SHEET
 ---
 
-|ACL|IPs|Size|
-|---|---|----|
-|blackip.txt|1.297.012|18,5 Mb|
+|ACL|Black IPs|txt size|tar.gz size|
+|---|---------|--------|-----------|
+|blackip.txt|1.435.989|20,5 Mb|18,5 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -30,12 +30,21 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 ### MODO DE USO / HOW TO USE
 ---
 
-La ACL **blackip.txt** ya viene optimizada. Descárguela en la ruta de su preferencia:
+La ACL **blackip.txt** ya viene optimizada. Descárguela y descomprimala en la ruta de su preferencia:
 
-The ACL **blackip.txt** is already optimized. Download it in the path of your preference:
+The ACL **blackip.txt** is already optimized. Download it and unzip it in the path of your preference:
+
+#####  Download ACL
 
 ```
-wget -q -N https://github.com/maravento/blackip/raw/master/blackip.txt
+wget -q -N https://github.com/maravento/blackip/raw/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
+```
+
+#####  Checksum ACL
+
+```
+wget -q -N https://github.com/maravento/blackip/raw/master/blackip.md5
+md5sum blackip.txt | awk '{print $1}' && cat blackip.md5 | awk '{print $1}'
 ```
 
 ### ACTUALIZACIÓN / UPDATE
@@ -61,7 +70,7 @@ Blackip: Done 06/05/2017 15:47:14
 - Blackip es una ACL IPv4. No incluye CIDR / Blackip is an ACL IPv4. Does not include CIDR
 - Antes de utilizar **bipupdate.sh** debe activar las reglas en [Squid-Cache](http://www.squid-cache.org/) / You must activate the rules in [Squid-Cache](http://www.squid-cache.org/) before using **bipupdate.sh**
 - La actualización debe ejecutarse en equipos de pruebas destinados para este propósito. Nunca en servidores en producción / The update must run on test equipment designed for this purpose. Never on servers in production
-- Se recomienda excluir rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) (descomente las líneas en **bipupdate.sh** referentes a las [IPs reservadas](https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt)) / It is recommended to excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) (uncomment the lines in **bipupdate.sh** referring to the [reserved IPs](https://github.com/maravento/whiteip/raw/master/acl/ianacidr.txt))
+- Blackip excluye rangos privados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) ([IPs reservadas](https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt)) / Blackip excludes private ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) ([reserved IPs](https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt))
 - Tenga en cuenta que no se debe utilizar **Blackip** en [IPSET](http://ipset.netfilter.org/) y en [Squid-Cache](http://www.squid-cache.org/) al mismo tiempo (doble filtrado) / Note that **Blackip** should not be used in [IPSET](http://ipset.netfilter.org/) and in [Squid-Cache](http://www.squid-cache.org/) at the same time (double filtrate).
 - Puede agregar su propia Blacklist IPs/CIDR a **blackip.txt**, pero tenga cuidado con los conflictos que pueda generar / You can add your own Blacklist IPs/CIDR to **blackip.txt**, but be careful with conflicts that may arise
 
