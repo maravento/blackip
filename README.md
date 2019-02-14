@@ -12,7 +12,7 @@
 
 |ACL|Black IPs|txt size|tar.gz size|
 |---|---------|--------|-----------|
-|blackip.txt|1.435.989|20,5 Mb|4,6 Mb|
+|blackip.txt|1.435.989|19.0 Mb|4,3 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -21,7 +21,7 @@
 git ipset iptables bash tar zip wget squid subversion python
 ```
 
-### DESCARGA / DOWNLOAD
+### GIT CLONE
 ---
 ```
 git clone --depth=1 https://github.com/maravento/blackip.git
@@ -37,14 +37,16 @@ The ACL **blackip.txt** is already optimized. Download it and unzip it in the pa
 #####  Download ACL
 
 ```
-wget -q -N https://github.com/maravento/blackip/raw/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz
+cat blackip.tar.gz* | tar xzf -
+
 ```
 
 #####  Checksum ACL
 
 ```
-wget -q -N https://github.com/maravento/blackip/raw/master/blackip.md5
-md5sum blackip.txt | awk '{print $1}' && cat blackip.md5 | awk '{print $1}'
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
+md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
 
 ### ACTUALIZACIÓN / UPDATE
@@ -55,7 +57,7 @@ El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captu
 The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains, however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time.
 
 ```
-wget -q -N https://github.com/maravento/blackip/raw/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
 ```
 
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
@@ -123,31 +125,27 @@ sudo ipset flush blackzone or sudo ipset flush
 
 ##### IPs Public Blacklists
 
-[IPDeny](http://www.ipdeny.com/ipblocks/)
+[Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 
-[Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
-
-[Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
-
-[Greensnow](http://blocklist.greensnow.co/greensnow.txt)
+[adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
 
 [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
 
-[Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
-
-[Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+[Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 
 [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 
-[Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
+[Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
 
-[Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
+[Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 
-[Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
+[IPDeny](http://www.ipdeny.com/ipblocks/)
 
 [Malc0de IP Blacklist](http://malc0de.com/bl/IP_Blacklist.txt)
 
-[The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
+[Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
+
+[Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
 
 [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 
@@ -155,13 +153,19 @@ sudo ipset flush blackzone or sudo ipset flush
 
 [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 
-[Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
+[Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
+
+[Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+
+[Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
+
+[The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
+
+[uceprotect](http://wget-mirrors.uceprotect.net/)
 
 [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 
-[Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
-
-[uceprotect.net](http://wget-mirrors.uceprotect.net/)
+[Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
 ##### TOR
 

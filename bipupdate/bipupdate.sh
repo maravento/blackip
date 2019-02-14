@@ -73,20 +73,21 @@ function blips() {
         blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
+        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
         blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+        blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
+        blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
+        blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
         blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
+        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
+        blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
         blips 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
+        blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
-        blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-        blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
-        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
-        blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
-        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
-        blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
 
 $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
 $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
