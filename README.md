@@ -12,7 +12,7 @@
 
 |ACL|Black IPs|txt size|tar.gz size|
 |---|---------|--------|-----------|
-|blackip.txt|1.435.989|19.0 Mb|4,3 Mb|
+|blackip.txt|1.415.021|20,1 Mb|4,5 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
