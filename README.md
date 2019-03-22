@@ -12,7 +12,7 @@
 
 |ACL|Black IPs|txt size|tar.gz size|
 |---|---------|--------|-----------|
-|blackip.txt|1.415.021|20,1 Mb|4,5 Mb|
+|blackip.txt|1.354.191|19,3 Mb|4,4 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -211,9 +211,9 @@ BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 [GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 [![License](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
-[maravento.com](http://www.maravento.com), [gateproxy.com](http://www.gateproxy.com) and [dextroyer.com](http://www.dextroyer.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
+[maravento.com](http://www.maravento.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-© 2018 [Maravento Studio](http://www.maravento.com)
+© 2019 [Maravento Studio](http://www.maravento.com)
 
 ### EXENCION DE RESPONSABILIDAD / DISCLAIMER
 ---
