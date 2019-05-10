@@ -1,8 +1,5 @@
 ## [Blackip](http://www.maravento.com/p/blackip.html)
 
-[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
-[![GitHub version](https://img.shields.io/badge/Version-1.0-yellowgreen.svg)](http://www.maravento.com/p/blackip.html)
-
 **Blackip** es un proyecto que pretende recopilar la mayor cantidad de listas negras públicas de IPs IPv4 (incluyendo bloqueo de zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/)) utilizando el módulo [IPSET](http://ipset.netfilter.org/) de [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). Este módulo nos permite realizar filtrado masivo (Vea [Filtrado por Geolocalización](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). **Blackip** también puede ser utilizada en [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
 
 **Blackip** is a project that aims to collect as many public blacklists of IPv4 IPs (including blocking geographic zones with [IPDeny](http://www.ipdeny.com/ipblocks/)) using the [IPSET](http://ipset.netfilter.org/) module from [Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/). This module allows us to perform mass filtering (See [Geolocation Filtering](http://www.maravento.com/2015/08/filtrado-por-geolocalizacion-ii.html)), at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). **Blackip** can also be used in [Squid-Cache](http://www.squid-cache.org/) (Tested in v3.5.x)
@@ -12,7 +9,7 @@
 
 |ACL|Black IPs|txt size|tar.gz size|
 |---|---------|--------|-----------|
-|blackip.txt|1.354.191|19,3 Mb|4,4 Mb|
+|blackip.txt|1.103.841|15,7 Mb|3,6 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
@@ -34,17 +31,12 @@ La ACL **blackip.txt** ya viene optimizada. Descárguela y descomprimala en la r
 
 The ACL **blackip.txt** is already optimized. Download it and unzip it in the path of your preference:
 
-#####  Download ACL
+#####  Download and Checksum
 
 ```
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz
 cat blackip.tar.gz* | tar xzf -
 
-```
-
-#####  Checksum ACL
-
-```
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
@@ -117,7 +109,7 @@ for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
 En caso de error o conflicto, ejecute: / In case of error or conflict, execute:
 ```
-sudo ipset flush blackzone or sudo ipset flush
+sudo ipset flush blackzone # (or: sudo ipset flush)
 ```
 
 ### FUENTES / SOURCES
@@ -208,9 +200,9 @@ BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 ### LICENCIA / LICENCE
 ---
 
-[GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.en.html)
+[![GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
 
-[![License](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
+[![CreativeCommons](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
 [maravento.com](http://www.maravento.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
 
 © 2019 [Maravento Studio](http://www.maravento.com)
