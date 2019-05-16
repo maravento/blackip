@@ -197,7 +197,7 @@ Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesado
 
 BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 
-### LICENCIA / LICENCE
+### LICENCIAS / LICENCES
 ---
 
 [![GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
