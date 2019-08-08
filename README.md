@@ -9,13 +9,13 @@
 
 |ACL|Black IPs|txt size|tar.gz size|
 |---|---------|--------|-----------|
-|blackip.txt|1.103.841|15,7 Mb|3,6 Mb|
+|blackip.txt|917104|13,0 Mb|3,0 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
 
 ```
-git ipset iptables bash tar zip wget squid subversion python
+git ipset iptables bash tar zip wget squid subversion python ulogd2
 ```
 
 ### GIT CLONE
@@ -27,16 +27,12 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 ### MODO DE USO / HOW TO USE
 ---
 
-La ACL **blackip.txt** ya viene optimizada. Descárguela y descomprimala en la ruta de su preferencia:
-
-The ACL **blackip.txt** is already optimized. Download it and unzip it in the path of your preference:
+La ACL **blackip.txt** ya viene optimizada. Descárguela y descomprimala en la ruta de su preferencia / The ACL **blackip.txt** is already optimized. Download it and unzip it in the path of your preference
 
 #####  Download and Checksum
 
 ```
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz
-cat blackip.tar.gz* | tar xzf -
-
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
@@ -44,9 +40,7 @@ md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ### ACTUALIZACIÓN / UPDATE
 ---
 
-El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs, sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar mucho tiempo.
-
-The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains, however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time.
+El script **bipupdate.sh** actualiza la ACL **blackip.txt**, realizando la captura, depuración y limpieza de IPs, sin embargo puede generar conflíctos. Tenga en cuenta que este script consume gran cantidad de recursos de hardware durante el procesamiento y puede tomar mucho tiempo / The **bipupdate.sh** script updates **blackip.txt** ACL, doing the capture, debugging and cleaning of domains, however it can generate conflicts. Keep in mind that this script consumes a lot of hardware resources during processing and it can take a long time.
 
 ```
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
@@ -89,18 +83,25 @@ http_access deny blackip
 
 Edite su script de Iptables y agregue las siguientes líneas: / Edit your Iptables script and add the following lines:
 ```
+### IPSET BLACKZONE (select country to block and ip/range) ###
+# http://www.ipdeny.com/ipblocks/
 ipset=/sbin/ipset
 iptables=/sbin/iptables
 route=/path_to_acl_blackip/
 zone=/path_to_acl_zones/zones
+if [ ! -d $zone ]; then mkdir -p $zone; fi
 
-# BLACKZONE RULE (select country to block and ip/range)
 $ipset -F
 $ipset -N -! blackzone hash:net maxelem 1000000
- for ip in $(cat $route/blackip.txt); do
-  $ipset -A blackzone $ip
- done
+# Uncomment this line if you want to block entire countries
+#for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
+# Uncomment this line if you want to block only ips (recommended)
+for ip in $(cat $route/blackip.txt); do
+    $ipset -A blackzone $ip
+done
+$iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j NFLOG --nflog-prefix 'Blackzone Block'
 $iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
+$iptables -A FORWARD -m set --match-set blackzone dst -j NFLOG --nflog-prefix 'Blackzone Block'
 $iptables -A FORWARD -m set --match-set blackzone dst -j DROP
 ```
 Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea: / You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line:
@@ -110,6 +111,13 @@ for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 En caso de error o conflicto, ejecute: / In case of error or conflict, execute:
 ```
 sudo ipset flush blackzone # (or: sudo ipset flush)
+```
+NFLOG: /var/log/ulog/syslogemu.log
+```
+chown root:root /var/log
+apt -y install ulogd2
+if [ ! -d /var/log/ulog/syslogemu.log ]; then mkdir -p /var/log/ulog && touch /var/log/ulog/syslogemu.log; fi
+usermod -a -G ulog $USER
 ```
 
 ### FUENTES / SOURCES
@@ -191,6 +199,7 @@ sudo ipset flush blackzone # (or: sudo ipset flush)
 ---
 
 Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blacklist", para ser incluidas en este proyecto / We thank all those who contributed to this project. Those interested may contribute sending us new "Blacklist" links to be included in this project
+Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 
 ### DONACION / DONATE
 ---
