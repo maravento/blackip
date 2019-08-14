@@ -100,19 +100,22 @@ unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 
-# CIDR2IP consumes all the resources of the PC and collapses
-#function cidr() {
-#       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt
-#       python cidr2ip.py cidr.txt >> blackip.txt
-#}
-#       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
-#       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
+# CIDR2IP (consumes all the resources of the PC and collapses)
+function cidr() {
+       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt
+#       python tools/cidr2ip.py cidr.txt >> bip.txt
+}
+       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
+       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
+# join blackcidr
+sed '/^$/d; /#/d' lst/blackcidr.txt >> cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
 
 echo "OK"
 
 echo
 echo "${cm9[${es}]}"
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > blackip.txt
+
 echo "OK"
 
 # DEBBUGGING BLACKIP and IANA (CIDR)
@@ -124,12 +127,12 @@ echo "OK"
 #echo "${cm10[${es}]}"
 
 ## Add ianacidr.txt to blackip.txt
-# Load ianacidr
 function ianacidr() {
         $wgetd "$1" -O - | sort -u >> blackip.txt
 }
         ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
-
+# add blackcidr
+sed '/^$/d; /#/d' cidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt >/dev/null 2>&1
 ## Reload Squid with Out
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> SquidError.txt
@@ -137,7 +140,7 @@ grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
 
 ## Remove conflicts from blackip.txt
-python debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+python tools/debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
 
 # COPY ACL TO PATH AND LOG
 cp -f blackip.txt $route/blackip.txt

@@ -1,0 +1,2 @@
+# Ultrasurf early versions
+65.49.14.0/24
