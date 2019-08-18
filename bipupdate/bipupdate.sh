@@ -100,15 +100,13 @@ unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
 
-# CIDR2IP (consumes all the resources of the PC and collapses)
-function cidr() {
-       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt
+# CIDR2IP (High consumption of system resources)
+#function cidr() {
+#       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
 #       python tools/cidr2ip.py cidr.txt >> bip.txt
-}
-       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
-       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
-# join blackcidr
-sed '/^$/d; /#/d' lst/blackcidr.txt >> cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
+#}
+#       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
+#       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
 echo "OK"
 
@@ -123,17 +121,19 @@ echo "OK"
 # And add line:
 # acl blackip dst "/etc/acl/blackip.txt"
 # http_access deny blackip
-#echo
-#echo "${cm10[${es}]}"
+echo
+echo "${cm10[${es}]}"
 
 ## Add ianacidr.txt to blackip.txt
 function ianacidr() {
         $wgetd "$1" -O - | sort -u >> blackip.txt
 }
         ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
+
 # add blackcidr
-sed '/^$/d; /#/d' cidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt >/dev/null 2>&1
+#sed '/^$/d; /#/d' lst/blackcidr.txt >> blackip.txt
 ## Reload Squid with Out
+sort -o blackip.txt -u blackip.txt
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> SquidError.txt
 grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
