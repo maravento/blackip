@@ -1,33 +1,21 @@
 #!/bin/bash
-### BEGIN INIT INFO
-# Provides:          bipupdate
-# Required-Start:    $local_fs $remote_fs $network
-# Required-Stop:     $local_fs $remote_fs $network
-# Should-Start:      $named
-# Should-Stop:       $named
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start daemon at boot time
-# Description:       Enable service provided by daemon
-### END INIT INFO
-
-# by:	maravento.com and novatoz.com
-
+# ------------------------------------
+# Update Blackweb
+# By: Alej Calero and Jhonatan Sneider
+# maravento.com
+# ------------------------------------
 # Language spa-eng
 cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
 cm2=("Descargando Blackip..." "Downloading Blackip...")
-cm7=("Descargando GeoIP..." "Downloading GeoIP...")
-cm8=("Descargando Listas Negras..." "Downloading Blacklists...")
-cm9=("Depurando Blackip..." "Debugging Blackip...")
-cm10=("Depurando IANA..." "Debugging IANA...")
-cm11=("Terminado" "Done")
+cm3=("Descargando GeoIP..." "Downloading GeoIP...")
+cm4=("Descargando Listas Negras..." "Downloading Blacklists...")
+cm5=("Depurando Blackip..." "Debugging Blackip...")
+cm6=("Depurando IANA..." "Debugging IANA...")
+cm7=("Terminado" "Done")
+cm8=("Verifique en su escritorio Squid-Error.txt" "Check on your desktop Squid-Error.txt")
+
 test "${LANG:0:2}" == "es"
 es=$?
-
-clear
-echo
-echo "Blackip Project"
-echo "${cm1[${es}]}"
 
 # VARIABLES
 bipupdate=$(pwd)/bipupdate
@@ -35,18 +23,21 @@ ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n"
 date=`date +%d/%m/%Y" "%H:%M:%S`
 wgetd="wget -q -c --retry-connrefused -t 0"
-
-# PATH_TO_ACL (Change it to the directory of your preference)
+xdesktop=$(xdg-user-dir DESKTOP)
+# path_to_lst (Change it to the directory of your preference)
 route=/etc/acl
 zone=/etc/zones
 
 # DELETE OLD REPOSITORY
 if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
-
 # CREATE PATH
 if [ ! -d $route ]; then mkdir -p $route; fi
 
-# DOWNLOAD BLACKWEB
+clear
+echo
+echo "Blackip Project"
+echo "${cm1[${es}]}"
+# DOWNLOAD BLACKIP
 echo
 echo "${cm2[${es}]}"
 svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
@@ -55,17 +46,17 @@ echo "OK"
 
 # DOWNLOADING GEOZONES
 echo
-echo "${cm7[${es}]}"
+echo "${cm3[${es}]}"
 if [ ! -d $zone ]; then mkdir -p $zone; fi
         $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
 echo "OK"
 
 # DOWNLOADING BLACKIPS
 echo
-echo "${cm8[${es}]}"
+echo "${cm4[${es}]}"
 
 function blips() {
-	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> bip.txt
+	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> bip
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
         blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
@@ -92,60 +83,54 @@ function blips() {
 $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
 $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
 $wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz'
-gunzip -c *.gz  | grep -oP "$ipRegExp" | uniq >> bip.txt
+gunzip -c *.gz  | grep -oP "$ipRegExp" | uniq >> bip
 
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
-unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
+unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip
 
 $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
-unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip.txt
+unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip
 
 # CIDR2IP (High consumption of system resources)
 #function cidr() {
 #       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
-#       python tools/cidr2ip.py cidr.txt >> bip.txt
+#       python tools/cidr2ip.py cidr.txt >> bip
 #}
 #       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
-
 echo "OK"
 
 echo
-echo "${cm9[${es}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip.txt | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > blackip.txt
-
+echo "${cm5[${es}]}"
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > blackip.txt
 echo "OK"
 
-# DEBBUGGING BLACKIP and IANA (CIDR)
+# DEBBUGGING BLACKIP
 # First you must edit /etc/squid/squid.conf
 # And add line:
-# acl blackip dst "/etc/acl/blackip.txt"
+# acl blackip dst "/path_to_lst/blackip.txt"
 # http_access deny blackip
 echo
-echo "${cm10[${es}]}"
-
-## Add ianacidr.txt to blackip.txt
-function ianacidr() {
-        $wgetd "$1" -O - | sort -u >> blackip.txt
-}
-        ianacidr 'https://github.com/maravento/whiteip/raw/master/wipupdate/ianacidr.txt' && sleep 1
-
+echo "${cm6[${es}]}"
 # add blackcidr
-#sed '/^$/d; /#/d' lst/blackcidr.txt >> blackip.txt
+#sed '/^$/d; /#/d' blst/bextra.txt >> blackip.txt
+# add tw
+#sed '/^$/d; /#/d' wlst/tw.txt >> blackip.txt
+# add iana cidr
+sed '/^$/d; /#/d' wlst/ianacidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt
 ## Reload Squid with Out
-sort -o blackip.txt -u blackip.txt
 cp -f blackip.txt $route/blackip.txt
 squid -k reconfigure 2> SquidError.txt
 grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
-
 ## Remove conflicts from blackip.txt
-python tools/debugbip.py && sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
-
+grep -Fvxf <(cat wlst/ianacidr.txt) clean.txt | sort -u > cleanip.txt
+python tools/debugbip.py
+sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
 cp -f blackip.txt $route/blackip.txt
-echo "Blackip $date" >> /var/log/syslog
+squid -k reconfigure 2> $xdesktop/SquidError.txt
+echo "BlackIP $date" >> /var/log/syslog
 # END
-cd
-rm -rf $bipupdate
-echo "${cm11[${es}]}"
+echo "${cm7[${es}]}"
+echo "${cm8[${es}]}"
