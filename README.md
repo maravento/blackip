@@ -181,6 +181,8 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 
 [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
 
+[BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+
 [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
 
 [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
@@ -211,7 +213,13 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 
 [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 
+[StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
+
 [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
+
+[TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
+
+[TOR Node List](https://www.dan.me.uk/torlist/?exit)
 
 [uceprotect](http://wget-mirrors.uceprotect.net/)
 
@@ -219,23 +227,15 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 
 [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-[TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
-
-[TOR Node List](https://www.dan.me.uk/torlist/?exit)
-
-[BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
-
-[StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
-
 ###### Inactive
 
 [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
 
 [Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
 
-[StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
-
 [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down since Ago 2017)
+
+[StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
 
 ##### White IPs
 
@@ -244,8 +244,6 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json) (Excluded for containing CIDR)
 
 [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653) (Excluded for containing CIDR)
-
-[CENTRAL-REPO Whitelist IPv4](https://github.com/mitchellkrogza/CENTRAL-REPO.Dead.Inactive.Whitelisted.Domains.For.Hosts.Projects/raw/master/IPV4-whitelist.txt) (Excluded for containing CIDR)
 
 ###### Inactives
 
@@ -259,11 +257,11 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 
 [IANA CIDR](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/ianacidr.txt)
 
+[Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
+
 [White IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
 
 [White IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/whiteips.txt)
-
-[Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
 
 ###### Externals
 
@@ -279,9 +277,6 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 
 [Teamviewer Capture](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.sh)
 
-###### Externals
-
-[CTFR](https://github.com/UnaPibaGeek/ctfr)
 
 ### CONTRIBUCIONES / CONTRIBUTIONS
 ---
