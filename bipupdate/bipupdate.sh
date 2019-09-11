@@ -7,7 +7,7 @@
 # Language spa-eng
 cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
 cm2=("Descargando Blackip..." "Downloading Blackip...")
-cm3=("Descargando GeoIP..." "Downloading GeoIP...")
+cm3=("Descargando IPDeny..." "Downloading IPDeny...")
 cm4=("Descargando Listas Negras..." "Downloading Blacklists...")
 cm5=("Depurando Blackip..." "Debugging Blackip...")
 cm6=("Depurando IANA..." "Debugging IANA...")
@@ -80,11 +80,6 @@ function blips() {
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
 
-$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
-$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
-$wgetd 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz'
-gunzip -c *.gz  | grep -oP "$ipRegExp" | uniq >> bip
-
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
 unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip
 
@@ -112,9 +107,11 @@ echo "OK"
 # http_access deny blackip
 echo
 echo "${cm6[${es}]}"
-# add blackcidr
+# add black ips/cidr
 #sed '/^$/d; /#/d' blst/bextra.txt >> blackip.txt
-# add tw
+# add old ips
+sed '/^$/d; /#/d' blst/oldips.txt >> blackip.txt
+# add teamviewer ips
 #sed '/^$/d; /#/d' wlst/tw.txt >> blackip.txt
 # add iana cidr
 sed '/^$/d; /#/d' wlst/ianacidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt
