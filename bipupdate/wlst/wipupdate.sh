@@ -48,7 +48,6 @@ cat ianacidr.txt >> out
 #cat tw.txt  >> out
 # reorganize
 cat out | $reorganize | uniq > whiteip.txt
-echo "WhiteIP for Reverse Squid $date" >> /var/log/syslog
 echo "OK"
 echo
 echo "${cm4[${es}]}"

@@ -109,25 +109,26 @@ echo
 echo "${cm6[${es}]}"
 # add black ips/cidr
 #sed '/^$/d; /#/d' blst/bextra.txt >> blackip.txt
-# add old ips
-sed '/^$/d; /#/d' blst/oldips.txt >> blackip.txt
 # add teamviewer ips
 #sed '/^$/d; /#/d' wlst/tw.txt >> blackip.txt
+# add old ips
+sed '/^$/d; /#/d' blst/oldips.txt >> blackip.txt
 # add iana cidr
-sed '/^$/d; /#/d' wlst/ianacidr.txt >> blackip.txt && sort -o blackip.txt -u blackip.txt
+sed '/^$/d; /#/d' wlst/ianacidr.txt >> blackip.txt
+sort -o blackip.txt -u blackip.txt
 ## Reload Squid with Out
-cp -f blackip.txt $route/blackip.txt
-squid -k reconfigure 2> SquidError.txt
-grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log >> SquidError.txt
+sudo cp -f blackip.txt $route/blackip.txt
+sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
+sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
 ## Remove conflicts from blackip.txt
 grep -Fvxf <(cat wlst/ianacidr.txt) clean.txt | sort -u > cleanip.txt
 python tools/debugbip.py
 sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
-cp -f blackip.txt $route/blackip.txt
-squid -k reconfigure 2> $xdesktop/SquidError.txt
-echo "BlackIP $date" >> /var/log/syslog
+sudo cp -f blackip.txt $route/blackip.txt
+sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
+sudo bash -c 'echo "BlackIP $date" >> /var/log/syslog'
 # END
 echo "${cm7[${es}]}"
 echo "${cm8[${es}]}"

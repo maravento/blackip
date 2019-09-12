@@ -106,7 +106,7 @@ La actualización y depuración puede tardar y consumir muchos recursos de hardw
 El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh` / The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`
 
 ```
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && sudo chmod +x bipupdate.sh && sudo ./bipupdate.sh
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
 ##### Verifique la ejecución / Check execution (/var/log/syslog):
@@ -161,7 +161,7 @@ http_access deny no_ip
 `whiteip.txt` ya esta actualizada y optimizada. Para actualizarla se utiliza `wipupdate.sh`. La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción / `whiteip.txt` is already updated and optimized. To update it, use `wipupdate.sh`. Upgrading and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment
 
 ```
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && sudo chmod +x wipupdate.sh && sudo ./wipupdate.sh
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && chmod +x wipupdate.sh && ./wipupdate.sh
 ```
 
 #####  Verifique su ejecución / Check execution (/var/log/syslog):
