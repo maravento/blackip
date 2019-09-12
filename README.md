@@ -9,7 +9,7 @@
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.338.384|47.7 Mb|9.9 Mb|
+|blackip.txt|3.338.838|47.7 Mb|9.9 Mb|
 
 ### DEPENDENCIAS / DEPENDENCIES
 ---
