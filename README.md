@@ -37,8 +37,12 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.m
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
 
-### REGLAS / RULES
+### REGLAS IPSET-SQUID / IPSET-SQUID RULES
 ---
+
+#### ⚠️ **ADVERTENCIA: ANTES DE CONTINUAR! / WARNING: BEFORE YOU CONTINUE!**
+
+No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado) / Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate).
 
 #### Bloqueo para [IPSET](http://ipset.netfilter.org/) / Block for [IPSET](http://ipset.netfilter.org/)
 
@@ -96,33 +100,10 @@ Y agregue las siguientes líneas: / And add the following lines:
 acl blackip dst "/path_to_lst/blackip.txt"
 http_access deny blackip
 ```
-
-#### Actualización BlackIP / BlackIP Update
-
-#### ⚠️ **ADVERTENCIA: ANTES DE CONTINUAR! / WARNING: BEFORE YOU CONTINUE!**
-
-La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción / Update and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment
-
-El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh` / The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`
-
-```
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
-```
-
-##### Verifique la ejecución / Check execution (/var/log/syslog):
-
-Ejecución exitosa / Successful execution
-```
-BlackIP: Done 06/05/2019 15:47:14
-```
-
-##### Importante sobre BlackIP Update / Important about BlackIP Update
+##### Importante sobre BlackIP / Important about BlackIP
 
 - `blackip.txt` es una lista IPv4. No incluye CIDR / `blackip.txt` is a list IPv4. Does not include CIDR
-- Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/) / You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh`
 - `blackip.txt` excluye rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) con `ianacidr.txt` / `blackip.txt` excludes private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) with `ianacidr.txt`
-- No se debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado) / Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate).
-- `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh` / `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh`
 - `bwextra.txt` se utiliza para agregar IP/CIDR que no se encuentren en `blackip.txt`, pero puede generar conflictos / `betra.txt` is used to add IP/CIDR that are not in, but it can generate conflicts
 
 ```
@@ -149,16 +130,42 @@ acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
 ```
 
-##### Listas Blancas para regla de Bloqueo Inverso para Squid / White Lists for Inverse Blocking Rule for Squid
+##### Importante sobre WhiteIP / Important about WhiteIP
 
 - `whiteip.txt` es una lista de IPs IPv4, optimizada para [Squid](http://www.squid-cache.org/). No incluye CIDR / `whiteip.txt` is a list of IPv4 IPs, optimized for [Squid](http://www.squid-cache.org/). Does not include CIDR
 - `wextra.txt` es una lista IPv4 para agregar manualmente IP/CIDR blancas que no se encuentran en `whiteip.txt` / `wextra.txt` is an IPv4 list to manually add white IP/CIDR that are not found in` whiteip.txt`
 
-#### Actualización WhiteIP / WhiteIP Update
+### ACTUALIZACIÓN / UPDATE
+---
 
 #### ⚠️ **ADVERTENCIA: ANTES DE CONTINUAR! / WARNING: BEFORE YOU CONTINUE!**
 
-`whiteip.txt` ya esta actualizada y optimizada. Para actualizarla se utiliza `wipupdate.sh`. La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción / `whiteip.txt` is already updated and optimized. To update it, use `wipupdate.sh`. Upgrading and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment
+La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción / Update and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment
+
+##### Actualización BlackIP / BlackIP Update
+
+>El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh` / The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`
+
+```
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
+```
+
+##### Importante sobre BlackIP Update / Important about BlackIP Update
+
+- `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh` / `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh`
+- Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/) / You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh`
+
+##### Verifique la ejecución / Check execution (/var/log/syslog):
+
+>Ejecución exitosa / Successful execution
+
+```
+BlackIP: Done 06/05/2019 15:47:14
+```
+
+##### Actualización WhiteIP / WhiteIP Update
+
+>`whiteip.txt` ya esta actualizada y optimizada. El proceso de actualización de `whiteip.txt` es ejecutado en secuencia por el script `wipupdate.sh` / `whiteip.txt` is already updated and optimized. The update process of `whiteip.txt` is executed in sequence by the script `wipupdate.sh`
 
 ```
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && chmod +x wipupdate.sh && ./wipupdate.sh
