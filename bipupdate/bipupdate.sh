@@ -56,7 +56,7 @@ echo
 echo "${cm4[${es}]}"
 
 function blips() {
-	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> bip
+	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> capture
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
         blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
@@ -81,10 +81,10 @@ function blips() {
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
 
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
-unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> bip
+unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture
 
 $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
-unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> bip
+unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> capture
 
 # CIDR2IP (High consumption of system resources)
 #function cidr() {
@@ -97,7 +97,7 @@ echo "OK"
 
 echo
 echo "${cm5[${es}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' bip | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > blackip.txt
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > cleancapture
 echo "OK"
 
 # DEBBUGGING BLACKIP
@@ -108,23 +108,25 @@ echo "OK"
 echo
 echo "${cm6[${es}]}"
 # add black ips/cidr
-#sed '/^$/d; /#/d' blst/bextra.txt >> blackip.txt
+#sed '/^$/d; /#/d' blst/bextra.txt >> cleancapture
 # add teamviewer ips
-#sed '/^$/d; /#/d' wlst/tw.txt >> blackip.txt
+#sed '/^$/d; /#/d' wlst/tw.txt >> cleancapture
 # add old ips
-sed '/^$/d; /#/d' blst/oldips.txt >> blackip.txt
+sed '/^$/d; /#/d' blst/oldips.txt >> cleancapture
 # add iana cidr
-sed '/^$/d; /#/d' wlst/ianacidr.txt >> blackip.txt
-sort -o blackip.txt -u blackip.txt
+sed '/^$/d; /#/d' wlst/ianacidr.txt >> cleancapture
+# reorganize
+cat cleancapture | $reorganize | uniq > blackip.txt
 ## Reload Squid with Out
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
-grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > clean.txt
+grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat wlst/ianacidr.txt) clean.txt | sort -u > cleanip.txt
+grep -Fvxf <(cat wlst/ianacidr.txt) squidip | sort -u > cleanip
+cat cleanip | $reorganize | uniq > debugip
 python tools/debugbip.py
-sed '/\//d' biptmp.txt | $reorganize | uniq > blackip.txt
+sed '/\//d' outip | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
