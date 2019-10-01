@@ -1,15 +1,15 @@
 ## [BlackIP](http://www.maravento.com/p/blackip.html)
 
-**BlackIP** It is a project that collects public blacklists of IPs to unify and make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+**BlackIP** is a project that collects and unifies public blacklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
-**BlackIP** es un proyecto que recopila listas negras públicas de IPs para unificarlas y hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+**BlackIP** es un proyecto que recopila y unifica listas negras públicas de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
 ### DATA SHEET
 ---
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.339.869|47.7 Mb|10.0 Mb|
+|blackip.txt|3.318.312|47.4 Mb|9.9 Mb|
 
 ### DEPENDENCIES
 ---
@@ -40,11 +40,7 @@ md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ### IPSET-SQUID RULES
 ---
 
-#### ⚠️ WARNING: BEFORE YOU CONTINUE!**
-
-Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
-
-#### Block for [IPSET](http://ipset.netfilter.org/)
+#### [IPSET](http://ipset.netfilter.org/) Rules
 
 This module allows us to perform mass filtering, at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). It includes geographical areas with [IPDeny](http://www.ipdeny.com/ipblocks/)) / Este módulo nos permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). Se incluye zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/))
 
@@ -87,7 +83,7 @@ if [ ! -d /var/log/ulog/syslogemu.log ]; then mkdir -p /var/log/ulog && touch /v
 usermod -a -G ulog $USER
 ```
 
-#### Block for [Squid](http://www.squid-cache.org/) (Tested in v3.5.x)
+#### [Squid](http://www.squid-cache.org/) Rule
 
 Edit:
 ```
@@ -100,45 +96,44 @@ And add the following lines: / Y agregue las siguientes líneas:
 acl blackip dst "/path_to_lst/blackip.txt"
 http_access deny blackip
 ```
-##### Important about BlackIP
 
+#### Important about BlackIP
+
+- Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
 - `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
-- `blackip.txt` excludes private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) with `ianacidr.txt` / `blackip.txt` excluye rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) con `ianacidr.txt`
-- `betra.txt` is used to add IP/CIDR that are not in, but it can generate conflicts / `bwextra.txt` se utiliza para agregar IP/CIDR que no se encuentren en `blackip.txt`, pero puede generar conflictos
+- `blackip.txt` does not include private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) (`ianacidr.txt`) / `blackip.txt` no incluye rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) (`ianacidr.txt`)
+- `blackip.txt` has been tested in Squid v3.5.x / `blackip.txt` ha sido testeada en Squid v3.5.x
+
+#### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
+
+**Blackip** contains millions of IP addresses, therefore it is recommended: / **Blackip** contiene millones de direcciones IP, por tanto se recomienda:
+
+- Use `betra.txt` to add IP/CIDR that are not in `blackip.txt` (By default it contains some BlackCIDR) / Use `bwextra.txt` para agregar IP/CIDR que no se encuentren en `blackip.txt` (Por defecto contiene algunos BlackCIDR)
+- Use `whiteip.txt`; a white list of IPv4 IP addresses (Hotmail, Gmail, Yahoo. Etc) / Use `whiteip.txt`; una lista blanca de direcciones IPs IPv4 (Hotmail, Gmail, Yahoo. etc)
+- Use `wextra.txt` to add whitelists of IP/CIDRs that are not included in` whiteip.txt` / Use `wextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `whiteip.txt`
+- To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
 
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+# blackip rules
 acl bextra dst "/path_to_lst/bextra.txt"
 http_access deny bextra
 acl blackip dst "/path_to_lst/blackip.txt"
 http_access deny blackip
-```
-
-#### Reverse Block For [Squid](http://www.squid-cache.org/) (Tested in v3.5.x)
-
-If you consider that there are many IPs to block, it is recommended to use the reverse blocking rule for Squid, which is to authorize only white lists of IPs and deny all other requests to IP addresses. If you are going to use this rule, it is recommended to disable BlackIP / Si considera que son muchas IPs a bloquear, se recomienda usar la regla de bloqueo inverso para Squid, que consiste en autorizar solamente listas blancas de IPs y denegar el resto de peticiones a direcciones IPs. Si va a usar esta regla, se recomienda desactivar BlackIP
-
-```
-# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+# whiteip rules
 acl wextra dst "/path_to_lst/wextra.txt"
 http_access allow wextra
 acl whiteip dst "/path_to_lst/whiteip.txt"
 http_access allow whiteip
-#acl blackip dst "/path_to_lst/blackip.txt"
-#http_access deny blackip
+# deny all IPs
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
 ```
 
-##### Important about WhiteIP
-
-- `whiteip.txt` is a list of IPv4 IPs, optimized for [Squid](http://www.squid-cache.org/). Does not include CIDR / `whiteip.txt` es una lista de IPs IPv4, optimizada para [Squid](http://www.squid-cache.org/). No incluye CIDR
-- `wextra.txt` is an IPv4 list to manually add white IP/CIDR that are not found in` whiteip.txt` / `wextra.txt` es una lista IPv4 para agregar manualmente IP/CIDR blancas que no se encuentran en `whiteip.txt`
-
 ### UPDATE
 ---
 
-#### ⚠️ WARNING: BEFORE YOU CONTINUE!**
+#### ⚠️ WARNING: BEFORE YOU CONTINUE!
 
 Update and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment / La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción
 
@@ -169,12 +164,6 @@ BlackIP: Done 06/05/2019 15:47:14
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && chmod +x wipupdate.sh && ./wipupdate.sh
 ```
 
-#####  Check execution (/var/log/syslog):
-
-```
-WhiteIP for Squid Reverse: 14/06/2019 15:47:14
-```
-
 ### SOURCES
 ---
 
@@ -196,6 +185,7 @@ WhiteIP for Squid Reverse: 14/06/2019 15:47:14
 - [Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Open BL](http://www.openbl.org/lists/base.txt)
+- [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
 - [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 - [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)

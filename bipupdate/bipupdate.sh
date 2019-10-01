@@ -79,6 +79,7 @@ function blips() {
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+        blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
 
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
 unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture
@@ -130,7 +131,7 @@ sed '/\//d' outip | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
-sudo bash -c 'echo "BlackIP $date" >> /var/log/syslog'
+sudo bash -c 'echo "BlackIP: Done $date" >> /var/log/syslog'
 # END
 echo "${cm7[${es}]}"
 echo "${cm8[${es}]}"
