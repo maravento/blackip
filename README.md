@@ -9,7 +9,7 @@
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.318.312|47.4 Mb|9.9 Mb|
+|blackip.txt|3.304,856|47.2 Mb|9.8 Mb|
 
 ### DEPENDENCIES
 ---
@@ -111,7 +111,7 @@ http_access deny blackip
 - Use `betra.txt` to add IP/CIDR that are not in `blackip.txt` (By default it contains some BlackCIDR) / Use `bwextra.txt` para agregar IP/CIDR que no se encuentren en `blackip.txt` (Por defecto contiene algunos BlackCIDR)
 - Use `whiteip.txt`; a white list of IPv4 IP addresses (Hotmail, Gmail, Yahoo. Etc) / Use `whiteip.txt`; una lista blanca de direcciones IPs IPv4 (Hotmail, Gmail, Yahoo. etc)
 - Use `wextra.txt` to add whitelists of IP/CIDRs that are not included in` whiteip.txt` / Use `wextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `whiteip.txt`
-- To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
+- To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
 
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
