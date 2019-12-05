@@ -9,7 +9,7 @@
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.290.217|47.0 Mb|9.8 Mb|
+|blackip.txt|3.257.291|46.5 Mb|9.7 Mb|
 
 ### DEPENDENCIES
 ---
@@ -50,8 +50,8 @@ Edit your Iptables script and add the following lines: / Edite su script de Ipta
 # http://www.ipdeny.com/ipblocks/
 ipset=/sbin/ipset
 iptables=/sbin/iptables
-route=/path_to_lst_blackip/
-zone=/path_to_lst_zones/zones
+route=/path_to_blackip/
+zone=/path_to_zones/zones
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 
 $ipset -F
@@ -93,7 +93,7 @@ And add the following lines: / Y agregue las siguientes líneas:
 
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-acl blackip dst "/path_to_lst/blackip.txt"
+acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 ```
 
@@ -116,14 +116,14 @@ http_access deny blackip
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 # blackip rules
-acl bextra dst "/path_to_lst/bextra.txt"
+acl bextra dst "/path_to/bextra.txt"
 http_access deny bextra
-acl blackip dst "/path_to_lst/blackip.txt"
+acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 # whiteip rules
-acl wextra dst "/path_to_lst/wextra.txt"
+acl wextra dst "/path_to/wextra.txt"
 http_access allow wextra
-acl whiteip dst "/path_to_lst/whiteip.txt"
+acl whiteip dst "/path_to/whiteip.txt"
 http_access allow whiteip
 # deny all IPs
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
