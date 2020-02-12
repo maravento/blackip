@@ -1,4 +1,4 @@
-## [BlackIP](http://www.maravento.com/p/blackip.html)
+## [BlackIP](https://www.maravento.com/p/blackip.html)
 
 **BlackIP** is a project that collects and unifies public blacklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
@@ -9,7 +9,7 @@
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.257.291|46.5 Mb|9.7 Mb|
+|blackip.txt|3.505.683|50.1 Mb|10.4 Mb|
 
 ### DEPENDENCIES
 ---
