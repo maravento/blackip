@@ -10,9 +10,9 @@ cm2=("Descargando Blackip..." "Downloading Blackip...")
 cm3=("Descargando IPDeny..." "Downloading IPDeny...")
 cm4=("Descargando Listas Negras..." "Downloading Blacklists...")
 cm5=("Depurando Blackip..." "Debugging Blackip...")
-cm6=("Depurando IANA..." "Debugging IANA...")
-cm7=("Terminado" "Done")
-cm8=("Verifique en su escritorio Squid-Error.txt" "Check on your desktop Squid-Error.txt")
+cm6=("Reiniciando Squid..." "Squid Reload...")
+cm7=("Verifique en su escritorio Squid-Error" "Check on your desktop Squid-Error")
+cm8=("Terminado" "Done")
 
 test "${LANG:0:2}" == "es"
 es=$?
@@ -106,26 +106,27 @@ echo "OK"
 # And add line:
 # acl blackip dst "/path_to_lst/blackip.txt"
 # http_access deny blackip
-echo
-echo "${cm6[${es}]}"
 # add black ips/cidr
 #sed '/^$/d; /#/d' blst/bextra.txt >> cleancapture
 # add teamviewer ips
 #sed '/^$/d; /#/d' wlst/tw.txt >> cleancapture
 # add old ips
 sed '/^$/d; /#/d' blst/oldips.txt >> cleancapture
-# add iana cidr
-sed '/^$/d; /#/d' wlst/ianacidr.txt >> cleancapture
+# add iana
+#sed '/^$/d; /#/d' wlst/iana.txt >> cleancapture
 # reorganize
 cat cleancapture | $reorganize | uniq > blackip.txt
+echo
+echo "${cm6[${es}]}"
 ## Reload Squid with Out
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat wlst/ianacidr.txt) squidip | sort -u > cleanip
-cat cleanip | $reorganize | uniq > debugip
+#grep -Fvxf <(cat wlst/iana.txt) squidip | sort -u > cleanip
+#cat cleanip | $reorganize | uniq > debugip
+cat squidip | $reorganize | uniq > debugip
 python tools/debugbip.py
 sed '/\//d' outip | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG

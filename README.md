@@ -9,7 +9,7 @@
 
 |lst|Black IPs|txt size|tar.gz size|
 | :---: | :---: | :---: | :---: |
-|blackip.txt|3.170.977|45.3 Mb|9.4 Mb|
+|blackip.txt|3.149.268|45.0 Mb|9.4 Mb|
 
 ### DEPENDENCIES
 ---
@@ -73,7 +73,7 @@ for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 ```
 In case of error or conflict, execute: / En caso de error o conflicto, ejecute:
 ```
-sudo ipset flush blackzone # (or: sudo ipset flush)
+ipset flush blackzone # (or: ipset flush)
 ```
 NFLOG: /var/log/ulog/syslogemu.log
 ```
@@ -101,30 +101,35 @@ http_access deny blackip
 
 - Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
 - `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
-- `blackip.txt` does not include private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) (`ianacidr.txt`) / `blackip.txt` no incluye rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada) (`ianacidr.txt`)
 - `blackip.txt` has been tested in Squid v3.5.x / `blackip.txt` ha sido testeada en Squid v3.5.x
 
 #### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
 
 **Blackip** contains millions of IP addresses, therefore it is recommended: / **Blackip** contiene millones de direcciones IP, por tanto se recomienda:
 
-- Use `betra.txt` to add IP/CIDR that are not in `blackip.txt` (By default it contains some BlackCIDR) / Use `bwextra.txt` para agregar IP/CIDR que no se encuentren en `blackip.txt` (Por defecto contiene algunos BlackCIDR)
-- Use `whiteip.txt`; a white list of IPv4 IP addresses (Hotmail, Gmail, Yahoo. Etc) / Use `whiteip.txt`; una lista blanca de direcciones IPs IPv4 (Hotmail, Gmail, Yahoo. etc)
-- Use `wextra.txt` to add whitelists of IP/CIDRs that are not included in` whiteip.txt` / Use `wextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `whiteip.txt`
+- Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Black CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Black CIDR)
+- Use `whiteip.txt` (a white list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `whiteip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
+- Use `wipextra.txt` to add whitelists of IP/CIDRs that are not included in` whiteip.txt` / Use `wipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `whiteip.txt`
+- Use IANA (`iana.txt`) to authorize or block private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) / Use IANA (`iana.txt`) para autorizar o bloquear rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada)
 - To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
 
 ```
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-# blackip rules
-acl bextra dst "/path_to/bextra.txt"
-http_access deny bextra
-acl blackip dst "/path_to/blackip.txt"
-http_access deny blackip
-# whiteip rules
-acl wextra dst "/path_to/wextra.txt"
-http_access allow wextra
+# IP/CIDRs that are not included in whiteip
+acl wipextra dst "/path_to/wipextra.txt"
+http_access allow wipextra
+# whiteip
 acl whiteip dst "/path_to/whiteip.txt"
 http_access allow whiteip
+# IANA -private/reserved ranges- (Optional)
+#acl iana dst "/path_to/iana.txt"
+#http_access allow iana
+# IP/CIDR that are not included in blackip
+acl bipextra dst "/path_to/bipextra.txt"
+http_access deny bipextra
+# blackip
+acl blackip dst "/path_to/blackip.txt"
+http_access deny blackip
 # deny all IPs
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
@@ -135,7 +140,7 @@ http_access deny no_ip
 
 #### ⚠️ WARNING: BEFORE YOU CONTINUE!
 
-Update and debugging can take and consume many hardware resources and bandwidth. It is not recommended to run it on production equipment / La actualización y depuración puede tardar y consumir muchos recursos de hardware y ancho de banda. No se recomienda ejecutarla en equipos en producción
+This section is only to explain how update and optimization process works. It is not necessary for user to run it. This process can take time and consume a lot of hardware and bandwidth resources, therefore it is recommended to use test equipment / Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas
 
 ##### BlackIP Update
 
@@ -221,7 +226,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ###### Internals
 
 - [Black IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
-- [IANA CIDR](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/ianacidr.txt)
+- [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
 - [White IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
@@ -258,9 +263,9 @@ BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 [![GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
 
 [![CreativeCommons](https://licensebuttons.net/l/by-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-sa/4.0/)
-[maravento.com](http://www.maravento.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
+[maravento.com](https://www.maravento.com) is licensed under a [Creative Commons Reconocimiento-CompartirIgual 4.0 Internacional License](http://creativecommons.org/licenses/by-sa/4.0/).
 
-© 2020 [Maravento Studio](http://www.maravento.com)
+© 2020 [Maravento Studio](https://www.maravento.com)
 
 ### DISCLAIMER
 ---

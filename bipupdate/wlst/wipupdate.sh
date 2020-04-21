@@ -40,8 +40,8 @@ echo
 echo "${cm3[${es}]}"
 ni="300"
 cat urls | xargs -I {} -P $ni bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' > out
-# add iana cidr
-cat ianacidr.txt out > outfile.tmp && mv outfile.tmp out
+# add iana
+# cat iana.txt out > outfile.tmp && mv outfile.tmp out
 # add teamviewer ips
 #cat tw.txt >> out
 # reorganize
