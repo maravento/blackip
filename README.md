@@ -7,9 +7,9 @@
 ### DATA SHEET
 ---
 
-|lst|Black IPs|txt size|tar.gz size|
-| :---: | :---: | :---: | :---: |
-|blackip.txt|3.149.268|45.0 Mb|9.4 Mb|
+|lst|Black IPs|txt size|
+| :---: | :---: | :---: |
+|blackip.txt|3156504|45.0 Mb|
 
 ### DEPENDENCIES
 ---
