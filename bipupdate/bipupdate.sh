@@ -1,9 +1,4 @@
 #!/bin/bash
-# ------------------------------------
-# Update Blackweb
-# By: Alej Calero and Jhonatan Sneider
-# maravento.com
-# ------------------------------------
 # Language spa-eng
 cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
 cm2=("Descargando Blackip..." "Downloading Blackip...")

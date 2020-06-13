@@ -31,9 +31,9 @@ echo "${cm2[${es}]}"
 function intacls() {
         $wgetd "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u >> urls
 }
-                intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/whiteurls.txt' && sleep 1
-                #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/remoteurls.txt' && sleep 1
-                #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/cloudsync.txt' && sleep 1
+        intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/whiteurls.txt' && sleep 1
+         #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/remoteurls.txt' && sleep 1
+         #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/cloudsync.txt' && sleep 1
 
 # DEBBUGGING WHITEIP (CIDR)
 echo
