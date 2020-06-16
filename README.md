@@ -10,7 +10,7 @@
 
 |lst|Black IPs|txt size|
 | :---: | :---: | :---: |
-|blackip.txt|3156504|45.0 Mb|
+|blackip.txt|3141722|44.9 Mb|
 
 ## DEPENDENCIES
 
