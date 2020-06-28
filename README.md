@@ -1,14 +1,14 @@
 # [BlackIP](https://www.maravento.com/p/blackip.html)
 
-**BlackIP** is a project that collects and unifies public blacklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+**BlackIP** is a project that collects and unifies public blocklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
-**BlackIP** es un proyecto que recopila y unifica listas negras públicas de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+**BlackIP** es un proyecto que recopila y unifica listas públicas de bloqueo de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
 ## DATA SHEET
 
 ---
 
-|lst|Black IPs|txt size|
+|lst|Block IPs|txt size|
 | :---: | :---: | :---: |
 |blackip.txt|3141722|44.9 Mb|
 
@@ -52,7 +52,7 @@ This module allows us to perform mass filtering, at a processing speed far super
 Edit your Iptables script and add the following lines: / Edite su script de Iptables y agregue las siguientes líneas:
 
 ```bash
-# IPSET BLACKZONE (select country to block and ip/range) ###
+# IPSET BLOCKZONE (select country to block and ip/range) ###
 # http://www.ipdeny.com/ipblocks/
 ipset=/sbin/ipset
 iptables=/sbin/iptables
@@ -61,17 +61,17 @@ zone=/path_to_zones/zones
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 
 $ipset -F
-$ipset -N -! blackzone hash:net maxelem 1000000
+$ipset -N -! blockzone hash:net maxelem 1000000
 # Uncomment this line if you want to block entire countries
 #for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 # Uncomment this line if you want to block only ips (recommended)
 for ip in $(cat $route/blackip.txt); do
-    $ipset -A blackzone $ip
+    $ipset -A blockzone $ip
 done
-$iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j NFLOG --nflog-prefix 'Blackzone Block'
-$iptables -t mangle -A PREROUTING -m set --match-set blackzone src -j DROP
-$iptables -A FORWARD -m set --match-set blackzone dst -j NFLOG --nflog-prefix 'Blackzone Block'
-$iptables -A FORWARD -m set --match-set blackzone dst -j DROP
+$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'Blockzone'
+$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
+$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'Blockzone'
+$iptables -A FORWARD -m set --match-set blpckzone dst -j DROP
 ```
 
 You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line: / Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea:
@@ -83,7 +83,7 @@ for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
 In case of error or conflict, execute: / En caso de error o conflicto, ejecute:
 
 ```bash
-ipset flush blackzone # (or: ipset flush)
+ipset flush blockzone # (or: ipset flush)
 ```
 
 NFLOG: /var/log/ulog/syslogemu.log
@@ -119,22 +119,22 @@ http_access deny blackip
 
 ##### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
 
-**Blackip** contains millions of IP addresses, therefore it is recommended: / **Blackip** contiene millones de direcciones IP, por tanto se recomienda:
+**blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
 
-- Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Black CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Black CIDR)
-- Use `whiteip.txt` (a white list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `whiteip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
-- Use `wipextra.txt` to add whitelists of IP/CIDRs that are not included in `whiteip.txt` / Use `wipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `whiteip.txt`
+- Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
+- Use `allowip.txt` (a allow list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
+- Use `wipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `wipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - Use IANA (`iana.txt`) to authorize or block private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) / Use IANA (`iana.txt`) para autorizar o bloquear rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada)
 - To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
 
 ```bash
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-# IP/CIDRs that are not included in whiteip
+# IP/CIDRs that are not included in allowip
 acl wipextra dst "/path_to/wipextra.txt"
 http_access allow wipextra
-# whiteip
-acl whiteip dst "/path_to/whiteip.txt"
-http_access allow whiteip
+# allowip
+acl allowip dst "/path_to/allowip.txt"
+http_access allow allowip
 # IANA -private/reserved ranges- (Optional)
 #acl iana dst "/path_to/iana.txt"
 #http_access allow iana
@@ -157,7 +157,7 @@ http_access deny no_ip
 
 This section is only to explain how update and optimization process works. It is not necessary for user to run it. This process can take time and consume a lot of hardware and bandwidth resources, therefore it is recommended to use test equipment / Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas
 
-#### BlackIP Update
+#### Black Update
 
 >The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh` / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`
 
@@ -165,7 +165,7 @@ This section is only to explain how update and optimization process works. It is
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
-##### Important about BlackIP Update
+##### Important about BLackIP Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
@@ -173,12 +173,12 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ##### Check execution (/var/log/syslog):
 
 ```bash
-BlackIP: Done 06/05/2019 15:47:14
+BLackIP: Done 06/05/2019 15:47:14
 ```
 
-#### WhiteIP Update
+#### AllowIP Update
 
->`whiteip.txt` is already updated and optimized. The update process of `whiteip.txt` is executed in sequence by the script `wipupdate.sh` / `whiteip.txt` ya esta actualizada y optimizada. El proceso de actualización de `whiteip.txt` es ejecutado en secuencia por el script `wipupdate.sh`
+>`allowip.txt` is already updated and optimized. The update process of `allowip.txt` is executed in sequence by the script `aipupdate.sh` / `allowip.txt` ya esta actualizada y optimizada. El proceso de actualización de `allowip.txt` es ejecutado en secuencia por el script `aipupdate.sh`
 
 ```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && chmod +x wipupdate.sh && ./wipupdate.sh
@@ -188,9 +188,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-### Black IPs
+### Block IPs
 
-#### Black IPs Actives
+#### Block IPs Actives
 
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
@@ -201,7 +201,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
-- [Malc0de IP Blacklist](http://malc0de.com/bl/IP_Blacklist.txt)
+- [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 - [Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
@@ -215,38 +215,38 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 - [TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
 - [TOR Node List](https://www.dan.me.uk/torlist/?exit)
-- [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
+- [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Black IPs Inactive
+#### Block IPs Inactive
 
-- [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blacklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
+- [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
 - [Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
 - [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down. Last Updated Known Apr 1/2016. Added to: `oldips.txt`)
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
-- [UCEPROTECT IP Blacklists / BACKSCATTERER.ORG Blacklist](http://wget-mirrors.uceprotect.net/) (Server Down. Last Updated Known Ago 17/2017. Added to: `oldips.txt`)
+- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (Server Down. Last Updated Known Ago 17/2017. Added to: `oldips.txt`)
 
-### White IPs
+### Allow IPs
 
-#### White IPs Actives
+#### Allow IPs Actives
 
 - [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json) (Excluded for containing CIDR)
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653) (Excluded for containing CIDR)
 
-##### White IPs Inactives
+##### Allow IPs Inactives
 
 - [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [See This post](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
 
 ### Work Lists
 
-- [Black IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
+- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
-- [White IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
-- [White IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/whiteips.txt)
+- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
+- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowips.txt)
 
-- [White URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/whiteurls.txt)
+- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
 ### Work Tools
 
@@ -259,7 +259,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-We thank all those who contributed to this project. Those interested may contribute sending us new "Blacklist" links to be included in this project / Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blacklist", para ser incluidas en este proyecto
+We thank all those who contributed to this project. Those interested may contribute sending us new "Blocklist" links to be included in this project / Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blocklist", para ser incluidas en este proyecto
 
 Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 

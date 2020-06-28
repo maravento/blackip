@@ -3,7 +3,7 @@
 cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
 cm2=("Descargando Blackip..." "Downloading Blackip...")
 cm3=("Descargando IPDeny..." "Downloading IPDeny...")
-cm4=("Descargando Listas Negras..." "Downloading Blacklists...")
+cm4=("Descargando Listas de Bloqueo..." "Downloading Blocklists...")
 cm5=("Depurando Blackip..." "Debugging Blackip...")
 cm6=("Reiniciando Squid..." "Squid Reload...")
 cm7=("Verifique en su escritorio Squid-Error" "Check on your desktop Squid-Error")
@@ -30,7 +30,7 @@ if [ ! -d $route ]; then mkdir -p $route; fi
 
 clear
 echo
-echo "Blackip Project"
+echo "Lockkip Project"
 echo "${cm1[${es}]}"
 # DOWNLOAD BLACKIP
 echo
@@ -46,7 +46,7 @@ if [ ! -d $zone ]; then mkdir -p $zone; fi
         $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
 echo "OK"
 
-# DOWNLOADING BLACKIPS
+# DOWNLOADING BLOCKLIST IPS
 echo
 echo "${cm4[${es}]}"
 
@@ -127,7 +127,7 @@ sed '/\//d' outip | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
-sudo bash -c 'echo "BlackIP: Done $date" >> /var/log/syslog'
+sudo bash -c 'echo "blackip: Done $date" >> /var/log/syslog'
 # END
 echo "${cm7[${es}]}"
 echo "${cm8[${es}]}"
