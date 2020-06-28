@@ -4,6 +4,14 @@
 
 **BlackIP** es un proyecto que recopila y unifica listas públicas de bloqueo de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
+## ETYMOLOGY
+
+---
+
+In computing, a blacklist, denylist or blocklist is a basic access control mechanism that allows through all elements (email addresses, users, passwords, URLs, IP addresses, domain names, file hashes, etc.), except those explicitly mentioned. Those items on the list are denied access. The opposite is a whitelist, which means only items on the list are let through whatever gate is being used. A greylist contains items that are temporarily blocked (or temporarily allowed) until an additional step is performed [Wikipedia](https://en.wikipedia.org/wiki/Blacklist_(computing))
+
+En informática, una lista negra, lista de denegación o lista de bloqueo es un mecanismo básico de control de acceso que permite a través de todos los elementos (direcciones de correo electrónico, usuarios, contraseñas, URL, direcciones IP, nombres de dominio, hashes de archivos, etc.), excepto los mencionados explícitamente. Esos elementos en la lista tienen acceso denegado. Lo opuesto es una lista blanca, lo que significa que solo los elementos de la lista pueden pasar por cualquier puerta que se esté utilizando. Una lista gris contiene elementos que se bloquean temporalmente (o se permiten temporalmente) hasta que se realiza un paso adicional [Wikipedia](https://en.wikipedia.org/wiki/Blacklist_(computing))
+
 ## DATA SHEET
 
 ---
@@ -123,15 +131,15 @@ http_access deny blackip
 
 - Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
 - Use `allowip.txt` (a allow list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
-- Use `wipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `wipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
+- Use `aipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - Use IANA (`iana.txt`) to authorize or block private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) / Use IANA (`iana.txt`) para autorizar o bloquear rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada)
 - To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
 
 ```bash
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 # IP/CIDRs that are not included in allowip
-acl wipextra dst "/path_to/wipextra.txt"
-http_access allow wipextra
+acl aipextra dst "/path_to/aipextra.txt"
+http_access allow aipextra
 # allowip
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
@@ -181,7 +189,7 @@ BLackIP: Done 06/05/2019 15:47:14
 >`allowip.txt` is already updated and optimized. The update process of `allowip.txt` is executed in sequence by the script `aipupdate.sh` / `allowip.txt` ya esta actualizada y optimizada. El proceso de actualización de `allowip.txt` es ejecutado en secuencia por el script `aipupdate.sh`
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wipupdate.sh && chmod +x wipupdate.sh && ./wipupdate.sh
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipupdate.sh && chmod +x aipupdate.sh && ./aipupdate.sh
 ```
 
 ## SOURCES
@@ -244,7 +252,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
 - [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
-- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowips.txt)
+- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
 
 - [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
