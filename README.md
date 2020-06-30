@@ -8,16 +8,19 @@
 
 ---
 
-Due to recent arbitrary changes in computer terminology, it is necessary to clarify the meaning and connotation of the term **blacklist**, associated with this project: 
-*In computing, a blacklist, denylist or blocklist is a basic access control mechanism that allows through all elements (email addresses, users, passwords, URLs, IP addresses, domain names, file hashes, etc.), except those explicitly mentioned. Those items on the list are denied access. The opposite is a whitelist, which means only items on the list are let through whatever gate is being used.*
+Due to recent arbitrary changes in computer terminology, it is necessary to clarify the meaning and connotation of the term **blacklist**, associated with this project: *In computing, a blacklist, denylist or blocklist is a basic access control mechanism that allows through all elements (email addresses, users, passwords, URLs, IP addresses, domain names, file hashes, etc.), except those explicitly mentioned. Those items on the list are denied access. The opposite is a whitelist, which means only items on the list are let through whatever gate is being used.*
 
-Debido a los recientes cambios arbitrarios en la terminología informática, es necesario aclarar el significado y connotación del término **blacklist**, asociado a este proyecto: 
-*En informática, una lista negra, lista de denegación o lista de bloqueo es un mecanismo básico de control de acceso que permite a través de todos los elementos (direcciones de correo electrónico, usuarios, contraseñas, URL, direcciones IP, nombres de dominio, hashes de archivos, etc.), excepto los mencionados explícitamente. Esos elementos en la lista tienen acceso denegado. Lo opuesto es una lista blanca, lo que significa que solo los elementos de la lista pueden pasar por cualquier puerta que se esté utilizando.*
+Debido a los recientes cambios arbitrarios en la terminología informática, es necesario aclarar el significado y connotación del término **blacklist**, asociado a este proyecto: *En informática, una lista negra, lista de denegación o lista de bloqueo es un mecanismo básico de control de acceso que permite a través de todos los elementos (direcciones de correo electrónico, usuarios, contraseñas, URL, direcciones IP, nombres de dominio, hashes de archivos, etc.), excepto los mencionados explícitamente. Esos elementos en la lista tienen acceso denegado. Lo opuesto es una lista blanca, lo que significa que solo los elementos de la lista pueden pasar por cualquier puerta que se esté utilizando.*
 
 Source [Wikipedia](https://en.wikipedia.org/wiki/Blacklist_(computing))
 
-Therefore, **blacklist**, **blackweb**, **blackip**, etc., have nothing to do with racial discrimination.
-Por tanto, **blacklist**, **blackweb**, **blackip**, etc.,  no tienen ninguna relación con la discriminación racial.
+Therefore / Por tanto
+
+**blacklist**, **blocklist**, **blackweb**, **blackip**, **whitelist**, **etc.**
+
+are terms that have nothing to do with racial discrimination / son términos que no tienen ninguna relación con la discriminación racial
+
+
 
 ## DATA SHEET
 
@@ -26,14 +29,6 @@ Por tanto, **blacklist**, **blackweb**, **blackip**, etc.,  no tienen ninguna re
 |lst|Block IPs|txt size|
 | :---: | :---: | :---: |
 |blackip.txt|3141722|44.9 Mb|
-
-## DEPENDENCIES
-
----
-
-```bash
-git ipset iptables bash tar zip wget squid subversion python ulogd2
-```
 
 ## GIT CLONE
 
@@ -49,10 +44,15 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 
 `blackip.txt` is already optimized. Download it and unzip it in the path of your preference / `blackip.txt` ya viene optimizada. Descárguela y descomprimala en la ruta de su preferencia
 
-### Download and Checksum
+### Download
 
 ```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
+```
+
+### Checksum
+
+```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
@@ -172,7 +172,7 @@ http_access deny no_ip
 
 This section is only to explain how update and optimization process works. It is not necessary for user to run it. This process can take time and consume a lot of hardware and bandwidth resources, therefore it is recommended to use test equipment / Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas
 
-#### Black Update
+#### Blackip Update
 
 >The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh` / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`
 
@@ -180,7 +180,13 @@ This section is only to explain how update and optimization process works. It is
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
-##### Important about BLackIP Update
+##### Dependencies
+
+```bash
+git ipset iptables bash tar zip wget squid subversion python ulogd2
+```
+
+##### Important about BLackip Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
@@ -188,7 +194,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ##### Check execution (/var/log/syslog):
 
 ```bash
-BLackIP: Done 06/05/2019 15:47:14
+BLackip: Done 06/05/2019 15:47:14
 ```
 
 #### AllowIP Update
@@ -203,9 +209,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-### Block IPs
+### Blacklists
 
-#### Block IPs Actives
+#### Actives Blocklists IP
 
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
@@ -233,7 +239,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Block IPs Inactive
+#### Inactive Blocklists IP
 
 - [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
 - [Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
@@ -241,18 +247,18 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
 - [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (Server Down. Last Updated Known Ago 17/2017. Added to: `oldips.txt`)
 
-### Allow IPs
+### Whitelists
 
-#### Allow IPs Actives
+#### Actives Allowlists IP
 
 - [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json) (Excluded for containing CIDR)
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653) (Excluded for containing CIDR)
 
-##### Allow IPs Inactives
+##### Inactives Allowlists IP
 
 - [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [See This post](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
 
-### Work Lists
+### Worklists
 
 - [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
@@ -263,7 +269,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
-### Work Tools
+### Worktools
 
 - [cidr2ip](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/cidr2ip.py)
 - [Debug IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/debugbip.py)

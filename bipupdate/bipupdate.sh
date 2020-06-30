@@ -8,6 +8,7 @@ cm5=("Depurando Blackip..." "Debugging Blackip...")
 cm6=("Reiniciando Squid..." "Squid Reload...")
 cm7=("Verifique en su escritorio Squid-Error" "Check on your desktop Squid-Error")
 cm8=("Terminado" "Done")
+a0=("Instalando Dependencias..." "Installing Dependencies...")
 
 test "${LANG:0:2}" == "es"
 es=$?
@@ -28,9 +29,15 @@ if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
 # CREATE PATH
 if [ ! -d $route ]; then mkdir -p $route; fi
 
+echo "${a0[${es}]}"
+function dependencies(){
+    sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python squid ipset ulogd2
+}
+dependencies &> /dev/null
+
 clear
 echo
-echo "Lockkip Project"
+echo "Blackip Project"
 echo "${cm1[${es}]}"
 # DOWNLOAD BLACKIP
 echo
