@@ -12,7 +12,10 @@ a0=("Instalando Dependencias..." "Installing Dependencies...")
 
 test "${LANG:0:2}" == "es"
 es=$?
-
+clear
+echo
+echo "Blackip Project"
+echo "${cm1[${es}]}"
 # VARIABLES
 bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
@@ -29,16 +32,14 @@ if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
 # CREATE PATH
 if [ ! -d $route ]; then mkdir -p $route; fi
 
+# DEPENDENCIES
 echo "${a0[${es}]}"
 function dependencies(){
     sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python squid ipset ulogd2
 }
 dependencies &> /dev/null
+echo "OK"
 
-clear
-echo
-echo "Blackip Project"
-echo "${cm1[${es}]}"
 # DOWNLOAD BLACKIP
 echo
 echo "${cm2[${es}]}"
@@ -74,14 +75,14 @@ function blips() {
         blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
         blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
+        blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
-        blips 'https://www.maxmind.com/es/proxy-detection-sample-list' && sleep 1
+        blips 'https://www.maxmind.com/en/high-risk-ip-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
 
 $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
 unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture

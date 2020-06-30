@@ -28,7 +28,7 @@ are terms that have nothing to do with racial discrimination / son términos que
 
 |lst|Block IPs|txt size|
 | :---: | :---: | :---: |
-|blackip.txt|3141722|44.9 Mb|
+|blackip.txt|3113458|44.5 Mb|
 
 ## GIT CLONE
 
@@ -224,7 +224,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
 - [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
-- [Maxmind](https://www.maxmind.com/es/proxy-detection-sample-list)
+- [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
@@ -239,13 +239,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Inactive Blocklists IP
+#### Inactive Blocklists IP (Added to: `oldips.txt`)
 
 - [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
 - [Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
-- [OpenBL](https://www.openbl.org/lists/base.txt) (Server Down. Last Updated Known Apr 1/2016. Added to: `oldips.txt`)
+- [OpenBL](https://www.openbl.org/lists/base.txt)
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
-- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (Server Down. Last Updated Known Ago 17/2017. Added to: `oldips.txt`)
+- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) 
 
 ### Whitelists
 
@@ -260,14 +260,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ### Worklists
 
+- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
+- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
+- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 - [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
-- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
-- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
-
-- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
 ### Worktools
 
