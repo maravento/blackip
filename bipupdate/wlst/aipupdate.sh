@@ -1,7 +1,6 @@
 #!/bin/bash
 # ------------------------------------
 # AllowIP for Reverse Squid
-# By: Alej Calero and Jhonatan Sneider
 # https://unix.stackexchange.com/questions/550796/bash-to-launching-multiple-queries-with-xargs
 # ------------------------------------
 # used:	host -t a / or / dig +short -f
@@ -13,11 +12,11 @@ cm2=("Descargando Allow URLs..." "Downloading Allow URLs...")
 cm3=("Depurando Allowip..." "Debugging Allowip...")
 cm4=("Terminado" "Done")
 cm5=("Copie allowip a Squid y elimine los conflictos" "Copy allowip to Squid and eliminate the conflicts")
-
 test "${LANG:0:2}" == "es"
 es=$?
+
 clear
-echo
+echo -e "\n"
 echo "AllowIP Project"
 echo "${cm1[${es}]}"
 # PATH
@@ -27,6 +26,7 @@ wgetd="wget -q -c --retry-connrefused -t 0"
 date=`date +%d/%m/%Y" "%H:%M:%S`
 
 # DOWNLOAD URLS
+echo -e "\n"
 echo "${cm2[${es}]}"
 function intacls() {
         $wgetd "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u >> urls
@@ -36,10 +36,10 @@ function intacls() {
          #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/cloudsync.txt' && sleep 1
 
 # DEBBUGGING allowip (CIDR)
-echo
+echo -e "\n"
 echo "${cm3[${es}]}"
-ni="300"
-cat urls | xargs -I {} -P $ni bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' > out
+pp="300"
+cat urls | xargs -I {} -P $pp bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' > out
 # add iana
 # cat iana.txt out > outfile.tmp && mv outfile.tmp out
 # add teamviewer ips
@@ -47,6 +47,8 @@ cat urls | xargs -I {} -P $ni bash -c 'for sub in "" "www." "ftp."; do host -t a
 # reorganize
 cat out | $reorganize | uniq > allowip.txt
 echo "OK"
-echo
+echo -e "\n"
 echo "${cm4[${es}]}"
 echo "${cm5[${es}]}"
+echo Done
+notify-send "AllowIP Update: Done"

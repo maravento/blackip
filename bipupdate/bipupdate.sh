@@ -1,21 +1,20 @@
 #!/bin/bash
 # Language spa-eng
-cm1=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
-cm2=("Descargando Blackip..." "Downloading Blackip...")
-cm3=("Descargando IPDeny..." "Downloading IPDeny...")
-cm4=("Descargando Listas de Bloqueo..." "Downloading Blocklists...")
-cm5=("Depurando Blackip..." "Debugging Blackip...")
-cm6=("Reiniciando Squid..." "Squid Reload...")
-cm7=("Verifique en su escritorio Squid-Error" "Check on your desktop Squid-Error")
-cm8=("Terminado" "Done")
-a0=("Instalando Dependencias..." "Installing Dependencies...")
-
+bip01=("Este proceso puede tardar mucho tiempo. Sea paciente..." "This process can take a long time. Be patient...")
+bip02=("Instalando Dependencias..." "Installing Dependencies...")
+bip03=("Descargando Blackip..." "Downloading Blackip...")
+bip04=("Descargando IPDeny..." "Downloading IPDeny...")
+bip05=("Descargando Listas de Bloqueo..." "Downloading Blocklists...")
+bip06=("Depurando Blackip..." "Debugging Blackip...")
+bip07=("Reiniciando Squid..." "Squid Reload...")
+bip08=("Verifique en su escritorio Squid-Error" "Check on your desktop Squid-Error")
+bip09=("Terminado" "Done")
 test "${LANG:0:2}" == "es"
 es=$?
+
 clear
-echo
 echo "Blackip Project"
-echo "${cm1[${es}]}"
+echo "${bip01[${es}]}"
 # VARIABLES
 bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
@@ -33,7 +32,7 @@ if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
 if [ ! -d $route ]; then mkdir -p $route; fi
 
 # DEPENDENCIES
-echo "${a0[${es}]}"
+echo "${bip02[${es}]}"
 function dependencies(){
     sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python squid ipset ulogd2
 }
@@ -41,22 +40,19 @@ dependencies &> /dev/null
 echo "OK"
 
 # DOWNLOAD BLACKIP
-echo
-echo "${cm2[${es}]}"
+echo "${bip03[${es}]}"
 svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
 cd $bipupdate
 echo "OK"
 
 # DOWNLOADING GEOZONES
-echo
-echo "${cm3[${es}]}"
+echo "${bip04[${es}]}"
 if [ ! -d $zone ]; then mkdir -p $zone; fi
         $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
 echo "OK"
 
 # DOWNLOADING BLOCKLIST IPS
-echo
-echo "${cm4[${es}]}"
+echo "${bip05[${es}]}"
 
 function blips() {
 	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> capture
@@ -99,8 +95,7 @@ unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> capture
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 echo "OK"
 
-echo
-echo "${cm5[${es}]}"
+echo "${bip06[${es}]}"
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > cleancapture
 echo "OK"
 
@@ -119,8 +114,8 @@ sed '/^$/d; /#/d' blst/oldips.txt >> cleancapture
 #sed '/^$/d; /#/d' wlst/iana.txt >> cleancapture
 # reorganize
 cat cleancapture | $reorganize | uniq > blackip.txt
-echo
-echo "${cm6[${es}]}"
+
+echo "${bip07[${es}]}"
 ## Reload Squid with Out
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
@@ -136,6 +131,8 @@ sed '/\//d' outip | $reorganize | uniq > blackip.txt
 sudo cp -f blackip.txt $route/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
 sudo bash -c 'echo "blackip: Done $date" >> /var/log/syslog'
+echo "OK"
 # END
-echo "${cm7[${es}]}"
-echo "${cm8[${es}]}"
+echo "${bip08[${es}]}"
+echo "${bip09[${es}]}"
+notify-send "Blackip Update: Done"
