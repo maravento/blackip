@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3120311|44.6 Mb|
+|blackip.txt|3166439|45.3 Mb|
 
 ## GIT CLONE
 
@@ -122,7 +122,7 @@ http_access deny blackip
 - Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
 - Use `allowip.txt` (a allow list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
 - Use `aipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
-- Use IANA (`iana.txt`) to authorize or block private/reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network) / Use IANA (`iana.txt`) para autorizar o bloquear rangos privados/reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada)
+- By default `blackip.txt` does not exclude private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude these ranges / Por defecto blackip.txt no excluye rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluir estos rangos
 - To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
 
 ```bash
