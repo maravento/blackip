@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3166439|45.3 Mb|
+|blackip.txt|3049758|43.6 Mb|
 
 ## GIT CLONE
 
@@ -134,8 +134,8 @@ http_access allow aipextra
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
 # IANA -private/reserved ranges- (Optional)
-#acl iana dst "/path_to/iana.txt"
-#http_access allow iana
+acl iana dst "/path_to/iana.txt"
+http_access allow iana
 # IP/CIDR that are not included in blackip
 acl bipextra dst "/path_to/bipextra.txt"
 http_access deny bipextra
