@@ -112,8 +112,11 @@ echo "OK"
 sed '/^$/d; /#/d' blst/oldips.txt >> cleancapture
 # add iana
 #sed '/^$/d; /#/d' wlst/iana.txt >> cleancapture
+# exclude allowip
+sed 's:\/.*::' wlst/iana.txt >> wlst/allowip.txt
+comm -3 <(sort wlst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
 # reorganize
-cat cleancapture | $reorganize | uniq > blackip.txt
+cat cleancapture2 | $reorganize | uniq > blackip.txt
 
 echo "${bip07[${es}]}"
 ## Reload Squid with Out

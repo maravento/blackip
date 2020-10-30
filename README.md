@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3049758|43.6 Mb|
+|blackip.txt|3073805|43.9 Mb|
 
 ## GIT CLONE
 
@@ -123,23 +123,23 @@ http_access deny blackip
 - Use `allowip.txt` (a allow list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
 - Use `aipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - By default `blackip.txt` does not exclude private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude these ranges / Por defecto blackip.txt no excluye rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluir estos rangos
-- To increase security, close Squid to any other request to IP addresses. Very useful for blocking anonymizers / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP. Muy útil para el bloqueo de anonimizadores
+- To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
 
 ```bash
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-# IP/CIDRs that are not included in allowip
+# Allow IP/CIDR list (not included in allowip) (Optional)
 acl aipextra dst "/path_to/aipextra.txt"
 http_access allow aipextra
-# allowip
+# Allow IP list (Optional)
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
-# IANA -private/reserved ranges- (Optional)
+# IANA list (not included in allowip) (Optional)
 acl iana dst "/path_to/iana.txt"
 http_access allow iana
-# IP/CIDR that are not included in blackip
+# Block IP/CIDR list (not included in blackip)
 acl bipextra dst "/path_to/bipextra.txt"
 http_access deny bipextra
-# blackip
+# Blackip list
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 # deny all IPs
@@ -241,15 +241,18 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [See This post](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
 
-### Worklists
+### Internal Worklists
 
 - [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
 - [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
-- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 - [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
+
+### External Worklists
+
+- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
 ### Worktools
 
