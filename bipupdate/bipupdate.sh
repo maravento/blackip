@@ -20,8 +20,8 @@ bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n"
 date=`date +%d/%m/%Y" "%H:%M:%S`
-wgetd="wget -q -c --retry-connrefused -t 0"
 xdesktop=$(xdg-user-dir DESKTOP)
+wgetd='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
 # path_to_lst (Change it to the directory of your preference)
 route=/etc/acl
 zone=/etc/zones
@@ -55,7 +55,13 @@ echo "OK"
 echo "${bip05[${es}]}"
 
 function blips() {
-	$wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> capture
+    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+
+   if [ $? -eq 0 ]; then
+       $wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> capture
+   else
+       echo ERROR "$1"
+   fi
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
         blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
@@ -80,11 +86,27 @@ function blips() {
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
 
-$wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
-unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture
+function listed_ip_180_all() {
+    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
-$wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
-unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> capture
+   if [ $? -eq 0 ]; then
+       $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
+       unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> capture
+   else
+       echo ERROR "$1"
+   fi
+}
+
+function full_blacklist_database() {
+    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+
+    if [ $? -eq 0 ]; then
+        $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+        unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture
+    else
+        echo ERROR "$1"
+    fi
+}
 
 # CIDR2IP (High consumption of system resources)
 #function cidr() {
