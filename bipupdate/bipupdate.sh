@@ -64,7 +64,6 @@ function blips() {
    fi
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
-        blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
         blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
         blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
@@ -84,7 +83,10 @@ function blips() {
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
-        blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+
+# out of service      
+# blips 'http://cinsscore.com/list/ci-badguys.txt'
+# blips 'http://www.unsubscore.com/blacklist.txt'
 
 function listed_ip_180_all() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
