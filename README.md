@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|2731894|39.1 Mb|
+|blackip.txt|2747720|39.3 Mb|
 
 ## GIT CLONE
 
@@ -47,6 +47,15 @@ md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 
 This module allows us to perform mass filtering, at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). It includes geographical areas with [IPDeny](http://www.ipdeny.com/ipblocks/)) / Este módulo nos permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). Se incluye zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/))
 
+Donwload Zones / Descarga de Zonas
+
+```zone=/path_to_folder/zones
+if [ ! -d $zone ]; then mkdir -p $zone; fi
+wget -q -N http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
+tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
+rm -f all-zones.tar.gz >/dev/null 2>&1
+```
+
 Edit your Iptables script and add the following lines: / Edite su script de Iptables y agregue las siguientes líneas:
 
 ```bash
@@ -55,7 +64,7 @@ Edit your Iptables script and add the following lines: / Edite su script de Ipta
 ipset=/sbin/ipset
 iptables=/sbin/iptables
 route=/path_to_blackip/
-zone=/path_to_zones/zones
+zone=/path_to_folder/zones
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 
 $ipset -F
@@ -69,7 +78,7 @@ done
 $iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'Blockzone'
 $iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
 $iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'Blockzone'
-$iptables -A FORWARD -m set --match-set blpckzone dst -j DROP
+$iptables -A FORWARD -m set --match-set blockzone dst -j DROP
 ```
 
 You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line: / Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea:

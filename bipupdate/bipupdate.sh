@@ -24,7 +24,6 @@ xdesktop=$(xdg-user-dir DESKTOP)
 wgetd='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
 # path_to_lst (Change it to the directory of your preference)
 route=/etc/acl
-zone=/etc/zones
 
 # DELETE OLD REPOSITORY
 if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
@@ -47,8 +46,9 @@ echo "OK"
 
 # DOWNLOADING GEOZONES
 echo "${bip04[${es}]}"
+zone=/etc/zones
 if [ ! -d $zone ]; then mkdir -p $zone; fi
-        $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
+$wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
 echo "OK"
 
 # DOWNLOADING BLOCKLIST IPS
