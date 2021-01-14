@@ -33,7 +33,7 @@ if [ ! -d $route ]; then mkdir -p $route; fi
 # DEPENDENCIES
 echo "${bip02[${es}]}"
 function dependencies(){
-    sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python squid ipset ulogd2
+    sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip python squid ipset ulogd2
 }
 dependencies &> /dev/null
 echo "OK"
@@ -58,12 +58,13 @@ function blips() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
-       $wgetd "$1" -O - | grep -oP "$ipRegExp" | uniq >> capture
+       $wgetd "$1" -O - | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
    else
        echo ERROR "$1"
    fi
 }
         blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
+        blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
         blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
         blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
@@ -75,49 +76,62 @@ function blips() {
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
         blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
         blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
+        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
         blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
+        blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
         blips 'https://www.maxmind.com/en/high-risk-ip-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
+        blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+        
+function uceprotect() {
+    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1"
 
-# out of service      
-# blips 'http://cinsscore.com/list/ci-badguys.txt'
-# blips 'http://www.unsubscore.com/blacklist.txt'
+   if [ $? -eq 0 ]; then
+       $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
+   else
+       echo ERROR "$1"
+   fi
+}
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz'
 
 function listed_ip_180_all() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
-       $wgetd 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
-       unzip -p listed_ip_180_all.zip | grep -oP "$ipRegExp" | uniq >> capture
+       $wgetd "$1" && unzip -p listed_ip_180_all.zip | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
    else
        echo ERROR "$1"
    fi
 }
+        listed_ip_180_all 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 
 function full_blacklist_database() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
-        $wgetd 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
-        unzip -p full_blacklist_database.zip | grep -oP "$ipRegExp" | uniq >> capture
+        $wgetd "$1" && unzip -p full_blacklist_database.zip | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
     else
         echo ERROR "$1"
     fi
 }
+        full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+
+echo "OK"
 
 # CIDR2IP (High consumption of system resources)
 #function cidr() {
-#       $wgetd "$1" -O - | sed '/^$/d; / *#/d' | uniq > cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
+#       $wgetd "$1" -O - | sed '/^$/d; /*#/d' | uniq > cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
 #       python tools/cidr2ip.py cidr.txt >> bip
 #}
 #       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
-echo "OK"
 
 echo "${bip06[${es}]}"
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > cleancapture

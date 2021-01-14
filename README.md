@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|2747720|39.3 Mb|
+|blackip.txt|3194540|45.7 Mb|
 
 ## GIT CLONE
 
@@ -175,7 +175,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ##### Dependencies
 
 ```bash
-git ipset iptables bash tar zip wget squid subversion python ulogd2
+wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip python squid ipset ulogd2 iptables
 ```
 
 ##### Important about BLackip Update
@@ -208,9 +208,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
 - [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+- [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt)
+- [Blocklist](https://lists.blocklist.de/lists/all.txt)
+- [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 - [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 - [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
+- [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
 - [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
@@ -224,20 +228,17 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 - [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
+- [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
+- [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 - [TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
 - [TOR Node List](https://www.dan.me.uk/torlist/?exit)
+- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (includes: [Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz), [Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz), [Level3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz))
 - [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
 #### Inactive Blocklists IP (Added to: `oldips.txt`)
 
-- [Blocklist](https://lists.blocklist.de/lists/all.txt) and [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt). Replaced by [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist)
-- [Firehold Level 1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset) (Excluded for containing CIDR)
 - [OpenBL](https://www.openbl.org/lists/base.txt)
-- [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt) (Excluded for containing CIDR)
-- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/)
-- [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
-- [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 
 ### Whitelists
 
@@ -252,9 +253,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ### Internal Worklists
 
-- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/wextra.txt)
+- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipextra.txt)
 - [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
-- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bextra.txt)
+- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bipextra.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
