@@ -86,7 +86,7 @@ function blips() {
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
-        blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
+        #blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
         
 function uceprotect() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1"
