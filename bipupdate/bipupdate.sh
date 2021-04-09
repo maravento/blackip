@@ -85,7 +85,8 @@ function blips() {
         blips 'https://www.maxmind.com/en/high-risk-ip-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-        blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
+        # Temporarily offline
+        #blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
         #blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
         
 function uceprotect() {
