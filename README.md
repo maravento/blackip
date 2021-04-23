@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3152478|45.1 Mb|
+|blackip.txt|3168627|45.3 Mb|
 
 ## GIT CLONE
 
@@ -182,6 +182,7 @@ wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip py
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
+- Some lists have download restrictions, so do not run `bipupdate.sh` more than once a day / Algunas listas tienen restricciones de descarga, entonces no ejecute `bipupdate.sh` más de una vez al día
 
 ##### Check execution (/var/log/syslog):
 
@@ -201,9 +202,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-### Blacklists
+### BLOCKLISTS
 
-#### Actives Blocklists IP
+#### Active
 
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
@@ -224,7 +225,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
 - [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
-- [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 - [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
@@ -235,23 +235,28 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Inactive Blocklists IP (Added to: `oldips.txt`)
+#### Inactive or Discontinued
+
+*Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `oldip.txt`*
 
 - [OpenBL](https://www.openbl.org/lists/base.txt)
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
+- [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 
-### Whitelists
+### ALLOWLISTS
 
-#### Actives Allowlists IP
+#### Active
 
 - [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json) (Excluded for containing CIDR)
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653) (Excluded for containing CIDR)
 
-##### Inactives Allowlists IP
+#### Inactive or Discontinued
 
-- [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [See This post](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
+*Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `aipextra.txt`*
 
-### Internal Worklists
+- [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [Read me](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
+
+### Debug
 
 - [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipextra.txt)
 - [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
@@ -259,9 +264,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
-
-### External Worklists
-
 - [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
 ### Worktools

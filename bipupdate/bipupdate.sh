@@ -75,7 +75,6 @@ function blips() {
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
         blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
-        blips 'https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
         blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
@@ -85,12 +84,9 @@ function blips() {
         blips 'https://www.maxmind.com/en/high-risk-ip-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-        # Temporarily offline
-        #blips 'https://zeustracker.abuse.ch/blocklist.php?download=badips' && sleep 1
-        #blips 'http://www.unsubscore.com/blacklist.txt' && sleep 1
         
 function uceprotect() {
-    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1"
+    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
        $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
@@ -148,7 +144,7 @@ echo "OK"
 # add teamviewer ips
 #sed '/^$/d; /#/d' wlst/tw.txt >> cleancapture
 # add old ips
-sed '/^$/d; /#/d' blst/oldips.txt >> cleancapture
+sed '/^$/d; /#/d' blst/oldip.txt >> cleancapture
 # add iana
 #sed '/^$/d; /#/d' wlst/iana.txt >> cleancapture
 # exclude allowip
