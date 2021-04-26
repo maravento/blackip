@@ -135,23 +135,28 @@ http_access deny blackip
 - To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
 
 ```bash
-# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
-# Allow IP/CIDR list (not included in allowip) (Optional)
-acl aipextra dst "/path_to/aipextra.txt"
-http_access allow aipextra
+### INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS ###
+
+## ALLOW IP/CIDR ##
 # Allow IP list (Optional)
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
+# Allow IP/CIDR list (not included in allowip) (Optional)
+acl aipextra dst "/path_to/aipextra.txt"
+http_access allow aipextra
 # IANA list (not included in allowip) (Optional)
 acl iana dst "/path_to/iana.txt"
 http_access allow iana
-# Block IP/CIDR list (not included in blackip)
+
+## BLOCK IP/CIDR ##
+# Block IP/CIDR list (not included in blackip) (Optional)
 acl bipextra dst "/path_to/bipextra.txt"
 http_access deny bipextra
-# Blackip list
+# Blackip
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
-# deny all IPs
+
+## DENY ALL IP ##
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
 ```
@@ -247,12 +252,14 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 #### Active
 
-- [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json) (Excluded for containing CIDR)
-- [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653) (Excluded for containing CIDR)
+*Debugged and added to: `aipextra.txt`*
+
+- [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
+- [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
 
 #### Inactive or Discontinued
 
-*Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `aipextra.txt`*
+*Recovered by [EOP](https://raw.githubusercontent.com/dnswl/eop/master/O365IPAddresses.xml), debugged and added to: `aipextra.txt`*
 
 - [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [Read me](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
 
@@ -271,7 +278,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [cidr2ip](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/cidr2ip.py)
 - [Debug IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/debugbip.py)
 - [Teamviewer Capture](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.sh)
-
 
 ## CONTRIBUTIONS
 
