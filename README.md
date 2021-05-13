@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3199309|45.7 Mb|
+|blackip.txt|3193082|45.6 Mb|
 
 ## GIT CLONE
 
@@ -33,9 +33,10 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 ```
 
-### Checksum
+### Download and Checksum
 
 ```bash
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
