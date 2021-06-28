@@ -69,7 +69,7 @@ function blips() {
         blips 'http://malc0de.com/bl/IP_Blacklist.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
         blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
-        blips 'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1' && sleep 1
+        blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
         blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
         blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
@@ -81,7 +81,6 @@ function blips() {
         blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
-        blips 'https://www.maxmind.com/en/high-risk-ip-sample-list' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
         
@@ -94,9 +93,9 @@ function uceprotect() {
        echo ERROR "$1"
    fi
 }
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz'
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz'
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz'
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz' && sleep 2
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz' && sleep 2
+       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz' && sleep 2
 
 function listed_ip_180_all() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null

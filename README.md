@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3383380|48.4 Mb|
+|blackip.txt|3288457|47.0 Mb|
 
 ## GIT CLONE
 
@@ -226,7 +226,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
 - [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
-- [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
@@ -235,19 +234,20 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 - [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
-- [TOR BulkExitList](https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1)
+- [TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
 - [TOR Node List](https://www.dan.me.uk/torlist/?exit)
 - [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (includes: [Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz), [Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz), [Level3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz))
 - [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Inactive or Discontinued
+#### Inactive, Discontinued or Private
 
 *Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `oldip.txt`*
 
 - [OpenBL](https://www.openbl.org/lists/base.txt)
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 - [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
+- [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
 
 ### ALLOWLISTS
 
@@ -258,7 +258,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
 
-#### Inactive or Discontinued
+#### Inactive, Discontinued or Private
 
 *Recovered by [EOP](https://raw.githubusercontent.com/dnswl/eop/master/O365IPAddresses.xml), debugged and added to: `aipextra.txt`*
 
