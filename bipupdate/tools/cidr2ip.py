@@ -44,5 +44,5 @@ if __name__ == '__main__':
         
         exit(0)
     except Exception as e:
-        print("Error: El archivo \"%s\" no existe" % sys.argv[1])
+        print("Error: File \"%s\" doesn't exist" % sys.argv[1])
         exit(1)
