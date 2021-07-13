@@ -1,58 +1,48 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Language spa-eng
 bip01=("This process can take a long time. Be patient..." "Este proceso puede tardar mucho tiempo. Sea paciente...")
-bip02=("Installing Dependencies..." "Instalando Dependencias...")
-bip03=("Downloading Blackip..." "Descargando Blackip...")
-bip04=("Downloading IPDeny..." "Descargando IPDeny...")
-bip05=("Downloading Blocklists..." "Descargando Listas de Bloqueo...")
-bip06=("Debugging Blackip..." "Depurando Blackip...")
-bip07=("Squid Reload..." "Reiniciando Squid...")
-bip08=("Check on your desktop Squid-Error" "Verifique en su escritorio Squid-Error")
-bip09=("Done" "Terminado")
+bip02=("Downloading IPDeny..." "Descargando IPDeny...")
+bip03=("Downloading BlackIP..." "Descargando BlackIP...")
+bip04=("Downloading Blocklists..." "Descargando Listas de Bloqueo...")
+bip05=("Debugging BlackIP..." "Depurando BlackIP...")
+bip06=("Squid Reload..." "Reiniciando Squid...")
+bip07=("Check on your desktop Squid-Error" "Verifique en su escritorio Squid-Error")
 test "${LANG:0:2}" == "en"
 en=$?
 
-clear
-echo "Blackip Project"
-echo "${bip01[${en}]}"
 # VARIABLES
 bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n"
-date=`date +%d/%m/%Y" "%H:%M:%S`
 xdesktop=$(xdg-user-dir DESKTOP)
 wgetd='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
 # path_to_lst (Change it to the directory of your preference)
 route=/etc/acl
+# CREATE PATH
+if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
+
+clear
+echo "Blackip Project"
+echo "${bip01[${en}]}"
+
+# DOWNLOADING GEOZONES
+echo "${bip02[${en}]}"
+geopath="/etc/zones"
+if [ ! -d "$geopath" ]; then sudo mkdir -p "$geopath"; fi
+$wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
+echo "OK"
 
 # DELETE OLD REPOSITORY
-if [ -d $bipupdate ]; then rm -rf $bipupdate; fi
-# CREATE PATH
-if [ ! -d $route ]; then mkdir -p $route; fi
-
-# DEPENDENCIES
-echo "${bip02[${en}]}"
-function dependencies(){
-    sudo apt -y install wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip python squid ipset ulogd2
-}
-dependencies &> /dev/null
-echo "OK"
+if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
 
 # DOWNLOAD BLACKIP
 echo "${bip03[${en}]}"
 svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
-cd $bipupdate
-echo "OK"
-
-# DOWNLOADING GEOZONES
-echo "${bip04[${en}]}"
-zone=/etc/zones
-if [ ! -d $zone ]; then mkdir -p $zone; fi
-$wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
+cd "$bipupdate"
 echo "OK"
 
 # DOWNLOADING BLOCKLIST IPS
-echo "${bip05[${en}]}"
+echo "${bip04[${en}]}"
 
 function blips() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
@@ -129,7 +119,7 @@ echo "OK"
 #       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
-echo "${bip06[${en}]}"
+echo "${bip05[${en}]}"
 sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > cleancapture
 echo "OK"
 
@@ -152,24 +142,26 @@ comm -3 <(sort wlst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*
 # reorganize
 cat cleancapture2 | $reorganize | uniq > blackip.txt
 
-echo "${bip07[${en}]}"
-## Reload Squid with Out
-sudo cp -f blackip.txt $route/blackip.txt
+# RELOAD SQUID-CACHE
+echo "${bip06[${en}]}"
+sudo cp -f blackip.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > squidip
 ## Remove conflicts from blackip.txt
-#grep -Fvxf <(cat wlst/iana.txt) squidip | sort -u > cleanip
-#cat cleanip | $reorganize | uniq > debugip
-cat squidip | $reorganize | uniq > debugip
+grep -Fvxf <(cat wlst/iana.txt) squidip | sort -u > cleanip
+cat cleanip | $reorganize | uniq > debugip
 python tools/debugbip.py
 sed '/\//d' outip | $reorganize | uniq > blackip.txt
 # COPY ACL TO PATH AND LOG
-sudo cp -f blackip.txt $route/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> $xdesktop/SquidError.txt
-sudo bash -c 'echo "blackip: Done $date" >> /var/log/syslog'
-echo "OK"
+sudo cp -f blackip.txt "$route"/blackip.txt
+sudo bash -c 'squid -k reconfigure' 2> "$xdesktop"/SquidError.txt
+
+# DELETE REPOSITORY (Optional)
+cd ..
+if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
+
 # END
-echo "${bip08[${en}]}"
-echo "${bip09[${en}]}"
-notify-send "Blackip Update: Done"
+echo "${bip07[${en}]}"
+sudo bash -c 'echo "BlackIP Done: $(date)" | tee -a /var/log/syslog'
+notify-send "BlackIP Update Done" "$(date)" -i checkbox

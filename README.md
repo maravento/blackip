@@ -11,7 +11,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3243238|46.4 Mb|
+|blackip.txt|3081809|44.1 Mb|
 
 ## GIT CLONE
 
@@ -33,10 +33,9 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 ```
 
-### Download and Checksum
+### Checksum
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
@@ -181,7 +180,14 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ##### Dependencies
 
 ```bash
-wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip python squid ipset ulogd2 iptables
+pkgs='wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python-is-python2 squid ipset ulogd2'
+if ! dpkg -s $pkgs >/dev/null 2>&1; then
+        echo "Install Dependencies..."
+        apt -y install $pkgs >/dev/null 2>&1
+        echo Done
+    else
+        echo "Do Nothing"
+fi
 ```
 
 ##### Important about BLackip Update
@@ -189,6 +195,7 @@ wget git subversion curl libnotify-bin idn2 perl tar rar unrar gzip unzip zip py
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
 - Some lists have download restrictions, so do not run `bipupdate.sh` more than once a day / Algunas listas tienen restricciones de descarga, entonces no ejecute `bipupdate.sh` más de una vez al día
+- During the execution of `bipupdate.sh` it will request privileges when needed / Durante la ejecución de `bipupdate.sh` solicitará privilegios cuando los necesite
 
 ##### Check execution (/var/log/syslog):
 
