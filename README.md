@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3093406|44.2 Mb|
+|blackip.txt|3254233|46.5 Mb|
 
 ## GIT CLONE
 
