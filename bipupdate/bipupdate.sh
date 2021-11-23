@@ -65,6 +65,7 @@ function blips() {
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
         blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
+        blips 'https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
         blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1

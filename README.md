@@ -221,6 +221,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
+- [BBcan177 minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
 - [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 - [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt)
 - [Blocklist](https://lists.blocklist.de/lists/all.txt)
