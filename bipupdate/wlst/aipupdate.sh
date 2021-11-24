@@ -30,12 +30,12 @@ function intacls() {
         $wgetd "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u >> urls
 }
         intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt' && sleep 1
-        #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/add/remote.txt' && sleep 1
+        #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/remote.txt' && sleep 1
 
 
 # DEBBUGGING Allow WhiteIP (CIDR)
 echo "${cm3[${en}]}"
-pp="400"
+pp="100"
 cat urls | xargs -I {} -P "$pp" bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' > out
 # add iana
 # cat iana.txt out > outfile.tmp && mv outfile.tmp out
