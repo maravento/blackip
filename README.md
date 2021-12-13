@@ -15,7 +15,8 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3161880|45.2 Mb|
+|blackip.txt|3161050|45.2 Mb|
+
 
 ## GIT CLONE
 
@@ -238,6 +239,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
 - [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
+- [Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 - [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
