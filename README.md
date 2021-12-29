@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3161050|45.2 Mb|
+|blackip.txt|3246771|46.4 Mb|
 
 
 ## GIT CLONE
@@ -127,7 +127,7 @@ http_access deny blackip
 
 - Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
 - `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
-- `blackip.txt` has been tested in Squid v3.5.x / `blackip.txt` ha sido testeada en Squid v3.5.x
+- `blackip.txt` has been tested in Squid v3.5.x and later / `blackip.txt` ha sido testeada en Squid v3.5.x y posteriores
 
 ##### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
 
@@ -247,7 +247,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
 - [TOR Node List](https://www.dan.me.uk/torlist/?exit)
 - [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (includes: [Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz), [Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz), [Level3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz))
-- [Ultimate Hosts IPs Blocklist](https://github.com/mitchellkrogza/Ultimate.Hosts.Blacklist). [Mirror](https://hosts.ubuntu101.co.za/ips.list)
+- [Ultimate Hosts IPs Blocklist](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
 #### Inactive, Discontinued or Private

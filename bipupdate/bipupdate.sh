@@ -61,7 +61,6 @@ function blips() {
         blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
         blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
         blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
-        blips 'https://hosts.ubuntu101.co.za/ips.list' && sleep 1
         blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
         blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
@@ -74,6 +73,7 @@ function blips() {
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
         blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
         blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
+        blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
         blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
