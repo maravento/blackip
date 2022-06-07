@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3197492|45.7 Mb|
+|blackip.txt|3176287|45,4 Mb|
 
 
 ## GIT CLONE
@@ -184,10 +184,12 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ##### Dependencies
 
+>Update requires python 3x and bash 5x / La actualización requiere python 3x y bash 5x
+
 ```bash
-pkgs='wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python-is-python2 squid ipset ulogd2'
+pkgs='wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
-  apt-get install $pkgs
+  apt -y install $pkgs
 fi
 ```
 
@@ -224,8 +226,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
 - [BBcan177 minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
 - [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
-- [Blocklist Export](https://www.blocklist.de/downloads/export-ips_all.txt)
-- [Blocklist](https://lists.blocklist.de/lists/all.txt)
+- [Blocklist](https://www.blocklist.de/downloads/export-ips_all.txt)
 - [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 - [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
@@ -233,7 +234,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
-- [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Open BL](http://www.openbl.org/lists/base.txt)
@@ -254,10 +254,11 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 *Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `oldip.txt`*
 
-- [OpenBL](https://www.openbl.org/lists/base.txt)
-- [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
-- [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
+- [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
+- [OpenBL](https://www.openbl.org/lists/base.txt)
+- [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
+- [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 
 ### ALLOWLISTS
 
