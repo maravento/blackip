@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3110209|44,5 Mb|
+|blackip.txt|3176744|45,4 Mb|
 
 
 ## GIT CLONE
@@ -45,58 +45,66 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.m
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
 
-### IPSET-SQUID RULES
+### [Ipset](http://ipset.netfilter.org/) Rules
 
-
-#### [IPSET](http://ipset.netfilter.org/) Rules
-
-This module allows us to perform mass filtering, at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). It includes geographical areas with [IPDeny](http://www.ipdeny.com/ipblocks/)) / Este módulo nos permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). Se incluye zonas geográficas con [IPDeny](http://www.ipdeny.com/ipblocks/))
-
-Donwload Zones / Descarga de Zonas
-
-```zone=/path_to_folder/zones
-if [ ! -d $zone ]; then mkdir -p $zone; fi
-wget -q -N http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
-rm -f all-zones.tar.gz >/dev/null 2>&1
-```
+Ipset allows us to perform mass filtering, at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)) / Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
 
 Edit your Iptables script and add the following lines: / Edite su script de Iptables y agregue las siguientes líneas:
 
 ```bash
-# IPSET BLOCKZONE (select country to block and ip/range) ###
-# http://www.ipdeny.com/ipblocks/
 ipset=/sbin/ipset
 iptables=/sbin/iptables
-route=/path_to_blackip/
-zone=/path_to_folder/zones
-if [ ! -d $zone ]; then mkdir -p $zone; fi
-
 $ipset -F
 $ipset -N -! blockzone hash:net maxelem 1000000
-# Uncomment this line if you want to block entire countries
-#for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
-# Uncomment this line if you want to block only ips (recommended)
-for ip in $(cat $route/blackip.txt); do
+for ip in $(cat /path_to/blackip.txt); do
     $ipset -A blockzone $ip
 done
-$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'Blockzone'
+$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'blackip'
 $iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
-$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'Blockzone'
+$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'blackip'
 $iptables -A FORWARD -m set --match-set blockzone dst -j DROP
 ```
 
-You can block entire countries ranges (e.g. China, Rusia, etc) with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries to the line: / Puede incluir rangos completos de países (e.g. China, Rusia, etc) con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países a la línea:
+#### Ipset Advanced Rules (with IPDeny)
+
+Additionally, you can use the above rule to include full IP ranges of countries with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries of your choice. For example: / Adicionalmente, puede usar la regla anterior para incluir rangos de IPs completos de países con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países de su elección. Por ejemplo:
 
 ```bash
-for ip in $(cat $zone/{cn,ru}.zone $route/blackip.txt); do
+# IPSET BLOCKZONE (select country to block and ip/range)
+# http://www.ipdeny.com/ipblocks/
+ipset=/sbin/ipset
+iptables=/sbin/iptables
+
+# Download Zones
+zone=/path_to_folder/zones
+if [ ! -d $zone ]; then mkdir -p $zone; fi
+wget -q -N http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
+tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
+rm -f all-zones.tar.gz >/dev/null 2>&1
+
+# Ipset Advanced Rules
+$ipset -F
+$ipset -N -! blockzone hash:net maxelem 1000000
+# Zones (e.g. China, Russia) + BlackIP
+for ip in $(cat $zone/{cn,ru}.zone /path_to/blackip.txt); do
+    $ipset -A blockzone $ip
+done
+$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'blackip'
+$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
+$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'blackip'
+$iptables -A FORWARD -m set --match-set blockzone dst -j DROP
 ```
+
+#### Flush
 
 In case of error or conflict, execute: / En caso de error o conflicto, ejecute:
 
 ```bash
 ipset flush blockzone # (or: ipset flush)
 ```
+
+#### Log
+
 
 NFLOG: /var/log/ulog/syslogemu.log
 
@@ -107,7 +115,7 @@ if [ ! -d /var/log/ulog/syslogemu.log ]; then mkdir -p /var/log/ulog && touch /v
 usermod -a -G ulog $USER
 ```
 
-#### [Squid](http://www.squid-cache.org/) Rule
+### [Squid](http://www.squid-cache.org/) Rule
 
 Edit:
 
@@ -123,13 +131,13 @@ acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 ```
 
-##### Important about BlackIP
+#### Important about BlackIP
 
 - Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
 - `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
 - `blackip.txt` has been tested in Squid v3.5.x and later / `blackip.txt` ha sido testeada en Squid v3.5.x y posteriores
 
-##### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
+#### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
 
 **blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
 

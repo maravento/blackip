@@ -124,7 +124,7 @@ echo "OK"
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
 echo "${bip05[${en}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' > cleancapture
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' > cleancapture
 echo "OK"
 
 # DEBBUGGING BLACKIP
