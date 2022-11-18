@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3147904|45,4 Mb|
+|blackip.txt|3162915|45,2 Mb|
 
 
 ## GIT CLONE
@@ -38,82 +38,65 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 ```
 
-### Checksum
+### Optional: Checksum
 
 ```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
 
-### [Ipset](http://ipset.netfilter.org/) Rules
+### [Ipset/Iptables](http://ipset.netfilter.org/) Rules
 
-Ipset allows us to perform mass filtering, at a processing speed far superior to other Solutions (See the [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)) / Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (Vea el [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
-
-Edit your Iptables script and add the following lines: / Edite su script de Iptables y agregue las siguientes líneas:
+Edit your Iptables bash script and add the following lines (run with root privileges): / Edite su bash script de Iptables y agregue las siguientes líneas (ejecutar con privilegios root):
 
 ```bash
+#!/bin/bash
+# variables
 ipset=/sbin/ipset
 iptables=/sbin/iptables
-$ipset -F
-$ipset -N -! blockzone hash:net maxelem 1000000
-for ip in $(cat /path_to/blackip.txt); do
-    $ipset -A blockzone $ip
+# Replace with your path to blackip.txt
+ips=/path_to_lst/blackip.txt
+
+$ipset flush -! blackip
+$ipset create -! blackip hash:net maxelem 10000000
+rm -f /tmp/*.txt &> /dev/null
+$ipset save > /tmp/ipset_blackip.txt
+cat $ips | while read line; do
+    echo "add blackip $line" >> /tmp/ipset_blackip.txt
 done
-$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'blackip'
-$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
-$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'blackip'
-$iptables -A FORWARD -m set --match-set blockzone dst -j DROP
+$ipset restore -! < /tmp/ipset_blackip.txt
+
+$iptables -t mangle -I PREROUTING -m set --match-set blackip src,dst -j DROP
+$iptables -I INPUT -m set --match-set blackip src,dst -j DROP
+$iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
 ```
 
-#### Ipset Advanced Rules (with IPDeny)
+#### Optional: Ipset/Iptables IPDeny Rules
 
-Additionally, you can use the above rule to include full IP ranges of countries with [IPDeny](http://www.ipdeny.com/ipblocks/) adding the countries of your choice. For example: / Adicionalmente, puede usar la regla anterior para incluir rangos de IPs completos de países con [IPDeny](http://www.ipdeny.com/ipblocks/) agregando los países de su elección. Por ejemplo:
+You can add the following lines to the bash above to include full country IP ranges with [IPDeny](https://www.ipdeny.com/ipblocks/) adding the countries of your choice. / Puede agregar las siguientes líneas al bash anterior para incluir rangos de IPs completos de países con [IPDeny](https://www.ipdeny.com/ipblocks/) agregando los países de su elección.
 
 ```bash
-# IPSET BLOCKZONE (select country to block and ip/range)
-# http://www.ipdeny.com/ipblocks/
-ipset=/sbin/ipset
-iptables=/sbin/iptables
-
-# Download Zones
+# Put these lines at the end of the "variables" section
+# Replace with your path to zones folder
 zone=/path_to_folder/zones
 if [ ! -d $zone ]; then mkdir -p $zone; fi
 wget -q -N http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
 tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
 rm -f all-zones.tar.gz >/dev/null 2>&1
 
-# Ipset Advanced Rules
-$ipset -F
-$ipset -N -! blockzone hash:net maxelem 1000000
-# Zones (e.g. China, Russia) + BlackIP
-for ip in $(cat $zone/{cn,ru}.zone /path_to/blackip.txt); do
-    $ipset -A blockzone $ip
-done
-$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j NFLOG --nflog-prefix 'blackip'
-$iptables -t mangle -A PREROUTING -m set --match-set blockzone src -j DROP
-$iptables -A FORWARD -m set --match-set blockzone dst -j NFLOG --nflog-prefix 'blackip'
-$iptables -A FORWARD -m set --match-set blockzone dst -j DROP
+# replace the line:
+cat $ips | while read line; do
+# with (e.g: Russia and China):
+cat $zone/{cn,ru}.zone $ips | while read line; do
 ```
 
-#### Flush
+#### Important about Ipset/Iptables Rules
 
-In case of error or conflict, execute: / En caso de error o conflicto, ejecute:
-
-```bash
-ipset flush blockzone # (or: ipset flush)
-```
-
-#### Log
-
-
-NFLOG: /var/log/ulog/syslogemu.log
-
-```bash
-chown root:root /var/log
-apt -y install ulogd2
-if [ ! -d /var/log/ulog/syslogemu.log ]; then mkdir -p /var/log/ulog && touch /var/log/ulog/syslogemu.log; fi
-usermod -a -G ulog $USER
-```
+- Ipset allows mass filtering, at a much higher processing speed than other solutions (check [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). / Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (consulte [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
+- Blackip is a list containing millions of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (for more information, check [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). / Blackip es una lista que contiene millones de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (para más información, consulte [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). 
+- Ipset/iptables limitation: "*When entries added by the SET target of iptables/ip6tables, then the hash size is fixed and the set won't be duplicated, even if the new entry cannot be added to the set*" (for more information, check [Man Ipset](https://ipset.netfilter.org/ipset.man.html)) / Limitación de Ipset/iptables: "*Cuando las entradas agregadas por el objetivo SET de iptables/ip6tables, el tamaño del hash es fijo y el conjunto no se duplicará, incluso si la nueva entrada no se puede agregar al conjunto*" (para más información, consulte [Man Ipset](https://ipset.netfilter.org/ipset.man.html)). 
+- Heavy use of these rules can slow down your PC to the point of crashing. Use them at your own risk. / El uso intensivo de estas reglas puede ralentizar su PC al punto de hacerlo colapsa. Úselas bajo su propio riesgo.
+- tested on: / probado en: iptables v1.8.7, ipset v7.15, protocol version: 7
 
 ### [Squid](http://www.squid-cache.org/) Rule
 
@@ -137,13 +120,13 @@ http_access deny blackip
 - `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
 - `blackip.txt` has been tested in Squid v3.5.x and later / `blackip.txt` ha sido testeada en Squid v3.5.x y posteriores
 
-#### [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
+#### Optional: [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
 
 **blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
 
 - Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
-- Use `allowip.txt` (a allow list of IPv4 IP addresses like a Hotmail, Gmail, Yahoo. Etc) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
-- Use `aipextra.txt` to add allowlists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
+- Use `allowip.txt` (a whitelist of IPv4 IP addresses such as Hotmail, Gmail, Yahoo. etc.) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
+- Use `aipextra.txt` to add whitelists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - By default `blackip.txt` does not exclude private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude these ranges / Por defecto blackip.txt no excluye rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluir estos rangos
 - To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
 
@@ -208,7 +191,7 @@ fi
 - Some lists have download restrictions, so do not run `bipupdate.sh` more than once a day / Algunas listas tienen restricciones de descarga, entonces no ejecute `bipupdate.sh` más de una vez al día
 - During the execution of `bipupdate.sh` it will request privileges when needed / Durante la ejecución de `bipupdate.sh` solicitará privilegios cuando los necesite
 
-##### Check execution (/var/log/syslog):
+##### Check execution (/var/log/syslog)
 
 ```bash
 BLackip: Done 06/05/2019 15:47:14

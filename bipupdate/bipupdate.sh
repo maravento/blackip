@@ -53,11 +53,11 @@ function blips() {
        echo ERROR "$1"
    fi
 }
-        blips 'http://blocklist.greensnow.co/greensnow.txt' && sleep 1
-        blips 'http://cinsscore.com/list/ci-badguys.txt' && sleep 1
-        blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
-        blips 'http://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
-        blips 'http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
+        blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
+        blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
+        blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
+        blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
+        blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
         blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
         blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
         blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
