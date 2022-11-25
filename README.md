@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3162915|45,2 Mb|
+|blackip.txt|3130506|44,8 Mb|
 
 
 ## GIT CLONE
@@ -51,24 +51,41 @@ Edit your Iptables bash script and add the following lines (run with root privil
 
 ```bash
 #!/bin/bash
+# https://linux.die.net/man/8/ipset
 # variables
 ipset=/sbin/ipset
 iptables=/sbin/iptables
+
 # Replace with your path to blackip.txt
 ips=/path_to_lst/blackip.txt
 
-$ipset flush -! blackip
-$ipset create -! blackip hash:net maxelem 10000000
-rm -f /tmp/*.txt &> /dev/null
-$ipset save > /tmp/ipset_blackip.txt
-cat $ips | while read line; do
+# ipset rules
+$ipset -L blackip >/dev/null 2>&1
+if [ $? -ne 0 ]; then
+        echo "set blackip does not exist. create set..."
+        $ipset -! create blackip hash:net family inet hashsize 1024 maxelem 10000000
+    else
+        echo "set blackip exist. flush set..."
+        $ipset -! flush blackip
+fi
+$ipset -! save > /tmp/ipset_blackip.txt
+# read file and sort (v8.32 or later)
+cat $ips | sort -V -u | while read line; do
+    # optional: if there are commented lines
+    if [ "${line:0:1}" = "#" ]; then
+        continue
+    fi
+    # adding IPv4 addresses to the tmp list
     echo "add blackip $line" >> /tmp/ipset_blackip.txt
 done
-$ipset restore -! < /tmp/ipset_blackip.txt
+# adding the tmp list of IPv4 addresses to the blackip set of ipset
+$ipset -! restore < /tmp/ipset_blackip.txt
 
+# iptables rules
 $iptables -t mangle -I PREROUTING -m set --match-set blackip src,dst -j DROP
 $iptables -I INPUT -m set --match-set blackip src,dst -j DROP
 $iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
+echo "done"
 ```
 
 #### Optional: Ipset/Iptables IPDeny Rules
@@ -78,16 +95,17 @@ You can add the following lines to the bash above to include full country IP ran
 ```bash
 # Put these lines at the end of the "variables" section
 # Replace with your path to zones folder
-zone=/path_to_folder/zones
-if [ ! -d $zone ]; then mkdir -p $zone; fi
+zones=/path_to_folder/zones
+# download zones
+if [ ! -d $zones ]; then mkdir -p $zones; fi
 wget -q -N http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-tar -C $zone -zxvf all-zones.tar.gz >/dev/null 2>&1
+tar -C $zones -zxvf all-zones.tar.gz >/dev/null 2>&1
 rm -f all-zones.tar.gz >/dev/null 2>&1
 
 # replace the line:
-cat $ips | while read line; do
+cat $ips | sort -V -u | while read line; do
 # with (e.g: Russia and China):
-cat $zone/{cn,ru}.zone $ips | while read line; do
+cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 ```
 
 #### Important about Ipset/Iptables Rules
@@ -151,7 +169,11 @@ http_access deny bipextra
 # Blackip
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
+```
 
+- Or you can replace blackip with a zero trust rule (ZTR) / O puede reemplazar blackip con una regla de confianza cero (ZTR)
+
+```
 ## DENY ALL IP ##
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
