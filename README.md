@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3151922|45,1 Mb|
+|blackip.txt|3051644|43,6 Mb|
 
 
 ## GIT CLONE
@@ -111,8 +111,8 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 #### Important about Ipset/Iptables Rules
 
 - Ipset allows mass filtering, at a much higher processing speed than other solutions (check [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). / Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (consulte [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
-- Blackip is a list containing millions of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (for more information, check [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). / Blackip es una lista que contiene millones de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (para más información, consulte [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). 
-- Ipset/iptables limitation: "*When entries added by the SET target of iptables/ip6tables, then the hash size is fixed and the set won't be duplicated, even if the new entry cannot be added to the set*" (for more information, check [Man Ipset](https://ipset.netfilter.org/ipset.man.html)) / Limitación de Ipset/iptables: "*Cuando las entradas agregadas por el objetivo SET de iptables/ip6tables, el tamaño del hash es fijo y el conjunto no se duplicará, incluso si la nueva entrada no se puede agregar al conjunto*" (para más información, consulte [Man Ipset](https://ipset.netfilter.org/ipset.man.html)). 
+- Blackip is a list containing millions of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (for more information, check [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). / Blackip es una lista que contiene millones de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (para más información, consulte [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)).
+- Ipset/iptables limitation: "*When entries added by the SET target of iptables/ip6tables, then the hash size is fixed and the set won't be duplicated, even if the new entry cannot be added to the set*" (for more information, check [Man Ipset](https://ipset.netfilter.org/ipset.man.html)) / Limitación de Ipset/iptables: "*Cuando las entradas agregadas por el objetivo SET de iptables/ip6tables, el tamaño del hash es fijo y el conjunto no se duplicará, incluso si la nueva entrada no se puede agregar al conjunto*" (para más información, consulte [Man Ipset](https://ipset.netfilter.org/ipset.man.html)).
 - Heavy use of these rules can slow down your PC to the point of crashing. Use them at your own risk. / El uso intensivo de estas reglas puede ralentizar su PC al punto de hacerlo colapsa. Úselas bajo su propio riesgo.
 - tested on: / probado en: iptables v1.8.7, ipset v7.15, protocol version: 7
 
@@ -142,7 +142,7 @@ http_access deny blackip
 
 **blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
 
-- Use `bipextra.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `bipextra.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
+- Use `blackcidr.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `blackcidr.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
 - Use `allowip.txt` (a whitelist of IPv4 IP addresses such as Hotmail, Gmail, Yahoo. etc.) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
 - Use `aipextra.txt` to add whitelists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - By default `blackip.txt` does not exclude private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude these ranges / Por defecto blackip.txt no excluye rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluir estos rangos
@@ -164,8 +164,8 @@ http_access allow iana
 
 ## BLOCK IP/CIDR ##
 # Block IP/CIDR list (not included in blackip) (Optional)
-acl bipextra dst "/path_to/bipextra.txt"
-http_access deny bipextra
+acl blackcidr dst "/path_to/blackcidr.txt"
+http_access deny blackcidr
 # Blackip
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
@@ -292,7 +292,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipextra.txt)
 - [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
-- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/bipextra.txt)
+- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/blackcidr.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)

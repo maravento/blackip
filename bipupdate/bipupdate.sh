@@ -77,7 +77,7 @@ function blips() {
         blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-        
+
 function uceprotect() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
@@ -133,7 +133,7 @@ echo "OK"
 # acl blackip dst "/path_to_lst/blackip.txt"
 # http_access deny blackip
 # add black ips/cidr
-#sed '/^$/d; /#/d' blst/bextra.txt >> cleancapture
+#sed '/^$/d; /#/d' blst/blackcidr.txt >> cleancapture
 # add teamviewer ips
 #sed '/^$/d; /#/d' wlst/tw.txt >> cleancapture
 # add old ips
