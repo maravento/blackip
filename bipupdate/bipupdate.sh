@@ -133,16 +133,12 @@ echo "OK"
 # acl blackip dst "/path_to_lst/blackip.txt"
 # http_access deny blackip
 # add black ips/cidr
-#sed '/^$/d; /#/d' blst/blackcidr.txt >> cleancapture
-# add teamviewer ips
-#sed '/^$/d; /#/d' wlst/tw.txt >> cleancapture
-# add old ips
-sed '/^$/d; /#/d' blst/oldip.txt >> cleancapture
+#sed '/^$/d; /#/d' lst/blackcidr.txt >> cleancapture
 # add iana
-#sed '/^$/d; /#/d' wlst/iana.txt >> cleancapture
+#sed '/^$/d; /#/d' lst/iana.txt >> cleancapture
 # exclude allowip
-sed 's:\/.*::' wlst/iana.txt >> wlst/allowip.txt
-comm -3 <(sort wlst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
+sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
+comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
 # reorganize
 cat cleancapture2 | $reorganize | uniq > blackip.txt
 
@@ -153,7 +149,7 @@ sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
 grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat wlst/iana.txt) squidip | sort -u > cleanip
+grep -Fvxf <(cat lst/iana.txt) squidip | sort -u > cleanip
 cat cleanip | $reorganize | uniq > debugip
 python tools/debugbip.py
 sed '/\//d' outip | $reorganize | uniq > blackip.txt

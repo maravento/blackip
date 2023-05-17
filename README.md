@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3166036|45.3 Mb|
+|blackip.txt|3251308|46.5 Mb|
 
 
 ## GIT CLONE
@@ -265,8 +265,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 #### Inactive, Discontinued or Private
 
-*Recovered by [Wayback Machine](https://archive.org/web/), debugged and added to: `oldip.txt`*
-
 - [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
 - [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
 - [OpenBL](https://www.openbl.org/lists/base.txt)
@@ -283,8 +281,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
 
 #### Inactive, Discontinued or Private
-
-*Recovered by [EOP](https://raw.githubusercontent.com/dnswl/eop/master/O365IPAddresses.xml), debugged and added to: `aipextra.txt`*
 
 - [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [Read me](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
 
