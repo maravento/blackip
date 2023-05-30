@@ -300,6 +300,12 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Debug IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/debugbip.py)
 - [Teamviewer Capture](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.sh)
 
+## STARGAZERS
+
+---
+
+<p align="center"><a href="https://github.com/maravento/blackip/stargazers"><img alt="" src="https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?theme=dark&user=maravento&repo=blackip"/></a></p>
+
 ## CONTRIBUTIONS
 
 ---
