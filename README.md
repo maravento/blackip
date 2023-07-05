@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|3251308|46.5 Mb|
+|blackip.txt|838867|11.8 Mb|
 
 
 ## GIT CLONE
@@ -247,7 +247,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
-- [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
@@ -270,6 +269,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [OpenBL](https://www.openbl.org/lists/base.txt)
 - [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
+- [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 
 ### ALLOWLISTS
 

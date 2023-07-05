@@ -48,7 +48,7 @@ function blips() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
-       $wgetd "$1" -O - | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
+       $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
    else
        echo ERROR "$1"
    fi
@@ -74,15 +74,15 @@ function blips() {
         blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
         blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
         blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
-        blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
         blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
         blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
+        #blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
 
 function uceprotect() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
-       $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
+       $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
    else
        echo ERROR "$1"
    fi
@@ -95,7 +95,7 @@ function listed_ip_180_all() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
    if [ $? -eq 0 ]; then
-       $wgetd "$1" && unzip -p listed_ip_180_all.zip | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
+       $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
    else
        echo ERROR "$1"
    fi
@@ -106,7 +106,7 @@ function full_blacklist_database() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
-        $wgetd "$1" && unzip -p full_blacklist_database.zip | sed '/^$/d; / *#/d; /\//d' | grep -oP "$ipRegExp" | uniq >> capture
+        $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
     else
         echo ERROR "$1"
     fi
@@ -124,9 +124,8 @@ echo "OK"
 #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
 
 echo "${bip05[${en}]}"
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| $reorganize | uniq | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' > cleancapture
-echo "OK"
-
+# debug
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP $ipRegExp | $reorganize | uniq > cleancapture
 # DEBBUGGING BLACKIP
 # First you must edit /etc/squid/squid.conf
 # And add line:
@@ -138,16 +137,16 @@ echo "OK"
 #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture
 # exclude allowip
 sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
-comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
-# reorganize
-cat cleancapture2 | $reorganize | uniq > blackip.txt
+#comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
+grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize | uniq > blackip.txt
+echo "OK"
 
 # RELOAD SQUID-CACHE
 echo "${bip06[${en}]}"
 sudo cp -f blackip.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
-grep -oP "$ipRegExp" SquidError.txt | $reorganize | uniq > squidip
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | $reorganize | uniq > squidip
 ## Remove conflicts from blackip.txt
 grep -Fvxf <(cat lst/iana.txt) squidip | sort -u > cleanip
 cat cleanip | $reorganize | uniq > debugip
