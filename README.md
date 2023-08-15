@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|838867|11.8 Mb|
+|blackip.txt|834680|11.7 Mb|
 
 
 ## GIT CLONE
@@ -320,7 +320,7 @@ Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 
 BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
 
-## LICENCES
+## LICENSES
 
 ---
 
