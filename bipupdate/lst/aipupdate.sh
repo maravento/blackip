@@ -27,22 +27,21 @@ wgetd='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --trie
 # DOWNLOAD URLS
 echo "${cm2[${en}]}"
 function intacls() {
-        $wgetd "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u >> urls
+    $wgetd "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u >>urls
 }
-        intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt' && sleep 1
-        #intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/remote.txt' && sleep 1
-
+intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt' && sleep 1
+#intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/remote.txt' && sleep 1
 
 # DEBBUGGING Allow WhiteIP (CIDR)
 echo "${cm3[${en}]}"
 pp="100"
-cat urls | xargs -I {} -P "$pp" bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' > out
+cat urls | xargs -I {} -P "$pp" bash -c 'for sub in "" "www." "ftp."; do host -t a "${sub}{}" ; done ' | grep "has address" | awk '{ print $4 }' >out
 # add iana
 # cat iana.txt out > outfile.tmp && mv outfile.tmp out
 # add teamviewer ips
 #cat tw.txt >> out
 # reorganize
-cat out | $reorganize | uniq > "$wip"
+cat out | $reorganize | uniq >"$wip"
 
 # END
 echo "${bip07[${en}]}"

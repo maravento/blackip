@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Language spa-eng
 bip01=("This process can take a long time. Be patient..." "Este proceso puede tardar mucho tiempo. Sea paciente...")
 bip02=("Downloading IPDeny..." "Descargando IPDeny...")
@@ -47,71 +47,71 @@ echo "${bip04[${en}]}"
 function blips() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
-   if [ $? -eq 0 ]; then
-       $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-   else
-       echo ERROR "$1"
-   fi
+    if [ $? -eq 0 ]; then
+        $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+    else
+        echo ERROR "$1"
+    fi
 }
-        blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
-        blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
-        blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
-        blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
-        blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
-        blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
-        blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
-        blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
-        blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
-        blips 'https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/abuse-ch-ipblocklist.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/compromised-ips.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/cps_cobaltstrike_ip.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/log4j.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/tor-exit.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
-        blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
-        blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
-        blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
-        blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
-        blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
-        blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
-        blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-        #blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
+blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
+blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
+blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
+blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
+blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
+blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
+blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
+blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
+blips 'https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/abuse-ch-ipblocklist.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/compromised-ips.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/cps_cobaltstrike_ip.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/log4j.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/tor-exit.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
+blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
+blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
+blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
+blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
+blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
+blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
+#blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
 
 function uceprotect() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
-   if [ $? -eq 0 ]; then
-       $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-   else
-       echo ERROR "$1"
-   fi
+    if [ $? -eq 0 ]; then
+        $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+    else
+        echo ERROR "$1"
+    fi
 }
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz' && sleep 2
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz' && sleep 2
-       uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz' && sleep 2
+uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz' && sleep 2
+uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz' && sleep 2
+uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz' && sleep 2
 
 function listed_ip_180_all() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
-   if [ $? -eq 0 ]; then
-       $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-   else
-       echo ERROR "$1"
-   fi
+    if [ $? -eq 0 ]; then
+        $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+    else
+        echo ERROR "$1"
+    fi
 }
-        listed_ip_180_all 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
+listed_ip_180_all 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 
 function full_blacklist_database() {
     wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
-        $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
+        $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
     else
         echo ERROR "$1"
     fi
 }
-        full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
 
 echo "OK"
 
@@ -125,7 +125,7 @@ echo "OK"
 
 echo "${bip05[${en}]}"
 # debug
-sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//'| sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP $ipRegExp | $reorganize | uniq > cleancapture
+sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP $ipRegExp | $reorganize | uniq >cleancapture
 # DEBBUGGING BLACKIP
 # First you must edit /etc/squid/squid.conf
 # And add line:
@@ -136,25 +136,25 @@ sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture
 # add iana
 #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture
 # exclude allowip
-sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
+sed 's:\/.*::' lst/iana.txt >>lst/allowip.txt
 #comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
-grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize | uniq > blackip.txt
+grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize | uniq >blackip.txt
 echo "OK"
 
 # RELOAD SQUID-CACHE
 echo "${bip06[${en}]}"
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
-sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | $reorganize | uniq > squidip
+sudo bash -c 'squid -k reconfigure' 2>SquidError.txt
+sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >>SquidError.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | $reorganize | uniq >squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat lst/iana.txt) squidip | sort -u > cleanip
-cat cleanip | $reorganize | uniq > debugip
+grep -Fvxf <(cat lst/iana.txt) squidip | sort -u >cleanip
+cat cleanip | $reorganize | uniq >debugip
 python tools/debugbip.py
-sed '/\//d' outip | $reorganize | uniq > blackip.txt
+sed '/\//d' outip | $reorganize | uniq >blackip.txt
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> "$xdesktop"/SquidError.txt
+sudo bash -c 'squid -k reconfigure' 2>"$xdesktop"/SquidError.txt
 
 # DELETE REPOSITORY (Optional)
 cd ..
