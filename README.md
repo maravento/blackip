@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|812350|11.4 Mb|
+|blackip.txt|1098949|15.5 Mb|
 
 
 ## GIT CLONE
@@ -206,7 +206,11 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then
 fi
 ```
 
-##### Important about BLackip Update
+#### Bandwidth Check (optional)
+
+>To guarantee update execution, before starting, script check bandwidth (with [Speedtest](https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py)). If it is > 1 Mbit/s, update continues; else, it shows warning messages and it is recommended to interrupt update / Para garantizar la ejecución de la actualización, antes de comenzar, el script verifica el acho de banda (con [Speedtest](https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py)). Si es > 1 Mbit/s, la actualización continúa; de lo contrario, muestra mensajes de advertencia y se recomienda interrumpir la actualización
+
+##### Important about Blackip Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
@@ -241,6 +245,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 - [Blocklist](https://www.blocklist.de/downloads/export-ips_all.txt)
 - [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
+- [ELLIO: Threat List/Feed](https://cdn.ellio.tech/community-feed)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 - [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 - [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)

@@ -21,6 +21,33 @@ route=/etc/acl
 # CREATE PATH
 if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
 
+# CHECKING DOWNLOAD BANDWIDTH (Optional)
+# https://raw.githubusercontent.com/maravento/vault/master/scripts/bash/bandwidth.sh
+echo "${bw03[${en}]}"
+dlmin="1.00"
+mb="Mbit/s"
+dl=$(curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python - --simple --no-upload | grep 'Download:')
+resume=$(curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python - --simple)
+dlvalue=$(echo "$dl" | awk '{print $2}')
+dlmb=$(echo "$dl" | awk '{print $3}')
+
+function bandwidth() {
+    if (($(echo "$dlvalue $dlmin" | awk '{print ($1 < $2)}'))); then
+        echo "WARNING! Bandwidth Download Slow: $dlvalue $dlmb < $dlmin $mb (min value)"
+        notify-send "WARNING! Bandwidth Download Slow:" "$dlvalue $dlmb < $dlmin $mb (min value)" -i checkbox
+    else
+        echo "OK"
+    fi
+}
+
+if [[ "$mb" == "$dlmb" ]]; then
+    bandwidth
+else
+    echo "Incorrect Value. Abort: $resume"
+    notify-send "Incorrect Value. Abort:" "$resume" -i checkbox
+    exit
+fi
+
 clear
 echo "Blackip Project"
 echo "${bip01[${en}]}"
@@ -38,14 +65,21 @@ if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
 # DOWNLOAD BLACKIP
 echo "${bip03[${en}]}"
 svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
-cd "$bipupdate"
-echo "OK"
+if [ -d "$bipupdate" ]; then
+    cd "$bipupdate" || {
+        echo "Access Error: $bipupdate"
+        exit 1
+    }
+else
+    echo "Does not exist: $bipupdate"
+    exit 1
+fi
 
 # DOWNLOADING BLOCKLIST IPS
 echo "${bip04[${en}]}"
 
 function blips() {
-    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+    curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
         $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
@@ -54,11 +88,10 @@ function blips() {
     fi
 }
 blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
+blips 'https://cdn.ellio.tech/community-feed' && sleep 1
+blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
 blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
 blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
-blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
-blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
-blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
 blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
 blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
 blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
@@ -72,14 +105,15 @@ blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol
 blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
 blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
 blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
+blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
+blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
 blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
 blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
 blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
 blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
-#blips 'https://www.malwaredomainlist.com/hostslist/ip.txt' && sleep 1
 
 function uceprotect() {
-    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+    curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
         $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
@@ -92,7 +126,7 @@ uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.ne
 uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz' && sleep 2
 
 function listed_ip_180_all() {
-    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+    curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
         $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
@@ -103,7 +137,7 @@ function listed_ip_180_all() {
 listed_ip_180_all 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 
 function full_blacklist_database() {
-    wget --no-check-certificate --timeout=10 --tries=1 --method=HEAD "$1" &>/dev/null
+    curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
 
     if [ $? -eq 0 ]; then
         $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
