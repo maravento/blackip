@@ -21,34 +21,8 @@ route=/etc/acl
 # CREATE PATH
 if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
 
-# CHECKING DOWNLOAD BANDWIDTH (Optional)
-# https://raw.githubusercontent.com/maravento/vault/master/scripts/bash/bandwidth.sh
-echo "${bw03[${en}]}"
-dlmin="1.00"
-mb="Mbit/s"
-dl=$(curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python - --simple --no-upload | grep 'Download:')
-resume=$(curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python - --simple)
-dlvalue=$(echo "$dl" | awk '{print $2}')
-dlmb=$(echo "$dl" | awk '{print $3}')
-
-function bandwidth() {
-    if (($(echo "$dlvalue $dlmin" | awk '{print ($1 < $2)}'))); then
-        echo "WARNING! Bandwidth Download Slow: $dlvalue $dlmb < $dlmin $mb (min value)"
-        notify-send "WARNING! Bandwidth Download Slow:" "$dlvalue $dlmb < $dlmin $mb (min value)" -i checkbox
-    else
-        echo "OK"
-    fi
-}
-
-if [[ "$mb" == "$dlmb" ]]; then
-    bandwidth
-else
-    echo "Incorrect Value. Abort: $resume"
-    notify-send "Incorrect Value. Abort:" "$resume" -i checkbox
-    exit
-fi
-
 clear
+echo
 echo "Blackip Project"
 echo "${bip01[${en}]}"
 
@@ -195,6 +169,5 @@ cd ..
 if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
 
 # END
-echo "${bip07[${en}]}"
 sudo bash -c 'echo "BlackIP Done: $(date)" | tee -a /var/log/syslog'
-notify-send "BlackIP Update Done" "$(date)" -i checkbox
+echo "${bip07[${en}]}"

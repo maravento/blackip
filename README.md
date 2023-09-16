@@ -200,15 +200,11 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >Update requires python 3x and bash 5x / La actualización requiere python 3x y bash 5x
 
 ```bash
-pkgs='wget git subversion curl libnotify-bin idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
+pkgs='wget git subversion curl idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
   apt -y install $pkgs
 fi
 ```
-
-#### Bandwidth Check (optional)
-
->To guarantee update execution, before starting, script check bandwidth (with [Speedtest](https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py)). If it is > 1 Mbit/s, update continues; else, it shows warning messages and it is recommended to interrupt update / Para garantizar la ejecución de la actualización, antes de comenzar, el script verifica el acho de banda (con [Speedtest](https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py)). Si es > 1 Mbit/s, la actualización continúa; de lo contrario, muestra mensajes de advertencia y se recomienda interrumpir la actualización
 
 ##### Important about Blackip Update
 
@@ -309,7 +305,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-<p align="center"><a href="https://github.com/maravento/blackip/stargazers"><img alt="" src="https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?theme=dark&user=maravento&repo=blackip"/></a></p>
+[![Stargazers repo roster for @maravento/blackip](https://reporoster.com/stars/maravento/blackip)](https://github.com/maravento/blackip/stargazers)
 
 ## CONTRIBUTIONS
 
