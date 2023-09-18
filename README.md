@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|1098949|15.5 Mb|
+|blackip.txt|995678|14.2 Mb|
 
 
 ## GIT CLONE
@@ -272,30 +272,19 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
 - [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 
-### ALLOWLISTS
-
-#### Active
-
-*Debugged and added to: `aipextra.txt`*
-
-- [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
-- [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
-
-#### Inactive, Discontinued or Private
-
-- [O365IPAddresses](https://support.content.office.net/en-us/static/O365IPAddresses.xml) (No longer support. [Read me](ocs.microsoft.com/es-es/office365/enterprise/urls-and-ip-address-ranges?redirectSourcePath=%252fen-us%252farticle%252fOffice-365-URLs-and-IP-address-ranges-8548a211-3fe7-47cb-abb1-355ea5aa88a2))
-
-### Debug
+### DEBUG LISTS
 
 - [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipextra.txt)
 - [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
+- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
+- [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
 - [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/blackcidr.txt)
 - [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
+- [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
 - [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
 - [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
-- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 
-### Worktools
+### WORKTOOLS
 
 - [cidr2ip](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/cidr2ip.py)
 - [Debug IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/debugbip.py)

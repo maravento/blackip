@@ -156,10 +156,11 @@ sudo bash -c 'squid -k reconfigure' 2>SquidError.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >>SquidError.txt
 grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | $reorganize | uniq >squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat lst/iana.txt) squidip | sort -u >cleanip
+grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip | sort -u >cleanip
 cat cleanip | $reorganize | uniq >debugip
 python tools/debugbip.py
-sed '/\//d' outip | $reorganize | uniq >blackip.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | $reorganize | uniq >blackip.txt
+
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2>"$xdesktop"/SquidError.txt
