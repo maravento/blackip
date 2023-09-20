@@ -145,28 +145,31 @@ http_access deny blackip
 - Use `blackcidr.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `blackcidr.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
 - Use `allowip.txt` (a whitelist of IPv4 IP addresses such as Hotmail, Gmail, Yahoo. etc.) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
 - Use `aipextra.txt` to add whitelists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
-- By default `blackip.txt` does not exclude private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude these ranges / Por defecto blackip.txt no excluye rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluir estos rangos
+- By default, `blackip.txt` excludes some private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude them all / Por defecto, `blackip.txt` excluye algunos rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluirlos todos
+- By default, `blackip.txt` excludes some DNS servers included in `dns.txt`. You can use this list and expand it to deny or allow DNS servers / Por defecto, `blackip.txt` excluye algunos servidores DNS incluidos en `dns.txt`. Puede usar esta lista y ampliarla, para denegar o permitir servidores DNS
 - To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
 
 ```bash
 ### INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS ###
 
-## ALLOW IP/CIDR ##
-# Allow IP list (Optional)
+## OPTIONAL LST ##
+# Allow IP list
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
-# Allow IP/CIDR list (not included in allowip) (Optional)
+# Allow IP/CIDR list (not included in allowip.txt)
 acl aipextra dst "/path_to/aipextra.txt"
 http_access allow aipextra
-# IANA list (not included in allowip) (Optional)
+# IANA list (not included in allowip.txt)
 acl iana dst "/path_to/iana.txt"
 http_access allow iana
-
-## BLOCK IP/CIDR ##
-# Block IP/CIDR list (not included in blackip) (Optional)
+# DNS list (excluded from blackip.txt)
+acl dnslst dst "/path_to/dns.txt"
+http_access allow dnslst # or deny dnlst
+# Block IP/CIDR list (not included in blackip.txt)
 acl blackcidr dst "/path_to/blackcidr.txt"
 http_access deny blackcidr
-# Blackip
+
+## BLACKIP LST ##
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 ```
@@ -274,21 +277,19 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ### DEBUG LISTS
 
-- [Allow IP/CIDR extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipextra.txt)
-- [Allow IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/allowip.txt)
+- [Allow IP/CIDR extra](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
+- [Allow IPs](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
 - [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
-- [Block IP/CIDR Extra](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/blackcidr.txt)
-- [IANA](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/iana.txt)
+- [Block IP/CIDR Extra](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
+- [DNS](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
+- [IANA](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
-- [Old IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/blst/oldips.txt)
-- [Teamviewer IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.txt)
 
 ### WORKTOOLS
 
-- [cidr2ip](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/cidr2ip.py)
-- [Debug IPs](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/debugbip.py)
-- [Teamviewer Capture](https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/tw.sh)
+- [cidr2ip](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
+- [Debug IPs](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
 
 ## STARGAZERS
 
