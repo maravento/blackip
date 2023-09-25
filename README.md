@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|995678|14.2 Mb|
+|blackip.txt|1111084|15.7 Mb|
 
 
 ## GIT CLONE
@@ -240,10 +240,16 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
+- [alienvault reputation](https://reputation.alienvault.com/reputation.generic)
+- [Artillery Threat Intelligence Feed and Banlist Feed](https://www.binarydefense.com/banlist.txt)
 - [BBcan177 minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
 - [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+- [Blocklist.de IPs](https://lists.blocklist.de/lists/all.txt)
 - [Blocklist](https://www.blocklist.de/downloads/export-ips_all.txt)
+- [bruteforceblocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
+- [darklist](https://www.darklist.de/raw.php)
+- [dshield](https://feeds.dshield.org/block.txt)
 - [ELLIO: Threat List/Feed](https://cdn.ellio.tech/community-feed)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 - [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
@@ -252,8 +258,10 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
+- [Nick Galbreath datacenters](https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv)
 - [Open BL](http://www.openbl.org/lists/base.txt)
 - [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
+- [pfBlockerNG Malicious Threats](https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw)
 - [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 - [Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
@@ -262,7 +270,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
 - [TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
 - [TOR Node List](https://www.dan.me.uk/torlist/?exit)
-- [UCEPROTECT IP Blocklists / BACKSCATTERER.ORG Blocklist](http://wget-mirrors.uceprotect.net/) (includes: [Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz), [Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz), [Level3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz))
+- [Uceprotect backscatterer Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz)
+- [Uceprotect backscatterer Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz)
+- [Uceprotect backscatterer Level 3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz)
 - [Ultimate Hosts IPs Blocklist](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 

@@ -61,15 +61,20 @@ function blips() {
         echo ERROR "$1"
     fi
 }
+blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
 blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
 blips 'https://cdn.ellio.tech/community-feed' && sleep 1
 blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
 blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
 blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
+blips 'https://feeds.dshield.org/block.txt' && sleep 1
 blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+blips 'https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw' && sleep 1
+blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
 blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
 blips 'https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0' && sleep 1
 blips 'https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt' && sleep 1
+blips 'https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv' && sleep 1
 blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/abuse-ch-ipblocklist.txt' && sleep 1
 blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/compromised-ips.txt' && sleep 1
 blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/cps_cobaltstrike_ip.txt' && sleep 1
@@ -79,10 +84,13 @@ blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol
 blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
 blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
 blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
+blips 'https://reputation.alienvault.com/reputation.generic' && sleep 1
 blips 'https://rules.emergingthreats.net/blockrules/compromised-ips.txt' && sleep 1
 blips 'https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt' && sleep 1
+blips 'https://www.binarydefense.com/banlist.txt' && sleep 1
 blips 'https://www.blocklist.de/downloads/export-ips_all.txt' && sleep 1
 blips 'https://www.dan.me.uk/torlist/?exit' && sleep 1
+blips 'https://www.darklist.de/raw.php' && sleep 1
 blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
 blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
 
