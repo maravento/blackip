@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|1111084|15.7 Mb|
+|blackip.txt|1276457|18,1 Mb|
 
 
 ## GIT CLONE
@@ -192,7 +192,7 @@ This section is only to explain how update and optimization process works. It is
 
 #### Blackip Update
 
->The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh` / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`
+>The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`. The script will request privileges when required. / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`. El script solicitará privilegios cuando lo requiera.
 
 ```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
@@ -257,6 +257,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
 - [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny](http://www.ipdeny.com/ipblocks/)
+- [ipsum](https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt)
 - [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Nick Galbreath datacenters](https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv)
 - [Open BL](http://www.openbl.org/lists/base.txt)
