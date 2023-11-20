@@ -15,7 +15,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|1276457|18,1 Mb|
+|blackip.txt|1234413|17,5 Mb|
 
 
 ## GIT CLONE
@@ -266,25 +266,26 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 - [Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
 - [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+- [SecOps-Institute - TOR Exit Node List](https://raw.githubusercontent.com/SecOps-Institute/Tor-IP-Addresses/master/tor-exit-nodes.lst)
 - [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
 - [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
 - [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
 - [TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
-- [TOR Node List](https://www.dan.me.uk/torlist/?exit)
 - [Uceprotect backscatterer Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz)
 - [Uceprotect backscatterer Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz)
 - [Uceprotect backscatterer Level 3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz)
 - [Ultimate Hosts IPs Blocklist](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
 - [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 
-#### Inactive, Discontinued or Private
+#### Inactive, Offline, Discontinued or Private
 
 - [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
+- [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
 - [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
 - [OpenBL](https://www.openbl.org/lists/base.txt)
 - [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
 - [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
-- [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
+- [TOR Node List](https://www.dan.me.uk/torlist/?exit)
 
 ### DEBUG LISTS
 
@@ -306,7 +307,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ---
 
-[![Stargazers repo roster for @maravento/blackip](https://reporoster.com/stars/maravento/blackip)](https://github.com/maravento/blackip/stargazers)
+[![Stargazers](https://bytecrank.com/nastyox/reporoster/php/stargazersSVG.php?user=maravento&repo=blackip)](https://github.com/maravento/blackip/stargazers)
 
 ## CONTRIBUTIONS
 
@@ -316,7 +317,7 @@ We thank all those who contributed to this project. Those interested may contrib
 
 Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 
-## DONATE
+## SPONSOR THIS PROJECT
 
 ---
 

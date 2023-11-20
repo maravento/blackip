@@ -172,7 +172,7 @@ sed -E '/:/d; s/\/[0-9]+//g' outip | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | 
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2>"$xdesktop"/SquidError.txt
+sudo bash -c 'squid -k reconfigure' 2>"$xdesktop"/SquidErrors.txt
 
 # DELETE REPOSITORY (Optional)
 cd ..
