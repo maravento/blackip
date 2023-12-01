@@ -8,15 +8,13 @@
 
 **BlackIP** es un proyecto que recopila y unifica listas públicas de bloqueo de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
-
 ## DATA SHEET
 
 ---
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|1234413|17,5 Mb|
-
+|blackip.txt|1240243|17,5 Mb|
 
 ## GIT CLONE
 
@@ -176,7 +174,7 @@ http_access deny blackip
 
 - Or you can replace blackip with a zero trust rule (ZTR) / O puede reemplazar blackip con una regla de confianza cero (ZTR)
 
-```
+```bash
 ## DENY ALL IP ##
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
@@ -238,54 +236,53 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 #### Active
 
-- [Abuse.ch Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
-- [adservers yoyo](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
-- [alienvault reputation](https://reputation.alienvault.com/reputation.generic)
-- [Artillery Threat Intelligence Feed and Banlist Feed](https://www.binarydefense.com/banlist.txt)
-- [BBcan177 minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
-- [BL Myip](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
-- [Blocklist.de IPs](https://lists.blocklist.de/lists/all.txt)
-- [Blocklist](https://www.blocklist.de/downloads/export-ips_all.txt)
-- [bruteforceblocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
-- [Cinsscore](http://cinsscore.com/list/ci-badguys.txt)
-- [darklist](https://www.darklist.de/raw.php)
-- [dshield](https://feeds.dshield.org/block.txt)
-- [ELLIO: Threat List/Feed](https://cdn.ellio.tech/community-feed)
+- [abuse.ch - Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
+- [abuse.ch - Zeustracker blocklist](https://zeustracker.abuse.ch/blocklist.php?download=badips)
+- [alienvault - reputation](https://reputation.alienvault.com/reputation.generic)
+- [BBcan177 - minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
+- [BBcan177 - pfBlockerNG Malicious Threats](https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw)
+- [binarydefense - Artillery Threat Intelligence Feed and Banlist Feed](https://www.binarydefense.com/banlist.txt)
+- [blocklist.de - export-ips_all](https://www.blocklist.de/downloads/export-ips_all.txt)
+- [blocklist.de - IPs all](https://lists.blocklist.de/lists/all.txt)
+- [Cinsscore - badguys](http://cinsscore.com/list/ci-badguys.txt)
+- [CriticalPathSecurity - Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
+- [dan.me.uk - TOR Node List](https://www.dan.me.uk/torlist/?exit)
+- [darklist - raw](https://www.darklist.de/raw.php)
+- [dshield.org - block](https://feeds.dshield.org/block.txt)
+- [ellio.tech - Threat List](https://cdn.ellio.tech/community-feed)
+- [Emerging Threats - compromised ips](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
-- [Emerging Threats compromised](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
-- [Firehold Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
-- [Firehold](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
-- [Greensnow](http://blocklist.greensnow.co/greensnow.txt)
-- [IPDeny](http://www.ipdeny.com/ipblocks/)
-- [ipsum](https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt)
-- [MyIP BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
-- [Nick Galbreath datacenters](https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv)
-- [Open BL](http://www.openbl.org/lists/base.txt)
-- [opsxcq proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
-- [pfBlockerNG Malicious Threats](https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw)
-- [Project Honeypot](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
-- [Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
-- [Rulez BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+- [Firehold - Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
+- [Firehold - level1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
+- [Greensnow - blocklist](http://blocklist.greensnow.co/greensnow.txt)
+- [IPDeny - ipblocks](http://www.ipdeny.com/ipblocks/)
+- [Myip - full BL](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
+- [MyIP - latest BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
+- [Nick Galbreath client9 - datacenters](https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv)
+- [OpenBL - base](http://www.openbl.org/lists/base.txt)
+- [opsxcq - proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
+- [Project Honeypot - list_of_ips](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
+- [Rulez - BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+- [rulez.sk - bruteforceblocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [SecOps-Institute - TOR Exit Node List](https://raw.githubusercontent.com/SecOps-Institute/Tor-IP-Addresses/master/tor-exit-nodes.lst)
-- [Spamhaus](https://www.spamhaus.org/drop/drop.lasso)
-- [StopForumSpam 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
-- [StopForumSpam Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
-- [TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
-- [Uceprotect backscatterer Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz)
-- [Uceprotect backscatterer Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz)
-- [Uceprotect backscatterer Level 3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz)
-- [Ultimate Hosts IPs Blocklist](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
-- [Zeustracker](https://zeustracker.abuse.ch/blocklist.php?download=badips)
+- [Spamhaus - drop-lasso](https://www.spamhaus.org/drop/drop.lasso)
+- [stamparm - ipsum](https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt)
+- [StopForumSpam - 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
+- [StopForumSpam - Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
+- [torproject - TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
+- [Uceprotect - backscatterer Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz)
+- [Uceprotect - backscatterer Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz)
+- [Uceprotect - backscatterer Level 3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz)
+- [Ultimate Hosts IPs Blocklist - ips](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
+- [yoyo - adservers](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
 
 #### Inactive, Offline, Discontinued or Private
 
-- [Malc0de IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
-- [Malwaredomain IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
-- [Maxmind](https://www.maxmind.com/en/high-risk-ip-sample-list)
-- [OpenBL](https://www.openbl.org/lists/base.txt)
-- [Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
-- [The LashBack UBL](http://www.unsubscore.com/blacklist.txt)
-- [TOR Node List](https://www.dan.me.uk/torlist/?exit)
+- [abuse.ch - Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
+- [Malc0de - IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
+- [Malwaredomain - IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
+- [Maxmind - high-risk-ip-sample-list](https://www.maxmind.com/en/high-risk-ip-sample-list)
+- [unsubscore - blacklist](http://www.unsubscore.com/blacklist.txt)
 
 ### DEBUG LISTS
 
