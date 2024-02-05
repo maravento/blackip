@@ -14,7 +14,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|1070556|15,1 Mb|
+|blackip.txt|493829|7,0 Mb|
 
 ## GIT CLONE
 
@@ -207,18 +207,37 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then
 fi
 ```
 
+#### Capture Public Blocklists
+
+>Capture IPv4 from downloaded public blocklists (see [SOURCES](https://github.com/maravento/blackip#sources)) and unifies them in a single file / Captura las IPv4 de las listas de bloqueo públicas descargadas (ver [FUENTES](https://github.com/maravento/blackip#sources)) y las unifica en un solo archivo
+
+#### DNS Loockup
+
+>Most of the [SOURCES](https://github.com/maravento/blackip#sources) contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth / La mayoría de las [FUENTES](https://github.com/maravento/blackip#sources) contienen millones de IP inválidas e inexistentes. Entonces se hace una verificación doble de cada IP (en 2 pasos) vía DNS y los inválidos e inexistentes se excluyen de Blackip. Este proceso puede tardar. Por defecto procesa en paralelo ≈ 6k a 12k x min, en dependencia del hardware y ancho de banda
+
+```bash
+HIT 8.8.8.8
+Host 8.8.8.8.in-addr.arpa domain name pointer dns.google
+FAULT 0.0.9.1
+Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
+```
+
+#### Run Squid-Cache with Blackip
+
+>Run Squid-Cache with Blackip and any error sends it to `SquidError.txt` on your desktop / Corre Squid-Cache con Blackip y cualquier error lo envía a `SquidError.txt` en su escritorio
+
+#### Check execution (/var/log/syslog)
+
+```bash
+Blackip: Done 02/02/2024 15:47:14
+```
+
 ##### Important about Blackip Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
 - Some lists have download restrictions, so do not run `bipupdate.sh` more than once a day / Algunas listas tienen restricciones de descarga, entonces no ejecute `bipupdate.sh` más de una vez al día
 - During the execution of `bipupdate.sh` it will request privileges when needed / Durante la ejecución de `bipupdate.sh` solicitará privilegios cuando los necesite
-
-##### Check execution (/var/log/syslog)
-
-```bash
-BLackip: Done 06/05/2019 15:47:14
-```
 
 #### AllowIP Update
 
