@@ -14,7 +14,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|510617|7,2 Mb|
+|blackip.txt|533634|7,5 Mb|
 
 ## GIT CLONE
 
@@ -337,7 +337,7 @@ Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 
 ---
 
-BTC: 3M84UKpz8AwwPADiYGQjT9spPKCvbqm4Bc
+[![Image](https://raw.githubusercontent.com/maravento/winexternal/master/img/maravento-paypal.png)](https://paypal.me/maravento)
 
 ## LICENSES
 

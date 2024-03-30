@@ -1,6 +1,6 @@
 #!/bin/bash
 # Language spa-eng
-bip01=("This process can take a long time. Be patient..." "Este proceso puede tardar mucho tiempo. Sea paciente...")
+bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
 bip02=("Downloading IPDeny..." "Descargando IPDeny...")
 bip03=("Downloading BlackIP..." "Descargando BlackIP...")
 bip04=("Downloading Blocklists..." "Descargando Listas de Bloqueo...")
