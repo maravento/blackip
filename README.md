@@ -14,7 +14,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|533634|7,5 Mb|
+|blackip.txt|514235|7,2 Mb|
 
 ## GIT CLONE
 
@@ -201,7 +201,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >Update requires python 3x and bash 5x / La actualización requiere python 3x y bash 5x
 
 ```bash
-pkgs='wget git subversion curl idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
+pkgs='wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
   apt -y install $pkgs
 fi

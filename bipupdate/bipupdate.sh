@@ -28,23 +28,24 @@ echo
 echo "Blackip Project"
 echo "${bip01[${en}]}"
 
-# DOWNLOADING GEOZONES
-echo "${bip02[${en}]}"
-geopath="/etc/zones"
-if [ ! -d "$geopath" ]; then sudo mkdir -p "$geopath"; fi
-$wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
-echo "OK"
-
 # CHECK DNSLOOKUP1
 if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     # DELETE OLD REPOSITORY
     if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
 
+    # DOWNLOADING GEOZONES
+    echo "${bip02[${en}]}"
+    geopath="/etc/zones"
+    if [ ! -d "$geopath" ]; then sudo mkdir -p "$geopath"; fi
+    $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
+    echo "OK"
+
     # DOWNLOAD BLACKIP
     echo "${bip03[${en}]}"
-    svn export "https://github.com/maravento/blackip/trunk/bipupdate" >/dev/null 2>&1
-    echo "OK"
+    wget https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolderdl.py
+    chmod +x gitfolderdl.py
+    python gitfolderdl.py https://github.com/maravento/blackip/bipupdate
     if [ -d "$bipupdate" ]; then
         cd "$bipupdate" || {
             echo "Access Error: $bipupdate"
