@@ -14,7 +14,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|514235|7,2 Mb|
+|blackip.txt|427362|6,1 Mb|
 
 ## GIT CLONE
 
@@ -42,6 +42,11 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.ta
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
 md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
 ```
+
+#### Important about BlackIP
+
+- Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
+- `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
 
 ### [Ipset/Iptables](http://ipset.netfilter.org/) Rules
 
@@ -86,7 +91,7 @@ $iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
 echo "done"
 ```
 
-#### Optional: Ipset/Iptables IPDeny Rules
+#### Ipset/Iptables Rules with IPDeny (Optional)
 
 You can add the following lines to the bash above to include full country IP ranges with [IPDeny](https://www.ipdeny.com/ipblocks/) adding the countries of your choice. / Puede agregar las siguientes líneas al bash anterior para incluir rangos de IPs completos de países con [IPDeny](https://www.ipdeny.com/ipblocks/) agregando los países de su elección.
 
@@ -106,7 +111,7 @@ cat $ips | sort -V -u | while read line; do
 cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 ```
 
-#### Important about Ipset/Iptables Rules
+#### About Ipset/Iptables Rules
 
 - Ipset allows mass filtering, at a much higher processing speed than other solutions (check [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)). / Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (consulte [benchmark](https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/)).
 - Blackip is a list containing millions of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (for more information, check [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)). / Blackip es una lista que contiene millones de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro [maxelem](https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is) (para más información, consulte [ipset's hashsize and maxelem parameters](https://www.odi.ch/weblog/posting.php?posting=738)).
@@ -126,17 +131,16 @@ And add the following lines: / Y agregue las siguientes líneas:
 
 ```bash
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
+
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 ```
 
-#### Important about BlackIP
+#### About Squid Rule
 
-- Should not be used `blackip.txt` in [IPSET](http://ipset.netfilter.org/) and in [Squid](http://www.squid-cache.org/) at the same time (double filtrate) / No debe utilizar `blackip.txt` en [IPSET](http://ipset.netfilter.org/) y en [Squid](http://www.squid-cache.org/) al mismo tiempo (doble filtrado)
-- `blackip.txt` is a list IPv4. Does not include CIDR / `blackip.txt` es una lista IPv4. No incluye CIDR
 - `blackip.txt` has been tested in Squid v3.5.x and later / `blackip.txt` ha sido testeada en Squid v3.5.x y posteriores
 
-#### Optional: [Squid-Cache](http://www.squid-cache.org/) Advanced Rules
+#### Advanced Rules
 
 **blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
 
@@ -145,42 +149,41 @@ http_access deny blackip
 - Use `aipextra.txt` to add whitelists of IP/CIDRs that are not included in `allowip.txt` / Use `aipextra.txt` para agregar listas blancas de IP/CIDR que no están incluidas en `allowip.txt`
 - By default, `blackip.txt` excludes some private or reserved ranges [RFC1918](https://en.wikipedia.org/wiki/Private_network). Use IANA (`iana.txt`) to exclude them all / Por defecto, `blackip.txt` excluye algunos rangos privados o reservados [RFC1918](https://es.wikipedia.org/wiki/Red_privada). Use IANA (`iana.txt`) para excluirlos todos
 - By default, `blackip.txt` excludes some DNS servers included in `dns.txt`. You can use this list and expand it to deny or allow DNS servers / Por defecto, `blackip.txt` excluye algunos servidores DNS incluidos en `dns.txt`. Puede usar esta lista y ampliarla, para denegar o permitir servidores DNS
-- To increase security, close Squid to any other request to IP addresses / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP
+- To increase security, close Squid to any other request to IP addresses with ZTR / Para incrementar la seguridad, cierre Squid a cualquier otra petición a direcciones IP con ZTR
 
 ```bash
 ### INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS ###
 
-## OPTIONAL LST ##
-# Allow IP list
+# Allow Rule for IP
 acl allowip dst "/path_to/allowip.txt"
 http_access allow allowip
-# Allow IP/CIDR list (not included in allowip.txt)
+
+# Allow Rule for IP/CIDR ACL (not included in allowip.txt)
 acl aipextra dst "/path_to/aipextra.txt"
 http_access allow aipextra
-# IANA list (not included in allowip.txt)
+
+# Allow Rule for IANA ACL (not included in allowip.txt)
 acl iana dst "/path_to/iana.txt"
 http_access allow iana
-# DNS list (excluded from blackip.txt)
+
+# Allow Rule for DNS ACL (excluded from blackip.txt)
 acl dnslst dst "/path_to/dns.txt"
 http_access allow dnslst # or deny dnlst
-# Block IP/CIDR list (not included in blackip.txt)
+
+# Block Rule for IP/CIDR ACL (not included in blackip.txt)
 acl blackcidr dst "/path_to/blackcidr.txt"
 http_access deny blackcidr
 
-## BLACKIP LST ##
+## Block Rule for Blackip
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
-```
 
-- Or you can replace blackip with a zero trust rule (ZTR) / O puede reemplazar blackip con una regla de confianza cero (ZTR)
-
-```bash
-## DENY ALL IP ##
+## Zero Trust Rule (ZTR)
 acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
 http_access deny no_ip
 ```
 
-## UPDATE
+## BLACKIP UPDATE
 
 ---
 
@@ -188,7 +191,8 @@ http_access deny no_ip
 
 This section is only to explain how update and optimization process works. It is not necessary for user to run it. This process can take time and consume a lot of hardware and bandwidth resources, therefore it is recommended to use test equipment / Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas
 
-#### Blackip Update
+| Bash Update |
+| ----------- |
 
 >The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`. The script will request privileges when required. / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`. El script solicitará privilegios cuando lo requiera.
 
@@ -196,7 +200,8 @@ This section is only to explain how update and optimization process works. It is
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
-##### Dependencies
+| Dependencies |
+| ------------ |
 
 >Update requires python 3x and bash 5x / La actualización requiere python 3x y bash 5x
 
@@ -207,11 +212,13 @@ if ! dpkg -s $pkgs >/dev/null 2>&1; then
 fi
 ```
 
-#### Capture Public Blocklists
+| Capture Public Blocklists |
+| ------------------------- |
 
 >Capture IPv4 from downloaded public blocklists (see [SOURCES](https://github.com/maravento/blackip#sources)) and unifies them in a single file / Captura las IPv4 de las listas de bloqueo públicas descargadas (ver [FUENTES](https://github.com/maravento/blackip#sources)) y las unifica en un solo archivo
 
-#### DNS Loockup
+| DNS Loockup |
+| ------------|
 
 >Most of the [SOURCES](https://github.com/maravento/blackip#sources) contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth / La mayoría de las [FUENTES](https://github.com/maravento/blackip#sources) contienen millones de IP inválidas e inexistentes. Entonces se hace una verificación doble de cada IP (en 2 pasos) vía DNS y los inválidos e inexistentes se excluyen de Blackip. Este proceso puede tardar. Por defecto procesa en paralelo ≈ 6k a 12k x min, en dependencia del hardware y ancho de banda
 
@@ -222,17 +229,19 @@ FAULT 0.0.9.1
 Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 ```
 
-#### Run Squid-Cache with Blackip
+| Run Squid-Cache with Blackip |
+| ----------------------------- |
 
 >Run Squid-Cache with Blackip and any error sends it to `SquidError.txt` on your desktop / Corre Squid-Cache con Blackip y cualquier error lo envía a `SquidError.txt` en su escritorio
 
-#### Check execution (/var/log/syslog)
+| Check execution (/var/log/syslog) |
+| --------------------------------- |
 
 ```bash
 Blackip: Done 02/02/2024 15:47:14
 ```
 
-##### Important about Blackip Update
+#### Important about Blackip Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
