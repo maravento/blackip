@@ -4,9 +4,9 @@
 [![last commit](https://img.shields.io/github/last-commit/maravento/blackip)](https://github.com/maravento/blackip)
 [![Twitter Follow](https://img.shields.io/twitter/follow/maraventostudio.svg?style=social)](https://twitter.com/maraventostudio)
 
-**BlackIP** is a project that collects and unifies public blocklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+BlackIP is a project that collects and unifies public blocklists of IP addresses, to make them compatible with [Squid](http://www.squid-cache.org/) and [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
-**BlackIP** es un proyecto que recopila y unifica listas públicas de bloqueo de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
+BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de direcciones IPs, para hacerlas compatibles con [Squid](http://www.squid-cache.org/) e [IPSET](http://ipset.netfilter.org/) ([Iptables](http://www.netfilter.org/documentation/HOWTO/es/packet-filtering-HOWTO-7.html) [Netfilter](http://www.netfilter.org/))
 
 ## DATA SHEET
 
@@ -14,7 +14,7 @@
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|427362|6,1 Mb|
+|blackip.txt|472773|6.6 Mb|
 
 ## GIT CLONE
 
@@ -132,6 +132,7 @@ And add the following lines: / Y agregue las siguientes líneas:
 ```bash
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 
+# Block Rule for BlackIP
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 ```
@@ -142,7 +143,7 @@ http_access deny blackip
 
 #### Advanced Rules
 
-**blackip** contains millions of IP addresses, therefore it is recommended: / **blackip** contiene millones de direcciones IP, por tanto se recomienda:
+BlackIP contains millions of IP addresses, therefore it is recommended: / BlackIP contiene millones de direcciones IP, por tanto se recomienda:
 
 - Use `blackcidr.txt` to add IP/CIDR that are not included in `blackip.txt` (By default it contains some Block CIDR) / Use `blackcidr.txt` para agregar IP/CIDR que no están incluidas en `blackip.txt` (Por defecto contiene algunos Block CIDR)
 - Use `allowip.txt` (a whitelist of IPv4 IP addresses such as Hotmail, Gmail, Yahoo. etc.) / Use `allowip.txt` (una lista blanca de direcciones IPs IPv4 tales como Hotmail, Gmail, Yahoo. etc)
@@ -174,7 +175,7 @@ http_access allow dnslst # or deny dnlst
 acl blackcidr dst "/path_to/blackcidr.txt"
 http_access deny blackcidr
 
-## Block Rule for Blackip
+## Block Rule for BlackIP
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 
@@ -229,19 +230,19 @@ FAULT 0.0.9.1
 Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 ```
 
-| Run Squid-Cache with Blackip |
+| Run Squid-Cache with BlackIP |
 | ----------------------------- |
 
->Run Squid-Cache with Blackip and any error sends it to `SquidError.txt` on your desktop / Corre Squid-Cache con Blackip y cualquier error lo envía a `SquidError.txt` en su escritorio
+>Run Squid-Cache with BlackIP and any error sends it to `SquidError.txt` on your desktop / Corre Squid-Cache con BlackIP y cualquier error lo envía a `SquidError.txt` en su escritorio
 
 | Check execution (/var/log/syslog) |
 | --------------------------------- |
 
 ```bash
-Blackip: Done 02/02/2024 15:47:14
+BlackIP: Done 02/02/2024 15:47:14
 ```
 
-#### Important about Blackip Update
+#### Important about BlackIP Update
 
 - `tw.txt` containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in `bipupdate.sh`. To update it use `tw.sh` / `tw.txt` contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas activelas en `bipupdate.sh`. Para actualizarla use `tw.sh`
 - You must activate the rules in [Squid](http://www.squid-cache.org/) before using `bipupdate.sh` / Antes de utilizar `bipupdate.sh` debe activar las reglas en [Squid](http://www.squid-cache.org/)
