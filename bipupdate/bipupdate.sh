@@ -169,10 +169,13 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 fi
 
 # DNS LOCKUP
-# FAULT: Unexist/Fail IP
-# HIT: Exist IP
-# pp = parallel processes (high resource consumption!)
-pp="300"
+# FAULT: Unexist/Fail domain
+# HIT: Exist domain
+# pp = parallel processes
+# WARNING: high resource consumption!
+# Xargs Limit: The limit is at least 127 on all systems (and on the author’s system it is 2147483647)
+# For more information, run: xargs --show-limits
+pp="100"
 
 # STEP 1:
 if [ ! -e "$bipupdate"/dnslookup2 ]; then

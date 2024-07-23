@@ -14,7 +14,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|472773|6.6 Mb|
+|blackip.txt|530545|7.5 Mb|
 
 ## GIT CLONE
 
@@ -192,8 +192,7 @@ http_access deny no_ip
 
 This section is only to explain how update and optimization process works. It is not necessary for user to run it. This process can take time and consume a lot of hardware and bandwidth resources, therefore it is recommended to use test equipment / Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas
 
-| Bash Update |
-| ----------- |
+#### Bash Update
 
 >The update process of `blackip.txt` is executed in sequence by the script `bipupdate.sh`. The script will request privileges when required. / El proceso de actualización de `blackip.txt` es ejecutado en secuencia por el script `bipupdate.sh`. El script solicitará privilegios cuando lo requiera.
 
@@ -201,25 +200,26 @@ This section is only to explain how update and optimization process works. It is
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
-| Dependencies |
-| ------------ |
+#### Dependencies
 
 >Update requires python 3x and bash 5x / La actualización requiere python 3x y bash 5x
 
 ```bash
-pkgs='wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 squid ipset'
+pkgs='wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset'
 if ! dpkg -s $pkgs >/dev/null 2>&1; then
   apt -y install $pkgs
 fi
+# For squid-cache
+apt install squid-openssl
+# or
+apt install squid
 ```
 
-| Capture Public Blocklists |
-| ------------------------- |
+#### Capture Public Blocklists
 
 >Capture IPv4 from downloaded public blocklists (see [SOURCES](https://github.com/maravento/blackip#sources)) and unifies them in a single file / Captura las IPv4 de las listas de bloqueo públicas descargadas (ver [FUENTES](https://github.com/maravento/blackip#sources)) y las unifica en un solo archivo
 
-| DNS Loockup |
-| ------------|
+#### DNS Loockup
 
 >Most of the [SOURCES](https://github.com/maravento/blackip#sources) contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth / La mayoría de las [FUENTES](https://github.com/maravento/blackip#sources) contienen millones de IP inválidas e inexistentes. Entonces se hace una verificación doble de cada IP (en 2 pasos) vía DNS y los inválidos e inexistentes se excluyen de Blackip. Este proceso puede tardar. Por defecto procesa en paralelo ≈ 6k a 12k x min, en dependencia del hardware y ancho de banda
 
@@ -230,13 +230,11 @@ FAULT 0.0.9.1
 Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 ```
 
-| Run Squid-Cache with BlackIP |
-| ----------------------------- |
+#### Run Squid-Cache with BlackIP
 
 >Run Squid-Cache with BlackIP and any error sends it to `SquidError.txt` on your desktop / Corre Squid-Cache con BlackIP y cualquier error lo envía a `SquidError.txt` en su escritorio
 
-| Check execution (/var/log/syslog) |
-| --------------------------------- |
+#### Check execution (/var/log/syslog)
 
 ```bash
 BlackIP: Done 02/02/2024 15:47:14
@@ -354,7 +352,7 @@ Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 ---
 
 [![GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl.txt)
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.en)
 
 ## DISCLAIMER
 
