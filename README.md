@@ -14,7 +14,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|487190|6.9 Mb|
+|blackip.txt|448227|6.3 Mb|
 
 ## GIT CLONE
 
