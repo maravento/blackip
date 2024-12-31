@@ -22,7 +22,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|438428|6,2 Mb|
+|blackip.txt|462989|6,5 Mb|
 
 ## GIT CLONE
 
