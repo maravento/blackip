@@ -22,7 +22,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|445065|6,3 Mb|
+|blackip.txt|449388|6,4 Mb|
 
 ## GIT CLONE
 
@@ -368,6 +368,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [cidr2ip](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
 - [Debug IPs](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
+
+## NOTICE
+
+---
+
+- This project includes third-party components.
+- Changes must be submitted via Issues. Pull requests are not accepted.
 
 ## STARGAZERS
 
