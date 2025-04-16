@@ -22,7 +22,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 |ACL|Blocked IP|File Size|
 | :---: | :---: | :---: |
-|blackip.txt|449388|6,4 Mb|
+|blackip.txt|426689|6,1 Mb|
 
 ## GIT CLONE
 
@@ -187,8 +187,8 @@ http_access deny blackcidr
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 
-## Zero Trust Rule (ZTR)
-acl no_ip url_regex -i [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}
+## Block IP
+acl no_ip url_regex -i ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$
 http_access deny no_ip
 ```
 
@@ -375,6 +375,8 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - Este proyecto incluye componentes de terceros.
 - Los cambios deben proponerse mediante Issues. No se aceptan Pull Requests.
+- Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.
+- Si su dirección IP aparece en Blackip, y considera que esto es un error, debe revisar las fuentes públicas [SOURCES](https://github.com/maravento/blackip/blob/master/README-es.md#sources), identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.
 
 ## STARGAZERS
 

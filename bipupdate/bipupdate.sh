@@ -17,7 +17,7 @@ bipupdate=$(pwd)/bipupdate
 ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n"
 xdesktop=$(xdg-user-dir DESKTOP)
-wgetd='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
+wgetd='wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
 # path_to_lst (Change it to the directory of your preference)
 route=/etc/acl
 # CREATE PATH
