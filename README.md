@@ -287,7 +287,6 @@ BlackIP: Done 02/02/2024 15:47:14
 - Some lists have download restrictions, so do not run `bipupdate.sh` more than once a day.
 - During the execution of `bipupdate.sh` it will request privileges when needed.
 - If you use `aufs`, temporarily change it to `ufs` during the upgrade, to avoid: `ERROR: Can't change type of existing cache_dir aufs /var/spool/squid to ufs. Restart required`.
-- If someone considers that a domain should not be on Blackip, they can create an [Issue](https://github.com/maravento/blackip/issues) and notify it to remove it.
 
 #### AllowIP Update
 
