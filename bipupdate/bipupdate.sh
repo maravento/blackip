@@ -61,7 +61,6 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     function blips() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-
         if [ $? -eq 0 ]; then
             $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
         else
@@ -87,6 +86,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/cps_cobaltstrike_ip.txt' && sleep 1
     blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/log4j.txt' && sleep 1
     blips 'https://raw.githubusercontent.com/CriticalPathSecurity/Public-Intelligence-Feeds/master/tor-exit.txt' && sleep 1
+    blips 'https://raw.githubusercontent.com/duggytuxy/Intelligence_IPv4_Blocklist/refs/heads/main/agressive_ips_dst_fr_be_blocklist.txt' && sleep 1
     blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
     blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
     blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
@@ -104,7 +104,6 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     function uceprotect() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-
         if [ $? -eq 0 ]; then
             $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
         else
@@ -117,7 +116,6 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     function listed_ip_180_all() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-
         if [ $? -eq 0 ]; then
             $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
         else

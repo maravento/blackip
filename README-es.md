@@ -4,6 +4,7 @@
 
 [![status-stable](https://img.shields.io/badge/status-stable-green.svg)](https://github.com/maravento/blackip)
 [![last commit](https://img.shields.io/github/last-commit/maravento/blackip)](https://github.com/maravento/blackip)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/maravento/blackip)
 [![Twitter Follow](https://img.shields.io/twitter/follow/maraventostudio.svg?style=social)](https://twitter.com/maraventostudio)
 
 <table align="center">
@@ -20,9 +21,9 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 ---
 
-|ACL|Blocked IP|File Size|
+| ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-|blackip.txt|426689|6,1 Mb|
+| blackip.txt | 437710 | 6,2 Mb |
 
 ## GIT CLONE
 
@@ -317,6 +318,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [dan.me.uk - TOR Node List](https://www.dan.me.uk/torlist/?exit)
 - [darklist - raw](https://www.darklist.de/raw.php)
 - [dshield.org - block](https://feeds.dshield.org/block.txt)
+- [duggytuxy - Intelligence_IPv4_Blocklist](https://github.com/duggytuxy/Intelligence_IPv4_Blocklist/blob/main/agressive_ips_dst_fr_be_blocklist.txt)
 - [ellio.tech - Threat List](https://cdn.ellio.tech/community-feed)
 - [Emerging Threats - compromised ips](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
