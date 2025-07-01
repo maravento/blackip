@@ -12,14 +12,25 @@ bip09=("Check on your desktop Squid-Error" "Verifique en su escritorio Squid-Err
 test "${LANG:0:2}" == "en"
 en=$?
 
+# check no-root
+if [ "$(id -u)" == "0" ]; then
+    echo "❌ This script should not be run as root."
+    exit 1
+fi
+
+# check SO
+UBUNTU_VERSION=$(lsb_release -rs)
+UBUNTU_ID=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
+if [[ "$UBUNTU_ID" != "ubuntu" || ( "$UBUNTU_VERSION" != "22.04" && "$UBUNTU_VERSION" != "24.04" ) ]]; then
+    echo "Unsupported system. Use at your own risk"
+    # exit 1
+fi
+
 # VARIABLES
-bipupdate=$(pwd)/bipupdate
-ipRegExp="(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"
-reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n"
-xdesktop=$(xdg-user-dir DESKTOP)
-wgetd='wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
+bipupdate="$(pwd)/bipupdate"
+wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
 # path_to_lst (Change it to the directory of your preference)
-route=/etc/acl
+route="/etc/acl"
 # CREATE PATH
 if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
 
@@ -32,18 +43,20 @@ echo "${bip01[${en}]}"
 if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     # DELETE OLD REPOSITORY
-    if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
+    rm -rf "$bipupdate" >/dev/null 2>&1
 
     # DOWNLOADING GEOZONES
     echo "${bip02[${en}]}"
     geopath="/etc/zones"
     if [ ! -d "$geopath" ]; then sudo mkdir -p "$geopath"; fi
-    $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz && tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1 && rm -f all-zones.tar.gz >/dev/null 2>&1
+    $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
+    sudo tar -C $geopath -zxvf all-zones.tar.gz >/dev/null 2>&1
+    rm -f all-zones.tar.gz >/dev/null 2>&1
     echo "OK"
 
     # DOWNLOAD BLACKIP
     echo "${bip03[${en}]}"
-    wget https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolderdl.py
+    $wgetd https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolderdl.py -O gitfolderdl.py
     chmod +x gitfolderdl.py
     python gitfolderdl.py https://github.com/maravento/blackip/bipupdate
     if [ -d "$bipupdate" ]; then
@@ -62,7 +75,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     function blips() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
         if [ $? -eq 0 ]; then
-            $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+            $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
         else
             echo ERROR "$1"
         fi
@@ -105,7 +118,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     function uceprotect() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
         if [ $? -eq 0 ]; then
-            $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+            $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
         else
             echo ERROR "$1"
         fi
@@ -117,7 +130,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     function listed_ip_180_all() {
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
         if [ $? -eq 0 ]; then
-            $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+            $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
         else
             echo ERROR "$1"
         fi
@@ -128,7 +141,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
 
         if [ $? -eq 0 ]; then
-            $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >>capture
+            $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
         else
             echo ERROR "$1"
         fi
@@ -147,7 +160,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     echo "${bip05[${en}]}"
     # debug
-    sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP $ipRegExp | $reorganize | uniq >cleancapture
+    sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture
     # DEBBUGGING BLACKIP
     # First you must edit /etc/squid/squid.conf
     # And add line:
@@ -158,9 +171,9 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     # add iana
     #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture
     # exclude allowip
-    sed 's:\/.*::' lst/iana.txt >>lst/allowip.txt
+    sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
     #comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
-    grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize | uniq >cleancapture2
+    grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture2
     echo "OK"
   else
     cd "$bipupdate"
@@ -169,23 +182,23 @@ fi
 # DNS LOCKUP
 # FAULT: Unexist/Fail domain
 # HIT: Exist domain
-# pp = parallel processes
 # WARNING: high resource consumption!
 # Xargs Limit: The limit is at least 127 on all systems (and on the author’s system it is 2147483647)
 # For more information, run: xargs --show-limits
-pp="50"
+# Number of parallel processes (CPU cores × 2) to balance performance and network stability
+PROCS=$(($(nproc) * 2))
 
 # STEP 1:
 if [ ! -e "$bipupdate"/dnslookup2 ]; then
     echo "${bip06[${en}]}"
-    sed 's/^\.//g' cleancapture2 | sort -u >step1
+    sed 's/^\.//g' cleancapture2 | sort -u > step1
     if [ -s dnslookup1 ]; then
         awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1 step1
     else
         cat step1
-    fi | xargs -I {} -P "$pp" sh -c "if host {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >>dnslookup1
-    sed '/^FAULT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u >hit.txt
-    sed '/^HIT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u >>fault.txt
+    fi | xargs -I {} -P "$PROCS" sh -c "if host {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup1
+    sed '/^FAULT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
+    sed '/^HIT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
     sort -o fault.txt -u fault.txt
     echo "OK"
 fi
@@ -194,36 +207,37 @@ sleep 10
 
 # STEP 2:
 echo "${bip07[${en}]}"
-sed 's/^\.//g' fault.txt | sort -u >step2
+sed 's/^\.//g' fault.txt | sort -u > step2
 if [ -s dnslookup2 ]; then
     awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2 step2
 else
     cat step2
-fi | xargs -I {} -P "$pp" sh -c "if host {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >>dnslookup2
-sed '/^FAULT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u >>hit.txt
-sed '/^HIT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u >fault.txt
+fi | xargs -I {} -P "$PROCS" sh -c "if host -W 2 {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup2
+sed '/^FAULT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> hit.txt
+sed '/^HIT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u > fault.txt
 echo "OK"
 
 # RELOAD SQUID-CACHE
 echo "${bip08[${en}]}"
 sed '/^$/d; /#/d' hit.txt | sort -u > blackip.txt
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2>SquidError.txt
-sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >>SquidError.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | $reorganize | uniq >squidip
+sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
+sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > squidip
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip | sort -u >cleanip
-cat cleanip | $reorganize | uniq >debugip
+grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip | sort -u > cleanip
+cat cleanip | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip
 python tools/debugbip.py
-sed -E '/:/d; s/\/[0-9]+//g' outip | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | $reorganize | uniq >blackip.txt
+cat lst/blockip.txt >> outip
+sed -E '/:/d; s/\/[0-9]+//g' outip | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2>"$xdesktop"/SquidErrors.txt
+sudo bash -c 'squid -k reconfigure' 2> "$(xdg-user-dir DESKTOP)"/SquidErrors.txt
 
 # DELETE REPOSITORY (Optional)
 cd ..
-if [ -d "$bipupdate" ]; then rm -rf "$bipupdate"; fi
+rm -rf "$bipupdate" >/dev/null 2>&1
 
 # END
 sudo bash -c 'echo "BlackIP Done: $(date)" | tee -a /var/log/syslog'

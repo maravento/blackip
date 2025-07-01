@@ -23,7 +23,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 437710 | 6,2 Mb |
+| blackip.txt | 442997| 6,3 Mb |
 
 ## GIT CLONE
 
@@ -214,10 +214,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >Update requires python 3x and bash 5x.
 
 ```bash
-pkgs='wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset'
-if ! dpkg -s $pkgs >/dev/null 2>&1; then
-  apt -y install $pkgs
-fi
+wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset
 ```
 
 >Make sure your Squid is installed correctly. If you have any problems, run the following script: (`sudo ./squid_install.sh`):
