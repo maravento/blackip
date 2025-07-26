@@ -8,7 +8,7 @@ bip05=("Debugging BlackIP..." "Depurando BlackIP...")
 bip06=("1st DNS Loockup..." "1ra Busqueda DNS...")
 bip07=("2nd DNS Loockup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
-bip09=("Check on your desktop Squid-Error" "Verifique en su escritorio Squid-Error")
+bip09=("Check Squid-Error" "Verifique Squid-Error")
 test "${LANG:0:2}" == "en"
 en=$?
 
@@ -179,24 +179,62 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     cd "$bipupdate"
 fi
 
-# DNS LOCKUP
-# FAULT: Unexist/Fail domain
-# HIT: Exist domain
-# WARNING: high resource consumption!
-# Xargs Limit: The limit is at least 127 on all systems (and on the author’s system it is 2147483647)
-# For more information, run: xargs --show-limits
-# Number of parallel processes (CPU cores × 2) to balance performance and network stability
-PROCS=$(($(nproc) * 2))
+# DNS LOOKUP
+# FAULT: Nonexistent or failed domain
+# HIT: Resolved (existent) domain
+#
+# WARNING: High resource consumption!
+# This script uses parallel DNS queries. Adjust concurrency to avoid saturating your CPU or network (e.g., Starlink).
+#
+# Xargs Parallel Limit:
+# The practical limit for parallel jobs with xargs is usually high (at least 127; check your system with: xargs --show-limits)
+#
+# Number of parallel processes (PROCS) = Logical CPUs × multiplier
+# The multiplier (e.g., 2, 4) controls how aggressively to parallelize. More isn't always better.
+#
+# ┌───────────────────────────────────────────────────────┐
+# │ How to determine your CPU configuration (Linux only): │
+# └───────────────────────────────────────────────────────┘
+# Physical cores: grep '^core id' /proc/cpuinfo | sort -u | wc -l
+# Logical CPUs (threads): nproc
+#
+# Recommended:
+#   PROCS=$(($(nproc)))      # Conservative (network-friendly)
+#   PROCS=$(($(nproc) * 2))  # Balanced
+#   PROCS=$(($(nproc) * 4))  # Aggressive (default)
+#   PROCS=$(($(nproc) * 8))  # Extreme (8 or higher, use with caution)
+#
+# Example: Core i5 with 4 physical cores and 8 threads (Hyper-Threading)
+#   nproc          → 8
+#   PROCS=$((8 * 4)) → 32 parallel queries
+#
+# Adjust based on:
+# - Your CPU
+# - Your network (bandwidth/latency)
+# - Desired balance between speed and system load
+PROCS=$(($(nproc) * 4))
 
 # STEP 1:
 if [ ! -e "$bipupdate"/dnslookup2 ]; then
     echo "${bip06[${en}]}"
     sed 's/^\.//g' cleancapture2 | sort -u > step1
+    total=$(wc -l < step1)
+    (
+        while sleep 1; do
+            processed=$(wc -l < dnslookup1 2>/dev/null)
+            percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
+            printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
+        done
+    ) &
+    progress_pid=$!
     if [ -s dnslookup1 ]; then
         awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1 step1
     else
         cat step1
     fi | xargs -I {} -P "$PROCS" sh -c "if host {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup1
+    kill "$progress_pid" 2>/dev/null
+    echo
+
     sed '/^FAULT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
     sed '/^HIT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
     sort -o fault.txt -u fault.txt
@@ -208,11 +246,23 @@ sleep 10
 # STEP 2:
 echo "${bip07[${en}]}"
 sed 's/^\.//g' fault.txt | sort -u > step2
+total=$(wc -l < step2)
+(
+    while sleep 1; do
+        processed=$(wc -l < dnslookup2 2>/dev/null)
+        percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
+        printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
+    done
+) &
+progress_pid=$!
 if [ -s dnslookup2 ]; then
     awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2 step2
 else
     cat step2
 fi | xargs -I {} -P "$PROCS" sh -c "if host -W 2 {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup2
+kill "$progress_pid" 2>/dev/null
+echo
+
 sed '/^FAULT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> hit.txt
 sed '/^HIT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u > fault.txt
 echo "OK"
@@ -221,19 +271,19 @@ echo "OK"
 echo "${bip08[${en}]}"
 sed '/^$/d; /#/d' hit.txt | sort -u > blackip.txt
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> SquidError.txt
-sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> SquidError.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" SquidError.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > squidip
+sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
+sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > squidip.txt
 ## Remove conflicts from blackip.txt
-grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip | sort -u > cleanip
-cat cleanip | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip
+grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip.txt | sort -u > cleanip.txt
+cat cleanip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip.txt
 python tools/debugbip.py
-cat lst/blockip.txt >> outip
-sed -E '/:/d; s/\/[0-9]+//g' outip | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
+cat lst/blockip.txt >> outip.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> "$(xdg-user-dir DESKTOP)"/SquidErrors.txt
+sudo bash -c 'squid -k reconfigure' 2> "$(pwd)/SquidErrors.txt"
 
 # DELETE REPOSITORY (Optional)
 cd ..

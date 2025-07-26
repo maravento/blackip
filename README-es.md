@@ -23,7 +23,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 442997 | 6,3 Mb |
+| blackip.txt | 452023 | 6,4 Mb |
 
 ## GIT CLONE
 
@@ -64,23 +64,20 @@ Edite su bash script de Iptables y agregue las siguientes líneas (ejecutar con 
 ```bash
 #!/bin/bash
 # https://linux.die.net/man/8/ipset
-# variables
-ipset=/sbin/ipset
-iptables=/sbin/iptables
 
 # Replace with your path to blackip.txt
 ips=/path_to_lst/blackip.txt
 
 # ipset rules
-$ipset -L blackip >/dev/null 2>&1
+ipset -L blackip >/dev/null 2>&1
 if [ $? -ne 0 ]; then
         echo "set blackip does not exist. create set..."
-        $ipset -! create blackip hash:net family inet hashsize 1024 maxelem 10000000
+        ipset -! create blackip hash:net family inet hashsize 1024 maxelem 10000000
     else
         echo "set blackip exist. flush set..."
-        $ipset -! flush blackip
+        ipset -! flush blackip
 fi
-$ipset -! save > /tmp/ipset_blackip.txt
+ipset -! save > /tmp/ipset_blackip.txt
 # read file and sort (v8.32 or later)
 cat $ips | sort -V -u | while read line; do
     # optional: if there are commented lines
@@ -91,12 +88,12 @@ cat $ips | sort -V -u | while read line; do
     echo "add blackip $line" >> /tmp/ipset_blackip.txt
 done
 # adding the tmp list of IPv4 addresses to the blackip set of ipset
-$ipset -! restore < /tmp/ipset_blackip.txt
+ipset -! restore < /tmp/ipset_blackip.txt
 
 # iptables rules
-$iptables -t mangle -I PREROUTING -m set --match-set blackip src,dst -j DROP
-$iptables -I INPUT -m set --match-set blackip src,dst -j DROP
-$iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
+iptables -t mangle -I PREROUTING -m set --match-set blackip src,dst -j DROP
+iptables -I INPUT -m set --match-set blackip src,dst -j DROP
+iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
 echo "done"
 ```
 
@@ -189,8 +186,8 @@ acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 
 ## Block IP
-acl no_ip url_regex -i ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$
-http_access deny no_ip
+acl no_ip_url url_regex -i ^(http|https)://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
+http_access deny no_ip_url
 ```
 
 ## BLACKIP UPDATE
