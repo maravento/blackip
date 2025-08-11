@@ -103,6 +103,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset' && sleep 1
     blips 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset' && sleep 1
     blips 'https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt' && sleep 1
+    blips 'https://raw.githubusercontent.com/romainmarcoux/malicious-ip/refs/heads/main/full-aa.txt' && sleep 1
     blips 'https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt' && sleep 1
     blips 'https://raw.githubusercontent.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/master/ips/ips0.list' && sleep 1
     blips 'https://reputation.alienvault.com/reputation.generic' && sleep 1
