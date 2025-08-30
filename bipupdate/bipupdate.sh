@@ -33,6 +33,8 @@ wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --t
 route="/etc/acl"
 # CREATE PATH
 if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
+# Absolute path
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 clear
 echo
@@ -284,7 +286,7 @@ sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> "$(pwd)/SquidErrors.txt"
+sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"
 
 # DELETE REPOSITORY (Optional)
 cd ..

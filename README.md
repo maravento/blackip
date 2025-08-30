@@ -23,7 +23,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 452023 | 6,4 Mb |
+| blackip.txt | 439268 | 6,2 Mb |
 
 ## GIT CLONE
 
@@ -91,9 +91,9 @@ done
 ipset -! restore < /tmp/ipset_blackip.txt
 
 # iptables rules
-iptables -t mangle -I PREROUTING -m set --match-set blackip src,dst -j DROP
-iptables -I INPUT -m set --match-set blackip src,dst -j DROP
-iptables -I FORWARD -m set --match-set blackip src,dst -j DROP
+iptables -t raw -I PREROUTING -m set --match-set blackip src -j DROP
+iptables -t raw -I PREROUTING -m set --match-set blackip dst -j DROP
+iptables -t raw -I OUTPUT -m set --match-set blackip dst -j DROP
 echo "done"
 ```
 
