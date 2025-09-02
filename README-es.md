@@ -211,43 +211,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >La actualización requiere python 3x y bash 5x
 
 ```bash
-wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset
-```
-
->Asegúrese que Squid esté instalado correctamente. Si tienes algún problema, ejecute el siguiente script: (`sudo ./squid_install.sh`):
-
-```bash
-#!/bin/bash
-
-# kill old version
-while pgrep squid > /dev/null; do
-    echo "Waiting for Squid to stop..."
-    killall -s SIGTERM squid &>/dev/null
-    sleep 5
-done
-
-# squid remove (if exist)
-apt purge -y squid- &>/dev/null
-rm -rf /var/spool/squid- /var/log/squid- /etc/squid- /dev/shm/- &>/dev/null
-
-# squid install (you can use 'squid-openssl' or 'squid')
-apt install -y squid-openssl squid-langpack squid-common squidclient squid-purge
-
-# create log
-if [ ! -d /var/log/squid ]; then
-    mkdir -p /var/log/squid
-fi &>/dev/null
-if [[ ! -f /var/log/squid/{access,cache,store,deny}.log ]]; then
-    touch /var/log/squid/{access,cache,store,deny}.log
-fi &>/dev/null
-
-# permissions
-chown -R proxy:proxy /var/log/squid
-
-# enable service
-systemctl enable squid.service
-systemctl start squid.service
-echo "Done"
+wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset squid
 ```
 
 #### Capture Public Blocklists
