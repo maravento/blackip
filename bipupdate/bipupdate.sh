@@ -1,4 +1,8 @@
 #!/bin/bash
+# maravento.com
+
+# BlackIP Update
+
 # Language spa-eng
 bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
 bip02=("Downloading IPDeny..." "Descargando IPDeny...")
@@ -9,8 +13,8 @@ bip06=("1st DNS Loockup..." "1ra Busqueda DNS...")
 bip07=("2nd DNS Loockup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
 bip09=("Check Squid-Error" "Verifique Squid-Error")
-test "${LANG:0:2}" == "en"
-en=$?
+
+lang=$([[ "${LANG,,}" =~ ^es ]] && echo 1 || echo 0)
 
 # check no-root
 if [ "$(id -u)" == "0" ]; then
@@ -39,7 +43,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 clear
 echo
 echo "Blackip Project"
-echo "${bip01[${en}]}"
+echo "${bip01[$lang]}"
 
 # CHECK DNSLOOKUP1
 if [ ! -e "$bipupdate"/dnslookup1 ]; then
@@ -48,16 +52,35 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     rm -rf "$bipupdate" >/dev/null 2>&1
 
     # DOWNLOADING GEOZONES
-    echo "${bip02[${en}]}"
+    echo "${bip02[$lang]}"
     geopath="/etc/zones"
-    if [ ! -d "$geopath" ]; then sudo mkdir -p "$geopath"; fi
-    $wgetd http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz
-    sudo tar -C $geopath -zxvf all-zones.tar.gz >/dev/null 2>&1
+    url="http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz"
+    # create dir
+    if [ ! -d "$geopath" ]; then
+        sudo mkdir -p "$geopath"
+    fi
+    # check with curl
+    if ! curl -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+        echo "❌ URL Down: $url"
+        exit 1
+    fi
+    # download
+    if ! $wgetd "$url" -O all-zones.tar.gz; then
+        echo "❌ ERROR: $url"
+        exit 1
+    fi
+    # extract
+    if ! sudo tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1; then
+        echo "❌ ERROR: all-zones.tar.gz"
+        rm -f all-zones.tar.gz
+        exit 1
+    fi
+    # clean
     rm -f all-zones.tar.gz >/dev/null 2>&1
     echo "OK"
 
     # DOWNLOAD BLACKIP
-    echo "${bip03[${en}]}"
+    echo "${bip03[$lang]}"
     $wgetd https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolderdl.py -O gitfolderdl.py
     chmod +x gitfolderdl.py
     python gitfolderdl.py https://github.com/maravento/blackip/bipupdate
@@ -72,14 +95,18 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     fi
 
     # DOWNLOADING BLOCKLIST IPS
-    echo "${bip04[${en}]}"
-
-    function blips() {
-        curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-        if [ $? -eq 0 ]; then
-            $wgetd "$1" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-        else
-            echo ERROR "$1"
+    echo "${bip04[$lang]}"
+    blips() {
+        local url="$1"
+        # check with curl
+        if ! curl -k -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+            echo "❌ URL Down: $url"
+            return 1
+        fi
+        # download
+        if ! $wgetd "$url" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture; then
+            echo "❌ ERROR: $url"
+            return 1
         fi
     }
     blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
@@ -119,39 +146,94 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     blips 'https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1' && sleep 1
     blips 'https://www.spamhaus.org/drop/drop.lasso' && sleep 1
 
-    function uceprotect() {
-        curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-        if [ $? -eq 0 ]; then
-            $wgetd "$1" && gunzip -c -f *uceprotect.net.gz | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-        else
-            echo ERROR "$1"
+    uceprotect() {
+        local url="$1"
+        local filename
+        # filename
+        filename=$(basename "${url%%\?*}")
+        # check with curl
+        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+            echo "❌ URL Down: $url"
+            return 1
         fi
+        # Ddownload
+        if ! $wgetd "$url" -O "$filename"; then
+            echo "❌ ERROR: $url"
+            return 1
+        fi
+        # extract
+        if ! gunzip -c -f "$filename" \
+             | grep -a -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
+             | sort -u >> capture; then
+            echo "❌ ERROR: $filename"
+            rm -f "$filename"
+            return 1
+        fi
+        # clean
+        rm -f "$filename"
+        return 0
     }
     uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz' && sleep 2
     uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz' && sleep 2
     uceprotect 'http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz' && sleep 2
 
-    function listed_ip_180_all() {
-        curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-        if [ $? -eq 0 ]; then
-            $wgetd "$1" && unzip -p listed_ip_180_all.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-        else
-            echo ERROR "$1"
+    listed_ip_180_all() {
+        local url="$1"
+        local filename
+        # filename
+        filename=$(basename "${url%%\?*}")
+        # check with curl
+        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+            echo "❌ URL Down: $url"
+            return 1
         fi
+        # download
+        if ! $wgetd "$url" -O "$filename"; then
+            echo "❌ ERROR: $url"
+            return 1
+        fi
+        # extract
+        if ! unzip -p "$filename" \
+             | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
+             | sort -u >> capture; then
+            echo "❌ ERROR: $filename"
+            rm -f "$filename"
+            return 1
+        fi
+        # clean
+        rm -f "$filename"
+        return 0
     }
     listed_ip_180_all 'https://www.stopforumspam.com/downloads/listed_ip_180_all.zip'
 
-    function full_blacklist_database() {
-        curl -k -X GET --connect-timeout 10 --retry 1 -I "$1" &>/dev/null
-
-        if [ $? -eq 0 ]; then
-            $wgetd "$1" && unzip -p full_blacklist_database.zip | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture
-        else
-            echo ERROR "$1"
+    full_blacklist_database() {
+        local url="$1"
+        local filename
+        # filename
+        filename=$(basename "${url%%\?*}")
+        # check with curl
+        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+            echo "❌ URL Down: $url"
+            return 1
         fi
+        # download
+        if ! $wgetd "$url" -O "$filename"; then
+            echo "❌ ERROR: $url"
+            return 1
+        fi
+        # extract
+        if ! unzip -p "$filename" \
+             | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
+             | sort -u >> capture; then
+            echo "❌ ERROR: $filename"
+            rm -f "$filename"
+            return 1
+        fi
+        # clean
+        rm -f "$filename"
+        return 0
     }
     full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
-
     echo "OK"
 
     # CIDR2IP (High consumption of system resources)
@@ -161,10 +243,21 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     #}
     #       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
     #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
+    #echo "OK"
 
-    echo "${bip05[${en}]}"
+    echo "${bip05[$lang]}"
     # debug
-    sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture | sed "/:/d" | sed '/\/[0-9]*$/d' | sed 's/^[ \s]*//;s/[ \s]*$//' | sed -r '/\.0\.0$/d' | sed -r 's:\s+.*::g' | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' | grep -oP '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture
+    sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture \
+    | sed "/:/d" \
+    | sed '/\/[0-9]*$/d' \
+    | sed 's/^[ \s]*//;s/[ \s]*$//' \
+    | sed -r '/\.0\.0$/d' \
+    | sed -r 's:\s+.*::g' \
+    | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
+    | grep -oP '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' \
+    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n \
+    | uniq > cleancapture
+
     # DEBBUGGING BLACKIP
     # First you must edit /etc/squid/squid.conf
     # And add line:
@@ -220,7 +313,7 @@ PROCS=$(($(nproc) * 4))
 
 # STEP 1:
 if [ ! -e "$bipupdate"/dnslookup2 ]; then
-    echo "${bip06[${en}]}"
+    echo "${bip06[$lang]}"
     sed 's/^\.//g' cleancapture2 | sort -u > step1
     total=$(wc -l < step1)
     (
@@ -248,7 +341,7 @@ fi
 sleep 10
 
 # STEP 2:
-echo "${bip07[${en}]}"
+echo "${bip07[$lang]}"
 sed 's/^\.//g' fault.txt | sort -u > step2
 total=$(wc -l < step2)
 (
@@ -272,7 +365,7 @@ sed '/^HIT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u > f
 echo "OK"
 
 # RELOAD SQUID-CACHE
-echo "${bip08[${en}]}"
+echo "${bip08[$lang]}"
 sed '/^$/d; /#/d' hit.txt | sort -u > blackip.txt
 sudo cp -f blackip.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
@@ -295,4 +388,4 @@ rm -rf "$bipupdate" >/dev/null 2>&1
 
 # END
 sudo bash -c 'echo "BlackIP Done: $(date)" | tee -a /var/log/syslog'
-echo "${bip09[${en}]}"
+echo "${bip09[$lang]}"
