@@ -23,7 +23,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 439268 | 6,2 Mb |
+| blackip.txt | 475200 | 6,7 Mb |
 
 ## GIT CLONE
 
@@ -45,11 +45,12 @@ git clone --depth=1 https://github.com/maravento/blackip.git
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 ```
 
-### Optional: Checksum
+### Checksum
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/checksum.md5
-md5sum blackip.txt | awk '{print $1}' && cat checksum.md5 | awk '{print $1}'
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.txt.sha256
+LOCAL=$(sha256sum blackip.txt | awk '{print $1}'); REMOTE=$(awk '{print $1}' blackip.txt.sha256); echo "$LOCAL" && echo "$REMOTE" && [ "$LOCAL" = "$REMOTE" ] && echo OK || echo FAIL
 ```
 
 #### Important about BlackIP
