@@ -25,8 +25,8 @@ fi
 # check SO
 UBUNTU_VERSION=$(lsb_release -rs)
 UBUNTU_ID=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
-if [[ "$UBUNTU_ID" != "ubuntu" || ( "$UBUNTU_VERSION" != "22.04" && "$UBUNTU_VERSION" != "24.04" ) ]]; then
-    echo "Unsupported system. Use at your own risk"
+if [[ "$UBUNTU_ID" != "ubuntu" || "$UBUNTU_VERSION" != "24.04" ]]; then
+    echo "This script requires Ubuntu 24.04. Use at your own risk"
     # exit 1
 fi
 
@@ -247,16 +247,18 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     echo "${bip05[$lang]}"
     # debug
-    sed -r 's/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/' capture \
-    | sed "/:/d" \
-    | sed '/\/[0-9]*$/d' \
-    | sed 's/^[ \s]*//;s/[ \s]*$//' \
-    | sed -r '/\.0\.0$/d' \
-    | sed -r 's:\s+.*::g' \
+    sed -r '
+        /:/d
+        /\/[0-9]*$/d
+        /\.0\.0$/d
+        s/^[[:space:]]*//
+        s/[[:space:]]*$//
+        s/[[:space:]].*//
+        s/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/
+    ' capture \
+    | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' \
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
-    | grep -oP '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' \
-    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n \
-    | uniq > cleancapture
+    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u > cleancapture
 
     # DEBBUGGING BLACKIP
     # First you must edit /etc/squid/squid.conf
