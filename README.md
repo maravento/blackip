@@ -23,7 +23,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 470504 | 6,7 Mb |
+| blackip.txt | 421688 | 6,0 Mb |
 
 ## GIT CLONE
 
@@ -262,8 +262,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ### BLOCKLISTS
 
-#### Active
-
 - [abuse.ch - Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
 - [abuse.ch - Zeustracker blocklist](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 - [alienvault - reputation](https://reputation.alienvault.com/reputation.generic)
@@ -278,7 +276,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [darklist - raw](https://www.darklist.de/raw.php)
 - [dshield.org - block](https://feeds.dshield.org/block.txt)
 - [duggytuxy - Data-Shield_IPv4_Blocklist](https://github.com/duggytuxy/Data-Shield_IPv4_Blocklist)
-- [duggytuxy - Intelligence_IPv4_Blocklist](https://github.com/duggytuxy/Intelligence_IPv4_Blocklist/blob/main/agressive_ips_dst_fr_be_blocklist.txt)
 - [ellio.tech - Threat List](https://cdn.ellio.tech/community-feed)
 - [Emerging Threats - compromised ips](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
 - [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
@@ -306,14 +303,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Uceprotect - backscatterer Level 3](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-3.uceprotect.net.gz)
 - [Ultimate Hosts IPs Blocklist - ips](https://github.com/Ultimate-Hosts-Blacklist/Ultimate.Hosts.Blacklist/tree/master/ips)
 - [yoyo - adservers](https://pgl.yoyo.org/adservers/iplist.php?format=&showintro=0)
-
-#### Inactive, Offline, Discontinued or Private
-
-- [abuse.ch - Ransomwaretracker](https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt)
-- [Malc0de - IP Blocklist](http://malc0de.com/bl/IP_Blacklist.txt)
-- [Malwaredomain - IP List](https://www.malwaredomainlist.com/hostslist/ip.txt)
-- [Maxmind - high-risk-ip-sample-list](https://www.maxmind.com/en/high-risk-ip-sample-list)
-- [unsubscore - blacklist](http://www.unsubscore.com/blacklist.txt)
 
 ### DEBUG LISTS
 
