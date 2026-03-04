@@ -81,9 +81,9 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
 
     # DOWNLOAD BLACKIP
     echo "${bip03[$lang]}"
-    $wgetd https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolderdl.py -O gitfolderdl.py
-    chmod +x gitfolderdl.py
-    python gitfolderdl.py https://github.com/maravento/blackip/bipupdate
+    $wgetd https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py
+    chmod +x gitfolder.py
+    python gitfolder.py https://github.com/maravento/blackip/bipupdate
     if [ -d "$bipupdate" ]; then
         cd "$bipupdate" || {
             echo "Access Error: $bipupdate"
