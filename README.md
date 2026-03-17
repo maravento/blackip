@@ -4,7 +4,6 @@
 
 [![status-maintained](https://img.shields.io/badge/status-maintained-purple.svg)](https://github.com/maravento/blackip)
 [![last commit](https://img.shields.io/github/last-commit/maravento/blackip)](https://github.com/maravento/blackip)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/maravento/blackip)
 [![Twitter Follow](https://img.shields.io/twitter/follow/maraventostudio.svg?style=social)](https://twitter.com/maraventostudio)
 
 <table align="center">
@@ -23,7 +22,7 @@ BlackIP is a project that collects and unifies public blocklists of IP addresses
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 421688 | 6,0 Mb |
+| blackip.txt | 489058 | 6,9 Mb |
 
 ## GIT CLONE
 

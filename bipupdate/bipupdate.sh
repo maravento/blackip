@@ -98,13 +98,19 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     echo "${bip04[$lang]}"
     blips() {
         local url="$1"
-        # check with curl
+        local label
+
+        label=$(basename "${url%%\?*}" | sed 's/[^a-zA-Z0-9._-]/_/g')
+
         if ! curl -k -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
             echo "❌ URL Down: $url"
             return 1
         fi
-        # download
-        if ! $wgetd "$url" -O - | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture; then
+
+        echo -n "$label ... "
+        if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture; then
+            echo "✅"
+        else
             echo "❌ ERROR: $url"
             return 1
         fi
