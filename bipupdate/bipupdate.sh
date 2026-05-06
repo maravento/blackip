@@ -335,7 +335,7 @@ if [ ! -e "$bipupdate"/dnslookup2 ]; then
         awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1 step1
     else
         cat step1
-    fi | xargs -I {} -P "$PROCS" sh -c "if host {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup1
+    fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 1 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup1
     kill "$progress_pid" 2>/dev/null
     echo
 
@@ -363,7 +363,7 @@ if [ -s dnslookup2 ]; then
     awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2 step2
 else
     cat step2
-fi | xargs -I {} -P "$PROCS" sh -c "if host -W 2 {} >/dev/null; then echo HIT {}; else echo FAULT {}; fi" >> dnslookup2
+fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2
 kill "$progress_pid" 2>/dev/null
 echo
 
@@ -383,11 +383,13 @@ grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip.txt | sort -u >
 cat cleanip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip.txt
 python tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
-sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -E -o '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"
+if ! sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"; then
+    echo "${bip09[$lang]}"
+fi
 
 # DELETE REPOSITORY (Optional)
 cd ..

@@ -22,7 +22,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 489058 | 6,9 Mb |
+| blackip.txt | 450441 | 6,4 Mb |
 
 ## GIT CLONE
 
@@ -185,9 +185,12 @@ http_access deny blackcidr
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 
-## Block IP
-acl no_ip url_regex -i ^(http|https)://[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+
-http_access deny no_ip
+# Block: Direct IPv4
+acl direct_ipv4 dstdom_regex -n -i ^([0-9]{1,3}\.){3}[0-9]{1,3}$
+http_access deny direct_ipv4
+# Block: Direct IPv6
+acl direct_ipv6 dstdom_regex -n -i ^\[([0-9a-f:]+)\]$
+http_access deny direct_ipv6
 ```
 
 ## BLACKIP UPDATE

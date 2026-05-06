@@ -21,7 +21,7 @@ def toRange(ip):
         netmask   = ip2int('255.255.255.255') << (32 - int(mask))
         broadcast = ip2int('255.255.255.255') >> int(mask) | ip1
         network   = ip1 & netmask
-        return [int2ip(i) for i in range(ip1, broadcast)]
+        return [int2ip(i) for i in range(network, broadcast + 1)]
     else:
         return [ip]
 
