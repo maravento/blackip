@@ -1,10 +1,15 @@
 #!/bin/bash
-# ------------------------------------
+# maravento.com
+#
+################################################################################
+#
 # AllowIP for Reverse Squid
 # https://unix.stackexchange.com/questions/550796/bash-to-launching-multiple-queries-with-xargs
-# ------------------------------------
+# 
 # used:	host -t a / or / dig +short -f
 # dig example.com +nostats +nocomments +nocmd
+#
+################################################################################
 
 # Language spa-eng
 cm1=("This process can take a long time. Be patient..." "Este proceso puede tardar mucho tiempo. Sea paciente...")

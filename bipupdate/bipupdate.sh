@@ -1,7 +1,11 @@
 #!/bin/bash
 # maravento.com
-
+#
+################################################################################
+#
 # BlackIP Update
+#
+################################################################################
 
 # Language spa-eng
 bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
@@ -45,8 +49,8 @@ echo
 echo "Blackip Project"
 echo "${bip01[$lang]}"
 
-# CHECK DNSLOOKUP1
-if [ ! -e "$bipupdate"/dnslookup1 ]; then
+# CHECK dnslookup1.txt
+if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
 
     # DELETE OLD REPOSITORY
     rm -rf "$bipupdate" >/dev/null 2>&1
@@ -108,7 +112,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         fi
 
         echo -n "$label ... "
-        if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture; then
+        if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture.txt; then
             echo "✅"
         else
             echo "❌ ERROR: $url"
@@ -169,7 +173,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         # extract
         if ! gunzip -c -f "$filename" \
              | grep -a -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
-             | sort -u >> capture; then
+             | sort -u >> capture.txt; then
             echo "❌ ERROR: $filename"
             rm -f "$filename"
             return 1
@@ -200,7 +204,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         # extract
         if ! unzip -p "$filename" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
-             | sort -u >> capture; then
+             | sort -u >> capture.txt; then
             echo "❌ ERROR: $filename"
             rm -f "$filename"
             return 1
@@ -229,7 +233,7 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         # extract
         if ! unzip -p "$filename" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
-             | sort -u >> capture; then
+             | sort -u >> capture.txt; then
             echo "❌ ERROR: $filename"
             rm -f "$filename"
             return 1
@@ -239,6 +243,10 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         return 0
     }
     full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
+    if [ ! -s capture.txt ]; then
+        echo "❌ ERROR: capture.txt is empty. Aborting."
+        exit 1
+    fi    
     echo "OK"
 
     # CIDR2IP (High consumption of system resources)
@@ -260,10 +268,14 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
         s/[[:space:]]*$//
         s/[[:space:]].*//
         s/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/
-    ' capture \
+    ' capture.txt \
     | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' \
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
-    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u > cleancapture
+    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u > cleancapture.txt
+    if [ ! -s cleancapture.txt ]; then
+        echo "❌ ERROR: cleancapture.txt is empty. Aborting."
+        exit 1
+    fi
 
     # DEBBUGGING BLACKIP
     # First you must edit /etc/squid/squid.conf
@@ -271,13 +283,17 @@ if [ ! -e "$bipupdate"/dnslookup1 ]; then
     # acl blackip dst "/path_to_lst/blackip.txt"
     # http_access deny blackip
     # add black ips/cidr
-    #sed '/^$/d; /#/d' lst/blackcidr.txt >> cleancapture
+    #sed '/^$/d; /#/d' lst/blackcidr.txt >> cleancapture.txt
     # add iana
-    #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture
+    #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture.txt
     # exclude allowip
     sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
-    #comm -3 <(sort lst/allowip.txt) <(sort cleancapture) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2
-    grep -vFf lst/allowip.txt cleancapture | sed -r 's/^\s+*//;s/\s+*$//' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture2
+    #comm -3 <(sort lst/allowip.txt) <(sort cleancapture.txt) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2.txt
+    grep -vFf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture2.txt
+    if [ ! -s cleancapture2.txt ]; then
+        echo "❌ ERROR: cleancapture2.txt is empty. Aborting."
+        exit 1
+    fi
     echo "OK"
   else
     cd "$bipupdate"
@@ -319,28 +335,32 @@ fi
 PROCS=$(($(nproc) * 4))
 
 # STEP 1:
-if [ ! -e "$bipupdate"/dnslookup2 ]; then
+if [ ! -e "$bipupdate"/dnslookup2.txt ]; then
     echo "${bip06[$lang]}"
-    sed 's/^\.//g' cleancapture2 | sort -u > step1
-    total=$(wc -l < step1)
+    sed 's/^\.//g' cleancapture2.txt | sort -u > step1.txt
+    if [ ! -s step1.txt ]; then
+        echo "❌ ERROR: step1.txt is empty. Aborting."
+        exit 1
+    fi
+    total=$(wc -l < step1.txt)
     (
         while sleep 1; do
-            processed=$(wc -l < dnslookup1 2>/dev/null)
+            processed=$(wc -l < dnslookup1.txt 2>/dev/null)
             percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
             printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
         done
     ) &
     progress_pid=$!
-    if [ -s dnslookup1 ]; then
-        awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1 step1
+    if [ -s dnslookup1.txt ]; then
+        awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1.txt step1.txt
     else
-        cat step1
-    fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 1 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup1
+        cat step1.txt
+    fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 1 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup1.txt
     kill "$progress_pid" 2>/dev/null
     echo
 
-    sed '/^FAULT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
-    sed '/^HIT/d' dnslookup1 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
+    sed '/^FAULT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
+    sed '/^HIT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
     sort -o fault.txt -u fault.txt
     echo "OK"
 fi
@@ -349,31 +369,35 @@ sleep 10
 
 # STEP 2:
 echo "${bip07[$lang]}"
-sed 's/^\.//g' fault.txt | sort -u > step2
-total=$(wc -l < step2)
+sed 's/^\.//g' fault.txt | sort -u > step2.txt
+if [ ! -s step2.txt ]; then
+    echo "❌ ERROR: step2.txt is empty. Aborting."
+    exit 1
+fi
+total=$(wc -l < step2.txt)
 (
     while sleep 1; do
-        processed=$(wc -l < dnslookup2 2>/dev/null)
+        processed=$(wc -l < dnslookup2.txt 2>/dev/null)
         percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
         printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
     done
 ) &
 progress_pid=$!
-if [ -s dnslookup2 ]; then
-    awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2 step2
+if [ -s dnslookup2.txt ]; then
+    awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2.txt step2.txt
 else
-    cat step2
-fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2
+    cat step2.txt
+fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2.txt
 kill "$progress_pid" 2>/dev/null
 echo
 
-sed '/^FAULT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u >> hit.txt
-sed '/^HIT/d' dnslookup2 | awk '{print $2}' | awk '{print "." $1}' | sort -u > fault.txt
+sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt
+sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt
 echo "OK"
 
 # RELOAD SQUID-CACHE
 echo "${bip08[$lang]}"
-sed '/^$/d; /#/d' hit.txt | sort -u > blackip.txt
+sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip.txt
 sudo cp -f blackip.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
@@ -384,6 +408,10 @@ cat cleanip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip.txt
 python tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
 sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
+if [ ! -s blackip.txt ]; then
+    echo "❌ ERROR: blackip.txt is empty. Aborting."
+    exit 1
+fi
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
