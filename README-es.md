@@ -1,10 +1,10 @@
 # [BlackIP](https://www.maravento.com/p/blackip.html)
 
-<!-- markdownlint-disable MD033 -->
-
 [![status-maintained](https://img.shields.io/badge/status-maintained-purple.svg)](https://github.com/maravento/blackip)
 [![last commit](https://img.shields.io/github/last-commit/maravento/blackip)](https://github.com/maravento/blackip)
 [![Twitter Follow](https://img.shields.io/twitter/follow/maraventostudio.svg?style=social)](https://twitter.com/maraventostudio)
+
+<!-- markdownlint-disable MD033 -->
 
 <table align="center">
   <tr>
