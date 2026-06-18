@@ -1,10 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 
 try:
-    a = set(line.strip().lower() for line in open('blackip.txt').readlines())
-    b = set(line.strip().lower() for line in open('debugip.txt').readlines())
-    open("outip.txt", "w").write("\n".join(sorted(a.difference(b))) + "\n")
+    with open('blackip_preview.txt') as f:
+        a = set(line.strip().lower() for line in f)
+    with open('debugip.txt') as f:
+        b = set(line.strip().lower() for line in f)
+    with open("outip.txt", "w") as f:
+        f.write("\n".join(sorted(a.difference(b))) + "\n")
 except FileNotFoundError as e:
     print("Error: %s" % e)
     sys.exit(1)

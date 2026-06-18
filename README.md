@@ -214,14 +214,14 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >Update requires python 3x and bash 5x.
 
 ```bash
-wget git curl idn2 perl tar rar unrar unzip zip python-is-python3 ipset squid
+wget git curl idn2 perl tar rar unrar unzip zip ipset squid grepcidr python-is-python3 (optional)
 ```
 
 #### Capture Public Blocklists
 
 >Capture IPv4 from downloaded public blocklists (see [SOURCES](https://github.com/maravento/blackip#sources)) and unifies them in a single file.
 
-#### DNS Loockup
+#### DNS Lookup
 
 >Most of the [SOURCES](https://github.com/maravento/blackip#sources) contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth.
 
@@ -236,11 +236,9 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 
 >Run Squid-Cache with BlackIP and any error sends it to `SquidError.txt` on your desktop.
 
-#### Check execution (/var/log/syslog)
+#### Log
 
-```bash
-BlackIP: Done 02/02/2024 15:47:14
-```
+>Both `bipupdate.sh` and `aipupdate.sh` generate a log file (`bipupdate.log` / `aipupdate.log`) in the same directory where they are executed.
 
 #### Important about BlackIP Update
 

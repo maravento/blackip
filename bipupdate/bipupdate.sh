@@ -7,35 +7,32 @@
 #
 ################################################################################
 
+# check no-root
+if [ "$(id -u)" -eq 0 ]; then
+    echo "❌ This script should not be run as root."
+    exit 1
+fi
+
 # Language spa-eng
 bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
 bip02=("Downloading IPDeny..." "Descargando IPDeny...")
 bip03=("Downloading BlackIP..." "Descargando BlackIP...")
 bip04=("Downloading Blocklists..." "Descargando Listas de Bloqueo...")
 bip05=("Debugging BlackIP..." "Depurando BlackIP...")
-bip06=("1st DNS Loockup..." "1ra Busqueda DNS...")
-bip07=("2nd DNS Loockup..." "2da Busqueda DNS...")
+bip06=("1st DNS Lookup..." "1ra Busqueda DNS...")
+bip07=("2nd DNS Lookup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
 bip09=("Check Squid-Error" "Verifique Squid-Error")
 
 lang=$([[ "${LANG,,}" =~ ^es ]] && echo 1 || echo 0)
 
-# check no-root
-if [ "$(id -u)" == "0" ]; then
-    echo "❌ This script should not be run as root."
-    exit 1
-fi
-
-# check SO
-UBUNTU_VERSION=$(lsb_release -rs)
-UBUNTU_ID=$(lsb_release -is | tr '[:upper:]' '[:lower:]')
-if [[ "$UBUNTU_ID" != "ubuntu" || "$UBUNTU_VERSION" != "24.04" ]]; then
-    echo "This script requires Ubuntu 24.04. Use at your own risk"
-    # exit 1
-fi
-
 # VARIABLES
-bipupdate="$(pwd)/bipupdate"
+# Absolute path
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOGFILE="$(basename "$0" .sh).log"
+exec > >(tee "$LOGFILE") 2>&1
+bipupdate="$SCRIPT_DIR/bipupdate"
+reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
 # path_to_lst (Change it to the directory of your preference)
 route="/etc/acl"
@@ -65,17 +62,17 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     fi
     # check with curl
     if ! curl -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-        echo "❌ URL Down: $url"
+        echo "URL Down: $url"
         exit 1
     fi
     # download
     if ! $wgetd "$url" -O all-zones.tar.gz; then
-        echo "❌ ERROR: $url"
+        echo "ERROR: $url"
         exit 1
     fi
     # extract
     if ! sudo tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1; then
-        echo "❌ ERROR: all-zones.tar.gz"
+        echo "ERROR: all-zones.tar.gz"
         rm -f all-zones.tar.gz
         exit 1
     fi
@@ -87,7 +84,10 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     echo "${bip03[$lang]}"
     $wgetd https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py
     chmod +x gitfolder.py
-    python gitfolder.py https://github.com/maravento/blackip/bipupdate
+    python3 gitfolder.py https://github.com/maravento/blackip/bipupdate || {
+        echo "ERROR: gitfolder.py failed to clone the repository."
+        exit 1
+    }
     if [ -d "$bipupdate" ]; then
         cd "$bipupdate" || {
             echo "Access Error: $bipupdate"
@@ -107,15 +107,15 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         label=$(basename "${url%%\?*}" | sed 's/[^a-zA-Z0-9._-]/_/g')
 
         if ! curl -k -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-            echo "❌ URL Down: $url"
+            echo "URL Down: $url"
             return 1
         fi
 
         echo -n "$label ... "
         if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture.txt; then
-            echo "✅"
+            echo "OK"
         else
-            echo "❌ ERROR: $url"
+            echo "ERROR: $url"
             return 1
         fi
     }
@@ -162,19 +162,19 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         filename=$(basename "${url%%\?*}")
         # check with curl
         if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-            echo "❌ URL Down: $url"
+            echo "URL Down: $url"
             return 1
         fi
-        # Ddownload
+        # Download
         if ! $wgetd "$url" -O "$filename"; then
-            echo "❌ ERROR: $url"
+            echo "ERROR: $url"
             return 1
         fi
         # extract
         if ! gunzip -c -f "$filename" \
              | grep -a -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "❌ ERROR: $filename"
+            echo "ERROR: $filename"
             rm -f "$filename"
             return 1
         fi
@@ -193,19 +193,19 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         filename=$(basename "${url%%\?*}")
         # check with curl
         if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-            echo "❌ URL Down: $url"
+            echo "URL Down: $url"
             return 1
         fi
         # download
         if ! $wgetd "$url" -O "$filename"; then
-            echo "❌ ERROR: $url"
+            echo "ERROR: $url"
             return 1
         fi
         # extract
         if ! unzip -p "$filename" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "❌ ERROR: $filename"
+            echo "ERROR: $filename"
             rm -f "$filename"
             return 1
         fi
@@ -222,19 +222,19 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         filename=$(basename "${url%%\?*}")
         # check with curl
         if ! curl -k -s -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-            echo "❌ URL Down: $url"
+            echo "URL Down: $url"
             return 1
         fi
         # download
         if ! $wgetd "$url" -O "$filename"; then
-            echo "❌ ERROR: $url"
+            echo "ERROR: $url"
             return 1
         fi
         # extract
         if ! unzip -p "$filename" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "❌ ERROR: $filename"
+            echo "ERROR: $filename"
             rm -f "$filename"
             return 1
         fi
@@ -244,19 +244,10 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     }
     full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
     if [ ! -s capture.txt ]; then
-        echo "❌ ERROR: capture.txt is empty. Aborting."
+        echo "ERROR: capture.txt is empty. Aborting."
         exit 1
     fi    
     echo "OK"
-
-    # CIDR2IP (High consumption of system resources)
-    #function cidr() {
-    #       $wgetd "$1" -O - | sed '/^$/d; /*#/d' | uniq > cidr.txt && sort -o cidr.txt -u cidr.txt >/dev/null 2>&1
-    #       python tools/cidr2ip.py cidr.txt >> bip
-    #}
-    #       cidr 'https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset'
-    #       cidr 'https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt'
-    #echo "OK"
 
     echo "${bip05[$lang]}"
     # debug
@@ -271,9 +262,9 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     ' capture.txt \
     | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' \
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
-    | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u > cleancapture.txt
+    | $reorganize > cleancapture.txt
     if [ ! -s cleancapture.txt ]; then
-        echo "❌ ERROR: cleancapture.txt is empty. Aborting."
+        echo "ERROR: cleancapture.txt is empty. Aborting."
         exit 1
     fi
 
@@ -282,16 +273,9 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     # And add line:
     # acl blackip dst "/path_to_lst/blackip.txt"
     # http_access deny blackip
-    # add black ips/cidr
-    #sed '/^$/d; /#/d' lst/blackcidr.txt >> cleancapture.txt
-    # add iana
-    #sed '/^$/d; /#/d' lst/iana.txt >> cleancapture.txt
-    # exclude allowip
-    sed 's:\/.*::' lst/iana.txt >> lst/allowip.txt
-    #comm -3 <(sort lst/allowip.txt) <(sort cleancapture.txt) | sed -r 's/^\s+*//;s/\s+*$//' > cleancapture2.txt
-    grep -vFf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > cleancapture2.txt
+    grep -vFf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize > cleancapture2.txt
     if [ ! -s cleancapture2.txt ]; then
-        echo "❌ ERROR: cleancapture2.txt is empty. Aborting."
+        echo "ERROR: cleancapture2.txt is empty. Aborting."
         exit 1
     fi
     echo "OK"
@@ -339,7 +323,7 @@ if [ ! -e "$bipupdate"/dnslookup2.txt ]; then
     echo "${bip06[$lang]}"
     sed 's/^\.//g' cleancapture2.txt | sort -u > step1.txt
     if [ ! -s step1.txt ]; then
-        echo "❌ ERROR: step1.txt is empty. Aborting."
+        echo "ERROR: step1.txt is empty. Aborting."
         exit 1
     fi
     total=$(wc -l < step1.txt)
@@ -365,31 +349,32 @@ if [ ! -e "$bipupdate"/dnslookup2.txt ]; then
     echo "OK"
 fi
 
-sleep 10
+sleep 5
 
 # STEP 2:
 echo "${bip07[$lang]}"
 sed 's/^\.//g' fault.txt | sort -u > step2.txt
-if [ ! -s step2.txt ]; then
-    echo "❌ ERROR: step2.txt is empty. Aborting."
-    exit 1
-fi
-total=$(wc -l < step2.txt)
-(
-    while sleep 1; do
-        processed=$(wc -l < dnslookup2.txt 2>/dev/null)
-        percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
-        printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
-    done
-) &
-progress_pid=$!
-if [ -s dnslookup2.txt ]; then
-    awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2.txt step2.txt
+if [ -s step2.txt ]; then
+    total=$(wc -l < step2.txt)
+    (
+        while sleep 1; do
+            processed=$(wc -l < dnslookup2.txt 2>/dev/null)
+            percent=$(awk -v p="$processed" -v t="$total" 'BEGIN { if (t > 0) printf "%.2f", (p/t)*100; else print 100 }')
+            printf "Processed: %d / %d (%s%%)\r" "$processed" "$total" "$percent"
+        done
+    ) &
+    progress_pid=$!
+    if [ -s dnslookup2.txt ]; then
+        awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2.txt step2.txt
+    else
+        cat step2.txt
+    fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2.txt
+    kill "$progress_pid" 2>/dev/null
+    echo
 else
-    cat step2.txt
-fi | xargs -I {} -P "$PROCS" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2.txt
-kill "$progress_pid" 2>/dev/null
-echo
+    echo "No FAULTs pending from STEP 1 - skipping STEP 2 lookups."
+fi
+touch dnslookup2.txt
 
 sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt
 sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt
@@ -397,32 +382,30 @@ echo "OK"
 
 # RELOAD SQUID-CACHE
 echo "${bip08[$lang]}"
-sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip.txt
-sudo cp -f blackip.txt "$route"/blackip.txt
+sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
+sudo cp -f blackip_preview.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > squidip.txt
-## Remove conflicts from blackip.txt
-grep -Fvxf <(cat lst/iana.txt lst/dns.txt | sed '/^#/d') squidip.txt | sort -u > cleanip.txt
-cat cleanip.txt | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > debugip.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize > squidip.txt
+# Remove conflicts (iana.txt, dns.txt)
+grepcidr -vf lst/iana.txt squidip.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | sort -u > cleanip.txt
+cat cleanip.txt | $reorganize > debugip.txt
 python tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
-sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq > blackip.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | $reorganize > blackip.txt
 if [ ! -s blackip.txt ]; then
-    echo "❌ ERROR: blackip.txt is empty. Aborting."
+    echo "ERROR: blackip.txt is empty. Aborting."
     exit 1
 fi
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
-if ! sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"; then
-    echo "${bip09[$lang]}"
-fi
+sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"
 
 # DELETE REPOSITORY (Optional)
 cd ..
 rm -rf "$bipupdate" >/dev/null 2>&1
 
 # END
-sudo bash -c 'echo "BlackIP Done: $(date)" | tee -a /var/log/syslog'
+echo "BlackIP Done: $(date)"
 echo "${bip09[$lang]}"
