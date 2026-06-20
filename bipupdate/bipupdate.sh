@@ -9,9 +9,19 @@
 
 # check no-root
 if [ "$(id -u)" -eq 0 ]; then
-    echo "❌ This script should not be run as root."
+    echo "This script should not be run as root."
     exit 1
 fi
+
+# DEPENDENCIES
+pkgs='wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host'
+for pkg in $pkgs; do
+  if ! dpkg -s "$pkg" &>/dev/null && ! command -v "$pkg" &>/dev/null; then
+    echo "'$pkg' is not installed. Run:"
+    echo "sudo apt install $pkg"
+    exit 1
+  fi
+done
 
 # Language spa-eng
 bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
@@ -38,11 +48,7 @@ wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --t
 route="/etc/acl"
 # CREATE PATH
 if [ ! -d "$route" ]; then sudo mkdir -p "$route"; fi
-# Absolute path
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-clear
-echo
 echo "Blackip Project"
 echo "${bip01[$lang]}"
 
@@ -386,13 +392,13 @@ sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
 sudo cp -f blackip_preview.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize > squidip.txt
-# Remove conflicts (iana.txt, dns.txt)
-grepcidr -vf lst/iana.txt squidip.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | sort -u > cleanip.txt
-cat cleanip.txt | $reorganize > debugip.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize | sort -u > cleanip.txt
 python tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
-sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | $reorganize > blackip.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | $reorganize > blackip_tmp.txt
+# Remove conflicts (iana.txt, dns.txt)
+grepcidr -vf lst/iana.txt blackip_tmp.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | $reorganize > blackip.txt
+rm -f blackip_tmp.txt
 if [ ! -s blackip.txt ]; then
     echo "ERROR: blackip.txt is empty. Aborting."
     exit 1

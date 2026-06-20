@@ -22,7 +22,7 @@ BlackIP es un proyecto que recopila y unifica listas públicas de bloqueo de dir
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 444381 | 6,3 Mb |
+| blackip.txt | 448906 | 6,3 Mb |
 
 ## GIT CLONE
 
@@ -64,6 +64,7 @@ Edite su bash script de Iptables y agregue las siguientes líneas (ejecutar con 
 ```bash
 #!/bin/bash
 # https://linux.die.net/man/8/ipset
+# dependencie: sudo apt install ipset
 
 # Replace with your path to blackip.txt
 ips=/path_to_lst/blackip.txt
@@ -93,7 +94,7 @@ ipset -! restore < /tmp/ipset_blackip.txt
 # iptables rules
 iptables -t raw -I PREROUTING -m set --match-set blackip src -j DROP
 iptables -t raw -I PREROUTING -m set --match-set blackip dst -j DROP
-iptables -t raw -I OUTPUT -m set --match-set blackip dst -j DROP
+iptables -t raw -I OUTPUT     -m set --match-set blackip dst -j DROP
 echo "done"
 ```
 
@@ -214,7 +215,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 >La actualización requiere python 3x y bash 5x
 
 ```bash
-wget git curl idn2 perl tar rar unrar unzip zip ipset squid grepcidr python-is-python3 (optional)
+pkgs='wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host'
 ```
 
 #### Capture Public Blocklists
