@@ -19,6 +19,27 @@
   </tr>
 </table>
 
+## Requirements
+
+---
+
+**⚠️ WARNING:** Only tested on Ubuntu 24.04 LTS. Other versions or distros not tested, use at your own risk.
+
+- `ipset`
+
+```bash
+apt install -y ipset
+```
+
+### Optional (for `bipupdate.sh`)
+
+- Python 3.x, Bash 5.x
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid`, `python3`, `bind9-host`
+
+```bash
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host
+```
+
 ## DATA SHEET
 
 ---
@@ -59,7 +80,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.ta
 ### Checksum
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.tar.gz && cat blackip.tar.gz* | tar xzf -
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/blackip.txt.sha256
 LOCAL=$(sha256sum blackip.txt | awk '{print $1}'); REMOTE=$(awk '{print $1}' blackip.txt.sha256); echo "$LOCAL" && echo "$REMOTE" && [ "$LOCAL" = "$REMOTE" ] && echo OK || echo FAIL
 ```
@@ -169,7 +189,7 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
     <td style="width: 50%; vertical-align: top;">
       <ul>
         <li>Ipset allows mass filtering, at a much higher processing speed than other solutions (check <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>).</li>
-        <li>Blackip is a list containing millions of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> (for more information, check <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">ipset's hashsize and maxelem parameters</a>).</li>
+        <li>Blackip is a list containing thousands of IPv4 lines and to be supported by Ipset, we had to arbitrarily increase the parameter <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> (for more information, check <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">ipset's hashsize and maxelem parameters</a>).</li>
         <li>Ipset/iptables limitation: "<i>When entries added by the SET target of iptables/ip6tables, then the hash size is fixed and the set won't be duplicated, even if the new entry cannot be added to the set</i>" (for more information, check <a href="https://ipset.netfilter.org/ipset.man.html" target="_blank">Man Ipset</a>).</li>
         <li>Heavy use of these rules can slow down your PC to the point of crashing. Use them at your own risk.</li>
         <li>Tested on iptables v1.8.7, ipset v7.15, protocol version: 7.</li>
@@ -178,7 +198,7 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
     <td style="width: 50%; vertical-align: top;">
       <ul>
         <li>Ipset permite realizar filtrado masivo, a una velocidad de procesamiento muy superior a otras soluciones (consulte <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>).</li>
-        <li>Blackip es una lista que contiene millones de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> (para más información, consulte <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">ipset's hashsize and maxelem parameters</a>).</li>
+        <li>Blackip es una lista que contiene miles de líneas IPv4 y para ser soportada por Ipset, hemos tenido que aumentar arbitrariamente el parámetro <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> (para más información, consulte <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">ipset's hashsize and maxelem parameters</a>).</li>
         <li>Limitación de Ipset/iptables: "<i>Cuando las entradas agregadas por el objetivo SET de iptables/ip6tables, el tamaño del hash es fijo y el conjunto no se duplicará, incluso si la nueva entrada no se puede agregar al conjunto</i>" (para más información, consulte <a href="https://ipset.netfilter.org/ipset.man.html" target="_blank">Man Ipset</a>).</li>
         <li>El uso intensivo de estas reglas puede ralentizar su PC al punto de hacerlo colapsar. Úselas bajo su propio riesgo.</li>
         <li>Probado en: iptables v1.8.7, ipset v7.15, protocol version: 7.</li>
@@ -241,7 +261,7 @@ http_access deny blackip
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      BlackIP contains millions of IP addresses, therefore it is recommended:
+      BlackIP contains thousands of IP addresses, therefore it is recommended:
       <ul>
         <li>Use <code>blackcidr.txt</code> to add IP/CIDR that are not included in <code>blackip.txt</code> (By default it contains some Block CIDR).</li>
         <li>Use <code>allowip.txt</code> (a whitelist of IPv4 IP addresses such as Hotmail, Gmail, Yahoo. etc.).</li>
@@ -252,7 +272,7 @@ http_access deny blackip
       </ul>
     </td>
     <td style="width: 50%; vertical-align: top;">
-      BlackIP contiene millones de direcciones IP, por tanto se recomienda:
+      BlackIP contiene miles de direcciones IP, por tanto se recomienda:
       <ul>
         <li>Use <code>blackcidr.txt</code> para agregar IP/CIDR que no están incluidas en <code>blackip.txt</code> (Por defecto contiene algunos Block CIDR).</li>
         <li>Use <code>allowip.txt</code> (una lista blanca de direcciones IPv4 tales como Hotmail, Gmail, Yahoo, etc).</li>
@@ -282,7 +302,7 @@ http_access allow iana
 
 # Allow Rule for DNS ACL (excluded from blackip.txt)
 acl dnslst dst "/path_to/dns.txt"
-http_access allow dnslst # or deny dnlst
+http_access allow dnslst # or deny dnslst
 
 # Block Rule for IP/CIDR ACL (not included in blackip.txt)
 acl blackcidr dst "/path_to/blackcidr.txt"
@@ -334,23 +354,6 @@ http_access deny direct_ipv6
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
-#### Dependencies
-
-<table width="100%">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      Update requires python 3x and bash 5x.
-    </td>
-    <td style="width: 50%; vertical-align: top;">
-      La actualización requiere python 3x y bash 5x.
-    </td>
-  </tr>
-</table>
-
-```bash
-pkgs='wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host'
-```
-
 #### Capture Public Blocklists
 
 <table width="100%">
@@ -389,10 +392,10 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      Run Squid-Cache with BlackIP and any error sends it to <code>SquidError.txt</code> on your desktop.
+      Run Squid-Cache with BlackIP and any error sends it to <code>SquidErrors.txt</code>.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      Corre Squid-Cache con BlackIP y cualquier error lo envía a <code>SquidError.txt</code> en su escritorio.
+      Corre Squid-Cache con BlackIP y cualquier error lo envía a <code>SquidErrors.txt</code>.
     </td>
   </tr>
 </table>
@@ -402,10 +405,10 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      Both <code>bipupdate.sh</code> and <code>aipupdate.sh</code> generate a log file (<code>bipupdate.log</code> / <code>aipupdate.log</code>) in the same directory where they are executed.
+      <code>bipupdate.sh</code> generates a log file (<code>bipupdate.log</code>) in the same directory where it is executed.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> y <code>aipupdate.sh</code> generan un archivo de log (<code>bipupdate.log</code> / <code>aipupdate.log</code>) en el mismo directorio donde se ejecutan.
+      <code>bipupdate.sh</code> genera un archivo de log (<code>bipupdate.log</code>) en el mismo directorio donde se ejecuta.
     </td>
   </tr>
 </table>
@@ -416,7 +419,6 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
   <tr>
     <td style="width: 50%; vertical-align: top;">
       <ul>
-        <li><code>tw.txt</code> containing IPs of teamviewer servers. By default they are commented. To block or authorize them, activate them in <code>bipupdate.sh</code>. To update it use <code>tw.sh</code>.</li>
         <li>You must activate the rules in <a href="http://www.squid-cache.org/" target="_blank">Squid</a> before using <code>bipupdate.sh</code>.</li>
         <li>Some lists have download restrictions, so do not run <code>bipupdate.sh</code> more than once a day.</li>
         <li>During the execution of <code>bipupdate.sh</code> it will request privileges when needed.</li>
@@ -425,7 +427,6 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
     </td>
     <td style="width: 50%; vertical-align: top;">
       <ul>
-        <li><code>tw.txt</code> contiene IPs de servidores teamviewer. Por defecto están comentadas. Para bloquearlas o autorizarlas actívelas en <code>bipupdate.sh</code>. Para actualizarla use <code>tw.sh</code>.</li>
         <li>Antes de utilizar <code>bipupdate.sh</code> debe activar las reglas en <a href="http://www.squid-cache.org/" target="_blank">Squid</a>.</li>
         <li>Algunas listas tienen restricciones de descarga, entonces no ejecute <code>bipupdate.sh</code> más de una vez al día.</li>
         <li>Durante la ejecución de <code>bipupdate.sh</code> solicitará privilegios cuando los necesite.</li>
@@ -449,7 +450,7 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 </table>
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/wlst/aipupdate.sh && chmod +x aipupdate.sh && ./aipupdate.sh
+wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/aipupdate.sh && chmod +x aipupdate.sh && ./aipupdate.sh
 ```
 
 ## SOURCES
@@ -459,7 +460,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 ### BLOCKLISTS
 
 - [abuse.ch - Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
-- [abuse.ch - Zeustracker blocklist](https://zeustracker.abuse.ch/blocklist.php?download=badips)
 - [alienvault - reputation](https://reputation.alienvault.com/reputation.generic)
 - [BBcan177 - minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
 - [BBcan177 - pfBlockerNG Malicious Threats](https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw)
@@ -482,17 +482,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Myip - full BL](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 - [MyIP - latest BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
 - [Nick Galbreath client9 - datacenters](https://raw.githubusercontent.com/client9/ipcat/master/datacenters.csv)
-- [OpenBL - base](http://www.openbl.org/lists/base.txt)
 - [opsxcq - proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
 - [Project Honeypot - list_of_ips](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 - [romainmarcoux - malicious-ip](https://github.com/romainmarcoux/malicious-ip/blob/main/full-aa.txt)
 - [Rulez - BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
-- [rulez.sk - bruteforceblocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
-- [SecOps-Institute - TOR Exit Node List](https://raw.githubusercontent.com/SecOps-Institute/Tor-IP-Addresses/master/tor-exit-nodes.lst)
 - [Spamhaus - drop-lasso](https://www.spamhaus.org/drop/drop.lasso)
 - [stamparm - ipsum](https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt)
 - [StopForumSpam - 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
-- [StopForumSpam - Toxic CIDR](https://www.stopforumspam.com/downloads/toxic_ip_cidr.txt)
 - [torproject - TOR BulkExitList](https://check.torproject.org/torbulkexitlist?ip=1.1.1.1)
 - [Uceprotect - backscatterer Level 1](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-1.uceprotect.net.gz)
 - [Uceprotect - backscatterer Level 2](http://wget-mirrors.uceprotect.net/rbldnsd-all/dnsbl-2.uceprotect.net.gz)
@@ -504,16 +500,13 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 - [Allow IP/CIDR extra](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [Allow IPs](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
-- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/allowurls.txt)
-- [Amazon AWS](https://ip-ranges.amazonaws.com/ip-ranges.json)
+- [Allow URLs](https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/debugwl.txt)
 - [Block IP/CIDR Extra](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [DNS](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [IANA](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
-- [Microsoft Azure Datacenter](https://www.microsoft.com/en-us/download/details.aspx?id=41653)
 
 ### WORKTOOLS
 
-- [cidr2ip](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
 - [Debug IPs](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
 
 ## NOTICE
@@ -541,20 +534,9 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
   </tr>
 </table>
 
-## CONTRIBUTIONS
+## ACKNOWLEDGMENTS
 
 ---
-
-<table width="100%">
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      We thank all those who contributed to this project. Those interested may contribute sending us new "Blocklist" links to be included in this project.
-    </td>
-    <td style="width: 50%; vertical-align: top;">
-      Agradecemos a todos aquellos que han contribuido a este proyecto. Los interesados pueden contribuir, enviándonos enlaces de nuevas "Blocklist", para ser incluidas en este proyecto.
-    </td>
-  </tr>
-</table>
 
 Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 

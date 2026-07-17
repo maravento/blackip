@@ -4,12 +4,23 @@
 ################################################################################
 #
 # BlackIP Update
+# log: bipupdate.log (generated in the execution directory)
 #
 ################################################################################
 
+set -uo pipefail
+
 # check no-root
-if [ "$(id -u)" -eq 0 ]; then
-    echo "This script should not be run as root."
+if [ "$(id -u)" == "0" ]; then
+    echo "[ERROR] This script should not be run as root."
+    exit 1
+fi
+
+# prevent overlapping runs
+SCRIPT_LOCK="/var/lock/$(basename "$0" .sh).lock"
+exec 200>"$SCRIPT_LOCK"
+if ! flock -n 200; then
+    echo "[ERROR] Script $(basename "$0") is already running"
     exit 1
 fi
 
@@ -32,13 +43,14 @@ bip05=("Debugging BlackIP..." "Depurando BlackIP...")
 bip06=("1st DNS Lookup..." "1ra Busqueda DNS...")
 bip07=("2nd DNS Lookup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
-bip09=("Check Squid-Error" "Verifique Squid-Error")
+bip09=("Check SquidErrors.txt" "Verifique SquidErrors.txt")
 
 lang=$([[ "${LANG,,}" =~ ^es ]] && echo 1 || echo 0)
 
 # VARIABLES
 # Absolute path
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
 LOGFILE="$(basename "$0" .sh).log"
 exec > >(tee "$LOGFILE") 2>&1
 bipupdate="$SCRIPT_DIR/bipupdate"
@@ -94,6 +106,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         echo "ERROR: gitfolder.py failed to clone the repository."
         exit 1
     }
+    rm -f gitfolder.py
     if [ -d "$bipupdate" ]; then
         cd "$bipupdate" || {
             echo "Access Error: $bipupdate"
@@ -252,7 +265,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     if [ ! -s capture.txt ]; then
         echo "ERROR: capture.txt is empty. Aborting."
         exit 1
-    fi    
+    fi
     echo "OK"
 
     echo "${bip05[$lang]}"
@@ -279,7 +292,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     # And add line:
     # acl blackip dst "/path_to_lst/blackip.txt"
     # http_access deny blackip
-    grep -vFf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize > cleancapture2.txt
+    grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $reorganize > cleancapture2.txt
     if [ ! -s cleancapture2.txt ]; then
         echo "ERROR: cleancapture2.txt is empty. Aborting."
         exit 1
@@ -299,24 +312,24 @@ fi
 # Xargs Parallel Limit:
 # The practical limit for parallel jobs with xargs is usually high (at least 127; check your system with: xargs --show-limits)
 #
-# Number of parallel processes (PROCS) = Logical CPUs × multiplier
+# Number of parallel processes (PROCS) = Logical CPUs x multiplier
 # The multiplier (e.g., 2, 4) controls how aggressively to parallelize. More isn't always better.
 #
-# ┌───────────────────────────────────────────────────────┐
-# │ How to determine your CPU configuration (Linux only): │
-# └───────────────────────────────────────────────────────┘
+# +-------------------------------------------------------+
+# | How to determine your CPU configuration (Linux only): |
+# +-------------------------------------------------------+
 # Physical cores: grep '^core id' /proc/cpuinfo | sort -u | wc -l
 # Logical CPUs (threads): nproc
 #
 # Recommended:
-#   PROCS=$(($(nproc)))      # Conservative (network-friendly)
-#   PROCS=$(($(nproc) * 2))  # Balanced
-#   PROCS=$(($(nproc) * 4))  # Aggressive (default)
-#   PROCS=$(($(nproc) * 8))  # Extreme (8 or higher, use with caution)
+# PROCS=$(($(nproc))) # Conservative (network-friendly)
+# PROCS=$(($(nproc) * 2)) # Balanced
+# PROCS=$(($(nproc) * 4)) # Aggressive (default)
+# PROCS=$(($(nproc) * 8)) # Extreme (8 or higher, use with caution)
 #
 # Example: Core i5 with 4 physical cores and 8 threads (Hyper-Threading)
-#   nproc          → 8
-#   PROCS=$((8 * 4)) → 32 parallel queries
+# nproc -> 8
+# PROCS=$((8 * 4)) -> 32 parallel queries
 #
 # Adjust based on:
 # - Your CPU
@@ -393,7 +406,7 @@ sudo cp -f blackip_preview.txt "$route"/blackip.txt
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
 grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize | sort -u > cleanip.txt
-python tools/debugbip.py
+python3 tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
 sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | $reorganize > blackip_tmp.txt
 # Remove conflicts (iana.txt, dns.txt)
