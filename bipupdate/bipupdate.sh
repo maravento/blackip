@@ -34,6 +34,56 @@ for pkg in $pkgs; do
   fi
 done
 
+SQUID_CONF="/etc/squid/squid.conf"
+
+# Edit /etc/squid/squid.conf and add lines:
+# acl blackip dst "/path_to/blackip.txt"
+# http_access deny blackip
+check_squid_acl() {
+    if ! grep -qE '^[[:space:]]*acl[[:space:]]+blackip[[:space:]]+dst' "$SQUID_CONF"; then
+        echo "ERROR: 'acl blackip dst' not found or commented out in $SQUID_CONF. Aborting."
+        exit 1
+    fi
+    if ! grep -qE '^[[:space:]]*http_access[[:space:]]+deny[[:space:]]+blackip' "$SQUID_CONF"; then
+        echo "ERROR: 'http_access deny blackip' not found or commented out in $SQUID_CONF. Aborting."
+        exit 1
+    fi
+}
+
+check_squid_status() {
+    squid_is_active() {
+        if command -v systemctl &>/dev/null; then
+            systemctl is-active --quiet squid
+        else
+            sudo service squid status &>/dev/null
+        fi
+    }
+
+    squid_start() {
+        if command -v systemctl &>/dev/null; then
+            sudo systemctl start squid
+        else
+            sudo service squid start
+        fi
+    }
+
+    if ! squid_is_active; then
+        echo "Squid is not active. Starting it..."
+        squid_start
+        for i in $(seq 1 30); do
+            squid_is_active && break
+            sleep 2
+        done
+        if ! squid_is_active; then
+            echo "ERROR: Squid failed to start. Aborting."
+            exit 1
+        fi
+    fi
+}
+
+check_squid_acl
+check_squid_status
+
 # Language spa-eng
 bip01=("This process can take. Be patient..." "Este proceso puede tardar. Sea paciente...")
 bip02=("Downloading IPDeny..." "Descargando IPDeny...")
@@ -44,6 +94,7 @@ bip06=("1st DNS Lookup..." "1ra Busqueda DNS...")
 bip07=("2nd DNS Lookup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
 bip09=("Check SquidErrors.txt" "Verifique SquidErrors.txt")
+bip10=("Download and apply IPDeny country zones? [y/N]: " "¿Descargar y aplicar zonas de países IPDeny? [s/N]: ")
 
 lang=$([[ "${LANG,,}" =~ ^es ]] && echo 1 || echo 0)
 
@@ -56,6 +107,7 @@ exec > >(tee "$LOGFILE") 2>&1
 bipupdate="$SCRIPT_DIR/bipupdate"
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
+trap 'rm -f capture.txt cleancapture.txt cleancapture2.txt step1.txt step2.txt blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt' INT TERM
 # path_to_lst (Change it to the directory of your preference)
 route="/etc/acl"
 # CREATE PATH
@@ -70,33 +122,40 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     # DELETE OLD REPOSITORY
     rm -rf "$bipupdate" >/dev/null 2>&1
 
-    # DOWNLOADING GEOZONES
-    echo "${bip02[$lang]}"
-    geopath="/etc/zones"
-    url="http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz"
-    # create dir
-    if [ ! -d "$geopath" ]; then
-        sudo mkdir -p "$geopath"
+    # DOWNLOADING GEOZONES (OPTIONAL)
+    download_ipdeny() {
+        echo "${bip02[$lang]}"
+        geopath="/etc/zones"
+        url="http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz"
+        # create dir
+        if [ ! -d "$geopath" ]; then
+            sudo mkdir -p "$geopath"
+        fi
+        # check with curl
+        if ! curl -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
+            echo "URL Down: $url"
+            exit 1
+        fi
+        # download
+        if ! $wgetd "$url" -O all-zones.tar.gz; then
+            echo "ERROR: $url"
+            exit 1
+        fi
+        # extract
+        if ! sudo tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1; then
+            echo "ERROR: all-zones.tar.gz"
+            rm -f all-zones.tar.gz
+            exit 1
+        fi
+        # clean
+        rm -f all-zones.tar.gz >/dev/null 2>&1
+        echo "OK"
+    }
+
+    read -r -p "${bip10[$lang]}" ipdeny_opt
+    if [[ "$ipdeny_opt" =~ ^[YySs]([Ee][Ss]|[Ii])?$ ]]; then
+        download_ipdeny
     fi
-    # check with curl
-    if ! curl -s -f -I --connect-timeout 5 --retry 1 "$url" >/dev/null; then
-        echo "URL Down: $url"
-        exit 1
-    fi
-    # download
-    if ! $wgetd "$url" -O all-zones.tar.gz; then
-        echo "ERROR: $url"
-        exit 1
-    fi
-    # extract
-    if ! sudo tar -C "$geopath" -zxvf all-zones.tar.gz >/dev/null 2>&1; then
-        echo "ERROR: all-zones.tar.gz"
-        rm -f all-zones.tar.gz
-        exit 1
-    fi
-    # clean
-    rm -f all-zones.tar.gz >/dev/null 2>&1
-    echo "OK"
 
     # DOWNLOAD BLACKIP
     echo "${bip03[$lang]}"
@@ -131,7 +190,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         fi
 
         echo -n "$label ... "
-        if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | uniq >> capture.txt; then
+        if $wgetd "$url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sort -u >> capture.txt; then
             echo "OK"
         else
             echo "ERROR: $url"
@@ -145,7 +204,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     blips 'https://cinsscore.com/list/ci-badguys.txt' && sleep 1
     blips 'https://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
     blips 'https://feeds.dshield.org/block.txt' && sleep 1
-    blips 'https://feodotracker.abuse.ch/blocklist/?download=ipblocklist' && sleep 1
+    blips 'https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt' && sleep 1
     blips 'https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw' && sleep 1
     blips 'https://lists.blocklist.de/lists/all.txt' && sleep 1
     blips 'https://myip.ms/files/blacklist/general/latest_blacklist.txt' && sleep 1
@@ -403,6 +462,7 @@ echo "OK"
 echo "${bip08[$lang]}"
 sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
 sudo cp -f blackip_preview.txt "$route"/blackip.txt
+check_squid_status
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
 grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize | sort -u > cleanip.txt
@@ -419,6 +479,7 @@ fi
 
 # COPY ACL TO PATH AND LOG
 sudo cp -f blackip.txt "$route"/blackip.txt
+check_squid_status
 sudo bash -c 'squid -k reconfigure' 2> "$SCRIPT_DIR/SquidErrors.txt"
 
 # DELETE REPOSITORY (Optional)

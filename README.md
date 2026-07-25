@@ -46,7 +46,7 @@ apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 448906 | 6,3 Mb |
+| blackip.txt | 442239 | 6,2 Mb |
 
 ## GIT CLONE
 
@@ -354,6 +354,23 @@ http_access deny direct_ipv6
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/bipupdate.sh && chmod +x bipupdate.sh && ./bipupdate.sh
 ```
 
+#### IPDeny Country Zones (Optional)
+
+<table width="100%">
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      On its first run, <code>bipupdate.sh</code> will ask whether to download and apply <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> country zones to <code>/etc/zones</code>. Answer <code>y</code> to download them, or press Enter (or <code>n</code>) to skip and continue with the blocklists only.
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      En su primera ejecución, <code>bipupdate.sh</code> preguntará si desea descargar y aplicar las zonas de países de <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> en <code>/etc/zones</code>. Responda <code>s</code> para descargarlas, o presione Enter (o <code>n</code>) para omitirlas y continuar solo con las listas de bloqueo.
+    </td>
+  </tr>
+</table>
+
+```bash
+¿Descargar y aplicar zonas de países IPDeny? [s/N]:
+```
+
 #### Capture Public Blocklists
 
 <table width="100%">
@@ -423,6 +440,7 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
         <li>Some lists have download restrictions, so do not run <code>bipupdate.sh</code> more than once a day.</li>
         <li>During the execution of <code>bipupdate.sh</code> it will request privileges when needed.</li>
         <li>If you use <code>aufs</code>, temporarily change it to <code>ufs</code> during the upgrade, to avoid: <code>ERROR: Can't change type of existing cache_dir aufs /var/spool/squid to ufs. Restart required</code>.</li>
+        <li><code>bipupdate.sh</code> intentionally uses <code>--no-check-certificate</code> (wget) and <code>-k</code> (curl). Several public blocklist sources have certificate/SSL issues that block the download when strict verification is enabled. This is a deliberate design choice, not an overlooked vulnerability.</li>
       </ul>
     </td>
     <td style="width: 50%; vertical-align: top;">
@@ -431,6 +449,7 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
         <li>Algunas listas tienen restricciones de descarga, entonces no ejecute <code>bipupdate.sh</code> más de una vez al día.</li>
         <li>Durante la ejecución de <code>bipupdate.sh</code> solicitará privilegios cuando los necesite.</li>
         <li>Si usa <code>aufs</code>, cámbielo temporalmente a <code>ufs</code> durante la actualización, para evitar: <code>ERROR: Can't change type of existing cache_dir aufs /var/spool/squid to ufs. Restart required</code>.</li>
+        <li><code>bipupdate.sh</code> usa intencionalmente <code>--no-check-certificate</code> (wget) y <code>-k</code> (curl). Varias fuentes públicas de listas de bloqueo tienen problemas de certificado/SSL que impiden la descarga si se activa la verificación estricta. Es una decisión de diseño deliberada, no una vulnerabilidad pasada por alto.</li>
       </ul>
     </td>
   </tr>
@@ -459,7 +478,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 
 ### BLOCKLISTS
 
-- [abuse.ch - Feodo Tracker](https://feodotracker.abuse.ch/blocklist/?download=ipblocklist)
+- [abuse.ch - Feodo Tracker](https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt)
 - [alienvault - reputation](https://reputation.alienvault.com/reputation.generic)
 - [BBcan177 - minerchk](https://raw.githubusercontent.com/BBcan177/minerchk/master/ip-only.txt)
 - [BBcan177 - pfBlockerNG Malicious Threats](https://gist.githubusercontent.com/BBcan177/d7105c242f17f4498f81/raw)
@@ -521,6 +540,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>Changes must be submitted via Issues. Pull requests are not accepted.</li>
         <li>Blackip is not a blacklist service itself. It does not independently verify IP addresses. Its purpose is to consolidate and reformat public blacklist sources to make them compatible with Squid/Iptables/Ipset.</li>
         <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <a href="#sources">SOURCES</a>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
+        <li>Available IPv4 address space is nearly exhausted, forcing increasingly frequent reassignment of addresses. As a result, Blackip may contain false positives, and the number of IPv4 addresses to block is expected to keep decreasing over time. If this reassignment trend continues at its current pace, Blackip could eventually stop serving its purpose altogether, simply because there would be no more IPv4 addresses left to block.</li>
       </ul>
     </td>
     <td style="width: 50%; vertical-align: top;">
@@ -529,6 +549,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>Los cambios deben proponerse mediante Issues. No se aceptan Pull Requests.</li>
         <li>Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.</li>
         <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <a href="#sources">SOURCES</a>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
+        <li>El espacio de direcciones IPv4 disponible está casi agotado, lo que obliga a una reasignación cada vez más frecuente de direcciones. Como consecuencia, Blackip puede contener falsos positivos, y se espera que la cantidad de direcciones IPv4 a bloquear siga disminuyendo con el tiempo. Si esta tendencia de reasignación continúa al ritmo actual, Blackip podría eventualmente dejar de cumplir su objetivo, simplemente porque ya no quedarían direcciones IPv4 disponibles para bloquear.</li>
       </ul>
     </td>
   </tr>
