@@ -29,13 +29,11 @@ if ! flock -n 200; then
 fi
 
 # DEPENDENCIES
-pkgs='wget bind9-host grepcidr'
-for pkg in $pkgs; do
-  if ! dpkg -s "$pkg" &>/dev/null && ! command -v "$pkg" &>/dev/null; then
-    echo "'$pkg' is not installed. Run:"
-    echo "sudo apt install $pkg"
-    exit 1
-  fi
+for dep in wget bind9-host grepcidr findutils gawk coreutils; do
+    if ! dpkg -s "$dep" &>/dev/null; then
+        echo "ERROR: Required dependency '$dep' is not installed." >&2
+        exit 1
+    fi
 done
 
 # Language spa-eng

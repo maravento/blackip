@@ -34,10 +34,10 @@ apt install -y ipset
 ### Optional (for `bipupdate.sh`)
 
 - Python 3.x, Bash 5.x
-- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid`, `python3`, `bind9-host`
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `gawk`, `coreutils`
 
 ```bash
-apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils gawk coreutils
 ```
 
 ## DATA SHEET
@@ -362,7 +362,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
       On its first run, <code>bipupdate.sh</code> will ask whether to download and apply <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> country zones to <code>/etc/zones</code>. Answer <code>y</code> to download them, or press Enter (or <code>n</code>) to skip and continue with the blocklists only.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      En su primera ejecución, <code>bipupdate.sh</code> preguntará si desea descargar y aplicar las zonas de países de <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> en <code>/etc/zones</code>. Responda <code>s</code> para descargarlas, o presione Enter (o <code>n</code>) para omitirlas y continuar solo con las listas de bloqueo.
+      En su primera ejecución, <code>bipupdate.sh</code> preguntará si desea descargar y aplicar las zonas de países de <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> en <code>/etc/zones</code>. Responda <code>y</code> para descargarlas, o presione Enter (o <code>n</code>) para omitirlas y continuar solo con las listas de bloqueo.
     </td>
   </tr>
 </table>

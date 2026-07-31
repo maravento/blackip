@@ -25,14 +25,18 @@ if ! flock -n 200; then
 fi
 
 # DEPENDENCIES
-pkgs='wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host'
-for pkg in $pkgs; do
-  if ! dpkg -s "$pkg" &>/dev/null && ! command -v "$pkg" &>/dev/null; then
-    echo "'$pkg' is not installed. Run:"
-    echo "sudo apt install $pkg"
-    exit 1
-  fi
+for dep in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils gawk; do
+    if ! dpkg -s "$dep" &>/dev/null; then
+        echo "ERROR: Required dependency '$dep' is not installed." >&2
+        exit 1
+    fi
 done
+
+# DEPENDENCIES (squid or squid-openssl)
+if ! dpkg -s squid &>/dev/null && ! dpkg -s squid-openssl &>/dev/null; then
+    echo "ERROR: 'squid' or 'squid-openssl' is not installed." >&2
+    exit 1
+fi
 
 SQUID_CONF="/etc/squid/squid.conf"
 
@@ -94,7 +98,7 @@ bip06=("1st DNS Lookup..." "1ra Busqueda DNS...")
 bip07=("2nd DNS Lookup..." "2da Busqueda DNS...")
 bip08=("Squid Reload..." "Reiniciando Squid...")
 bip09=("Check SquidErrors.txt" "Verifique SquidErrors.txt")
-bip10=("Download and apply IPDeny country zones? [y/N]: " "¿Descargar y aplicar zonas de países IPDeny? [s/N]: ")
+bip10=("Download and apply IPDeny country zones? [y/N]: " "¿Descargar y aplicar zonas de países IPDeny? [y/N]: ")
 
 lang=$([[ "${LANG,,}" =~ ^es ]] && echo 1 || echo 0)
 
@@ -105,6 +109,14 @@ cd "$SCRIPT_DIR" || exit 1
 LOGFILE="$(basename "$0" .sh).log"
 exec > >(tee "$LOGFILE") 2>&1
 bipupdate="$SCRIPT_DIR/bipupdate"
+# VALIDATION -- one variable per thing validated; use directly with =~
+_UH_OCT='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
+_UH_IPV4='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
+_UH_CIDR='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])/(3[0-2]|[12][0-9]|[0-9])$'
+_UH_NETMASK='^(0\.0\.0\.0|128\.0\.0\.0|192\.0\.0\.0|224\.0\.0\.0|240\.0\.0\.0|248\.0\.0\.0|252\.0\.0\.0|254\.0\.0\.0|255\.0\.0\.0|255\.128\.0\.0|255\.192\.0\.0|255\.224\.0\.0|255\.240\.0\.0|255\.248\.0\.0|255\.252\.0\.0|255\.254\.0\.0|255\.255\.0\.0|255\.255\.128\.0|255\.255\.192\.0|255\.255\.224\.0|255\.255\.240\.0|255\.255\.248\.0|255\.255\.252\.0|255\.255\.254\.0|255\.255\.255\.0|255\.255\.255\.128|255\.255\.255\.192|255\.255\.255\.224|255\.255\.255\.240|255\.255\.255\.248|255\.255\.255\.252|255\.255\.255\.254|255\.255\.255\.255)$'
+_UH_DNS='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])(,(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]))*$'
+_UH_UINT='^(0|[1-9][0-9]*)$'
+_UH_PREFIX='0.0.0.0:0 128.0.0.0:1 192.0.0.0:2 224.0.0.0:3 240.0.0.0:4 248.0.0.0:5 252.0.0.0:6 254.0.0.0:7 255.0.0.0:8 255.128.0.0:9 255.192.0.0:10 255.224.0.0:11 255.240.0.0:12 255.248.0.0:13 255.252.0.0:14 255.254.0.0:15 255.255.0.0:16 255.255.128.0:17 255.255.192.0:18 255.255.224.0:19 255.255.240.0:20 255.255.248.0:21 255.255.252.0:22 255.255.254.0:23 255.255.255.0:24 255.255.255.128:25 255.255.255.192:26 255.255.255.224:27 255.255.255.240:28 255.255.255.248:29 255.255.255.252:30 255.255.255.254:31 255.255.255.255:32'
 reorganize="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wgetd="wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
 trap 'rm -f capture.txt cleancapture.txt cleancapture2.txt step1.txt step2.txt blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt' INT TERM
@@ -153,7 +165,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
     }
 
     read -r -p "${bip10[$lang]}" ipdeny_opt
-    if [[ "$ipdeny_opt" =~ ^[YySs]([Ee][Ss]|[Ii])?$ ]]; then
+    if [[ "$ipdeny_opt" =~ ^[Yy]([Ee][Ss])?$ ]]; then
         download_ipdeny
     fi
 
@@ -338,7 +350,7 @@ if [ ! -e "$bipupdate"/dnslookup1.txt ]; then
         s/[[:space:]].*//
         s/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/
     ' capture.txt \
-    | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' \
+    | grep -oP "$_UH_IPV4" \
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
     | $reorganize > cleancapture.txt
     if [ ! -s cleancapture.txt ]; then
@@ -468,7 +480,7 @@ sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
 grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $reorganize | sort -u > cleanip.txt
 python3 tools/debugbip.py
 cat lst/blockip.txt >> outip.txt
-sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP '^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$' | $reorganize > blackip_tmp.txt
+sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP "$_UH_IPV4" | $reorganize > blackip_tmp.txt
 # Remove conflicts (iana.txt, dns.txt)
 grepcidr -vf lst/iana.txt blackip_tmp.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | $reorganize > blackip.txt
 rm -f blackip_tmp.txt
