@@ -3,7 +3,6 @@
 [![status-maintained](https://img.shields.io/badge/status-maintained-purple.svg)](https://github.com/maravento/blackip)
 [![last commit](https://img.shields.io/github/last-commit/maravento/blackip)](https://github.com/maravento/blackip)
 [![Stargazers](https://img.shields.io/github/stars/maravento/blackip?label=Stargazers)](https://github.com/maravento/blackip/stargazers)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/maravento/blackip)
 [![Twitter Follow](https://img.shields.io/twitter/follow/maraventostudio.svg)](https://twitter.com/maraventostudio)
 
 <!-- markdownlint-disable MD033 -->
@@ -34,10 +33,10 @@ apt install -y ipset
 ### Optional (for `bipupdate.sh`)
 
 - Python 3.x, Bash 5.x
-- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid`, `python3`, `bind9-host`
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `gawk`, `coreutils`
 
 ```bash
-apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils gawk coreutils
 ```
 
 ## DATA SHEET
@@ -362,7 +361,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
       On its first run, <code>bipupdate.sh</code> will ask whether to download and apply <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> country zones to <code>/etc/zones</code>. Answer <code>y</code> to download them, or press Enter (or <code>n</code>) to skip and continue with the blocklists only.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      En su primera ejecución, <code>bipupdate.sh</code> preguntará si desea descargar y aplicar las zonas de países de <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> en <code>/etc/zones</code>. Responda <code>s</code> para descargarlas, o presione Enter (o <code>n</code>) para omitirlas y continuar solo con las listas de bloqueo.
+      En su primera ejecución, <code>bipupdate.sh</code> preguntará si desea descargar y aplicar las zonas de países de <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> en <code>/etc/zones</code>. Responda <code>y</code> para descargarlas, o presione Enter (o <code>n</code>) para omitirlas y continuar solo con las listas de bloqueo.
     </td>
   </tr>
 </table>
@@ -584,8 +583,8 @@ Special thanks to: [Jhonatan Sneider](https://github.com/sney2002)
 
 | Content | Licensed Under |
 |---|---|
-|Scripts, Binaries, Infrastructure|[![GPL-3.0](https://img.shields.io/badge/Open_Core-GPLv3-blue.svg?style=for-the-badge&labelWidth=120&logoWidth=20)](https://www.gnu.org/licenses/gpl.txt)|
-|RAG, Workers, Specialized Modules, Docs|[![CC](https://img.shields.io/badge/Core_Engine-CC_BY--NC--ND_4.0-lightgrey.svg?style=for-the-badge&labelWidth=120&logoWidth=20)](https://creativecommons.org/licenses/by-nc-nd/4.0/)|
+|Scripts, Binaries, Infrastructure|[![GPL-3.0](https://img.shields.io/badge/Open_Core-GPLv3-blue.svg?style=for-the-badge&labelWidth=120&logoWidth=20)](LICENSE)|
+|RAG, Workers, Specialized Modules, Docs|[![CC](https://img.shields.io/badge/Core_Engine-CC_BY--NC--ND_4.0-lightgrey.svg?style=for-the-badge&labelWidth=120&logoWidth=20)](docs/LICENSE-CC-BY-NC-ND-4.0.md)|
 
 ## DISCLAIMER
 
