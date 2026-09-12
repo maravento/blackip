@@ -22,11 +22,11 @@
 
 📐 [Runtime Architecture Diagram](https://htmlpreview.github.io/?https://raw.githubusercontent.com/maravento/blackip/master/docs/blackip-architecture.html) — visual walkthrough of the update/enforcement pipeline.
 
-## Requirements
+## REQUIREMENTS
 
 ---
 
-**⚠️ WARNING:** Only tested on Ubuntu 24.04 LTS. Other versions or distros not tested, use at your own risk.
+**⚠️ WARNING:** Only tested on Ubuntu 24.04 LTS. Other versions or distributions are not tested and are used at your own risk.
 
 - `ipset`
 
@@ -37,10 +37,10 @@ apt install -y ipset
 ### Optional (for `bipupdate.sh`)
 
 - Python 3.x, Bash 5.x
-- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `gawk`, `coreutils`
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `grep`, `sed`, `coreutils`, `util-linux`, `sudo`
 
 ```bash
-apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils gawk coreutils
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils grep sed coreutils util-linux sudo
 ```
 
 ## DATA SHEET
@@ -311,7 +311,7 @@ http_access allow dnslst # or deny dnslst
 acl blackcidr dst "/path_to/blackcidr.txt"
 http_access deny blackcidr
 
-## Block Rule for BlackIP
+## BLOCK RULE FOR BLACKIP
 acl blackip dst "/path_to/blackip.txt"
 http_access deny blackip
 
@@ -379,10 +379,10 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      Capture IPv4 from downloaded public blocklists (see <a href="#sources">SOURCES</a>) and unify them in a single file.
+      Capture IPv4 from downloaded public blocklists (see <b>SOURCES</b>) and unify them in a single file.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      Captura las IPv4 de las listas de bloqueo públicas descargadas (ver <a href="#sources">FUENTES</a>) y las unifica en un solo archivo.
+      Captura las IPv4 de las listas de bloqueo públicas descargadas (ver <b>SOURCES</b>) y las unifica en un solo archivo.
     </td>
   </tr>
 </table>
@@ -392,10 +392,10 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      Most of the <a href="#sources">SOURCES</a> contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take time. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth.
+      Most of the <b>SOURCES</b> contain millions of invalid and nonexistent IP. Then, a double check of each IP is done (in 2 steps) via DNS and invalid and nonexistent are excluded from Blackip. This process may take time. By default it processes in parallel ≈ 6k to 12k x min, depending on the hardware and bandwidth.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      La mayoría de las <a href="#sources">FUENTES</a> contienen millones de IP inválidas e inexistentes. Entonces se hace una verificación doble de cada IP (en 2 pasos) vía DNS y los inválidos e inexistentes se excluyen de Blackip. Este proceso puede tardar. Por defecto procesa en paralelo ≈ 6k a 12k x min, en dependencia del hardware y ancho de banda.
+      La mayoría de las <b>SOURCES</b> contienen millones de IP inválidas e inexistentes. Entonces se hace una verificación doble de cada IP (en 2 pasos) vía DNS y los inválidos e inexistentes se excluyen de Blackip. Este proceso puede tardar. Por defecto procesa en paralelo ≈ 6k a 12k x min, en dependencia del hardware y ancho de banda.
     </td>
   </tr>
 </table>
@@ -425,13 +425,23 @@ Host 1.9.0.0.in-addr.arpa. not found: 3(NXDOMAIN)
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> generates a log file (<code>bipupdate.log</code>) in the same directory where it is executed.
+      <code>bipupdate.sh</code> generates a log file (<code>bipupdate.log</code>) next to the script, emptied at the start of every run.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> genera un archivo de log (<code>bipupdate.log</code>) en el mismo directorio donde se ejecuta.
+      <code>bipupdate.sh</code> genera un archivo de log (<code>bipupdate.log</code>) junto al script, vaciado al inicio de cada ejecución.
     </td>
   </tr>
 </table>
+
+#### Download Status
+
+| Tag | Shows | English | Español |
+|---|---|---|---|
+| `SAVED:` | File name | The transfer completed and the file was written | La transferencia terminó completa y el archivo quedó escrito |
+| `PARTIAL:` | Full URL | The download started and was cut off before finishing | La descarga arrancó y se cortó antes de terminar |
+| `BUSY:` | Full URL | The server answered 5xx: it is up but not serving the list right now | El servidor respondió 5xx: está activo pero no sirve la lista en ese momento |
+| `TIMEOUT:` | Full URL | The server did not answer at all | El servidor no respondió nada |
+| `BROKEN:` | Full URL | The server answered 404 or 410: broken or nonexistent URL | El servidor respondió 404 o 410: URL rota o inexistente |
 
 #### Important about BlackIP Update
 
@@ -543,7 +553,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>This project includes third-party components.</li>
         <li>Changes must be submitted via Issues. Pull requests are not accepted.</li>
         <li>Blackip is not a blacklist service itself. It does not independently verify IP addresses. Its purpose is to consolidate and reformat public blacklist sources to make them compatible with Squid/Iptables/Ipset.</li>
-        <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <a href="#sources">SOURCES</a>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
+        <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <b>SOURCES</b>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
         <li>Available IPv4 address space is nearly exhausted, forcing increasingly frequent reassignment of addresses. As a result, Blackip may contain false positives, and the number of IPv4 addresses to block is expected to keep decreasing over time. If this reassignment trend continues at its current pace, Blackip could eventually stop serving its purpose altogether, simply because there would be no more IPv4 addresses left to block.</li>
       </ul>
     </td>
@@ -552,7 +562,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>Este proyecto incluye componentes de terceros.</li>
         <li>Los cambios deben proponerse mediante Issues. No se aceptan Pull Requests.</li>
         <li>Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.</li>
-        <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <a href="#sources">SOURCES</a>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
+        <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <b>SOURCES</b>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
         <li>El espacio de direcciones IPv4 disponible está casi agotado, lo que obliga a una reasignación cada vez más frecuente de direcciones. Como consecuencia, Blackip puede contener falsos positivos, y se espera que la cantidad de direcciones IPv4 a bloquear siga disminuyendo con el tiempo. Si esta tendencia de reasignación continúa al ritmo actual, Blackip podría eventualmente dejar de cumplir su objetivo, simplemente porque ya no quedarían direcciones IPv4 disponibles para bloquear.</li>
       </ul>
     </td>

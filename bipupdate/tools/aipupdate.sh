@@ -17,24 +17,33 @@ set -uo pipefail
 # REQUIREMENTS
 # ------------------------------------------------------------------------------
 
+# logging
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+log_file="$script_dir/aipupdate.log"
+{ > "$log_file"; } 2>/dev/null || true
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$log_file" 2>/dev/null || true
+}
+
 # check no-root
 if [ "$(id -u)" == "0" ]; then
-    echo "[ERROR] This script should not be run as root."
+    log "ERROR: This script should not be run as root -- abort"
     exit 1
 fi
 
 # prevent overlapping runs
 script_lock="/var/lock/$(basename "$0" .sh).lock"
+(umask 077; : >> "$script_lock")
 exec 200>"$script_lock"
 if ! flock -n 200; then
-    echo "[ERROR] Script $(basename "$0") is already running"
+    log "ERROR: script $(basename "$0") is already running -- abort"
     exit 1
 fi
 
 # dependencies
-for dep_pkg in wget bind9-host grepcidr findutils gawk coreutils; do
+for dep_pkg in wget curl bind9-host grepcidr findutils grep sed coreutils util-linux; do
     if ! dpkg -s "$dep_pkg" &>/dev/null; then
-        echo "ERROR: Required dependency '$dep_pkg' is not installed." >&2
+        log "ERROR: '$dep_pkg' is not installed -- abort"
         exit 1
     fi
 done
@@ -43,35 +52,44 @@ done
 # VARIABLES
 # ------------------------------------------------------------------------------
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir" || exit 1
-log_file="$(basename "$0" .sh).log"
-exec > >(tee "$log_file") 2>&1
+cd "$script_dir" || { log "ERROR: cannot cd to $(basename "$script_dir") -- abort"; exit 1; }
 lst_dir="$script_dir/../lst"
 allowip_file="$lst_dir/allowip.txt"
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
-trap 'rm -f urls.txt out.txt progress.txt' INT TERM
+trap 'rm -f urls.txt out.txt progress.txt; exit 130' INT TERM
 
-echo "AllowIP Project"
-echo "This process can take a long time. Be patient..."
+log "aipupdate start..."
+log "This process can take a long time. Be patient..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------------------------
 
-echo "Downloading Allow URLs..."
+log "Downloading Allow URLs..."
 intacls() {
-    $wget_opts "$1" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u > urls.txt
+    local source_url="$1" http_code
+    http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+    case "$http_code" in
+        2*|405) ;;
+        000) log "TIMEOUT: $source_url"; return 1 ;;
+        5*)  log "BUSY: $source_url"; return 1 ;;
+        *)   log "BROKEN: $source_url"; return 1 ;;
+    esac
+    if ! $wget_opts "$source_url" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u > urls.txt; then
+        log "PARTIAL: $source_url"
+        return 1
+    fi
+    log "SAVED: $(basename "${source_url%%\?*}")"
 }
 intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/debugwl.txt' && sleep 1
-echo "OK"
+log "OK"
 
 # debbuging allow whiteIP (CIDR)
-echo "Debugging AllowIP..."
+log "Debugging AllowIP..."
 parallel_procs=$(($(nproc) * 4))
 if [ ! -s urls.txt ]; then
-    echo "ERROR: urls file is empty or missing. Aborting."
+    log "ERROR: urls.txt is empty -- abort"
     exit 1
 fi
 total_domains=$(wc -l < urls.txt)
@@ -84,9 +102,9 @@ total_domains=$(wc -l < urls.txt)
     done
 ) &
 progress_pid=$!
-cat urls.txt | xargs -I {} -P "$parallel_procs" bash -c 'for host_prefix in "" "www." "ftp."; do host -t a "${host_prefix}$1"; done; echo >> progress.txt' _ {} | grep "has address" | awk '{ print $4 }' > out.txt
+xargs -I {} -P "$parallel_procs" bash -c 'for host_prefix in "" "www." "ftp."; do host -t a "${host_prefix}$1"; done; echo >> progress.txt' _ {} <urls.txt | grep "has address" | awk '{ print $4 }' > out.txt
 kill "$progress_pid" 2>/dev/null
-echo "OK"
+log "OK"
 # Remove conflicts (iana.txt, dns.txt)
 grepcidr -vf "$lst_dir/iana.txt" out.txt | grep -vFxf <(sed '/^#/d' "$lst_dir/dns.txt") | $sort_uniq > "$allowip_file"
 sort -u "$allowip_file" -o "$allowip_file"
@@ -95,7 +113,7 @@ sort -u "$allowip_file" -o "$allowip_file"
 # END
 # ------------------------------------------------------------------------------
 
-echo "Copy Allow IP to Squid and eliminate the conflicts"
+log "Copy Allow IP to Squid and eliminate the conflicts"
 rm -f urls.txt out.txt progress.txt
-echo "AllowIP Done: $(date)"
+log "aipupdate done at: $(date)"
 command -v notify-send &>/dev/null && notify-send "AllowIP Update Done" "$(date)" -i checkbox

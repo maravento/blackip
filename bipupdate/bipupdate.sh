@@ -14,31 +14,40 @@ set -uo pipefail
 # REQUIREMENTS
 # ------------------------------------------------------------------------------
 
+# logging
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+log_file="$script_dir/bipupdate.log"
+{ > "$log_file"; } 2>/dev/null || true
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$log_file" 2>/dev/null || true
+}
+
 # check no-root
 if [ "$(id -u)" == "0" ]; then
-    echo "[ERROR] This script should not be run as root."
+    log "ERROR: This script should not be run as root -- abort"
     exit 1
 fi
 
 # prevent overlapping runs
 script_lock="/var/lock/$(basename "$0" .sh).lock"
+(umask 077; : >> "$script_lock")
 exec 200>"$script_lock"
 if ! flock -n 200; then
-    echo "[ERROR] Script $(basename "$0") is already running"
+    log "ERROR: script $(basename "$0") is already running -- abort"
     exit 1
 fi
 
 # dependencies
-for dep_pkg in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils gawk; do
+for dep_pkg in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils grep sed coreutils util-linux sudo; do
     if ! dpkg -s "$dep_pkg" &>/dev/null; then
-        echo "ERROR: Required dependency '$dep_pkg' is not installed." >&2
+        log "ERROR: '$dep_pkg' is not installed -- abort"
         exit 1
     fi
 done
 
 # dependencies (squid or squid-openssl)
 if ! dpkg -s squid &>/dev/null && ! dpkg -s squid-openssl &>/dev/null; then
-    echo "ERROR: 'squid' or 'squid-openssl' is not installed." >&2
+    log "ERROR: 'squid' or 'squid-openssl' is not installed -- abort"
     exit 1
 fi
 
@@ -53,11 +62,11 @@ squid_conf="/etc/squid/squid.conf"
 # http_access deny blackip
 check_squid_acl() {
     if ! grep -qE '^[[:space:]]*acl[[:space:]]+blackip[[:space:]]+dst' "$squid_conf"; then
-        echo "ERROR: 'acl blackip dst' not found in $(basename "$squid_conf") -- abort"
+        log "ERROR: 'acl blackip dst' not found -- abort"
         exit 1
     fi
     if ! grep -qE '^[[:space:]]*http_access[[:space:]]+deny[[:space:]]+blackip' "$squid_conf"; then
-        echo "ERROR: 'http_access deny blackip' not found -- abort"
+        log "ERROR: 'http_access deny blackip' not found -- abort"
         exit 1
     fi
 }
@@ -80,16 +89,17 @@ check_squid_status() {
     }
 
     if ! squid_is_active; then
-        echo "Squid is not active. Starting it..."
+        log "INFO: squid is not active, starting it"
         squid_start
         for wait_attempt in $(seq 1 30); do
             squid_is_active && break
             sleep 2
         done
         if ! squid_is_active; then
-            echo "ERROR: Squid failed to start. Aborting."
+            log "ERROR: squid failed to start -- abort"
             exit 1
         fi
+        log "FIX: squid was not active, started -- alert"
     fi
 }
 
@@ -100,11 +110,7 @@ check_squid_status
 # VARIABLES
 # ------------------------------------------------------------------------------
 
-# absolute path
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$script_dir" || exit 1
-log_file="$(basename "$0" .sh).log"
-exec > >(tee "$log_file") 2>&1
+cd "$script_dir" || { log "ERROR: cannot cd to $(basename "$script_dir") -- abort"; exit 1; }
 repo_dir="$script_dir/bipupdate"
 # validation -- one variable per thing validated; use directly with =~
 UH_OCT='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
@@ -115,14 +121,14 @@ UH_DNS='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|
 UH_UINT='^(0|[1-9][0-9]*)$'
 UH_PREFIX='0.0.0.0:0 128.0.0.0:1 192.0.0.0:2 224.0.0.0:3 240.0.0.0:4 248.0.0.0:5 252.0.0.0:6 254.0.0.0:7 255.0.0.0:8 255.128.0.0:9 255.192.0.0:10 255.224.0.0:11 255.240.0.0:12 255.248.0.0:13 255.252.0.0:14 255.254.0.0:15 255.255.0.0:16 255.255.128.0:17 255.255.192.0:18 255.255.224.0:19 255.255.240.0:20 255.255.248.0:21 255.255.252.0:22 255.255.254.0:23 255.255.255.0:24 255.255.255.128:25 255.255.255.192:26 255.255.255.224:27 255.255.255.240:28 255.255.255.248:29 255.255.255.252:30 255.255.255.254:31 255.255.255.255:32'
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
-wget_opts="wget -q -c --show-progress --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
-trap 'rm -f capture.txt cleancapture.txt cleancapture2.txt step1.txt step2.txt blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt' INT TERM
+wget_opts="wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
+trap 'rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt; exit 130' INT TERM
 # path_to_lst (Change it to the directory of your preference)
 acl_dir="/etc/acl"
 if [ ! -d "$acl_dir" ]; then sudo mkdir -p "$acl_dir"; fi
 
-echo "Blackip Project"
-echo "This process can take. Be patient..."
+log "bipupdate start..."
+log "This process can take. Be patient..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
@@ -136,7 +142,8 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
 
     # download geozones (optional)
     download_ipdeny() {
-        echo "Downloading IPDeny..."
+        local http_code
+        log "Downloading IPDeny..."
         zones_dir="/etc/zones"
         source_url="http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz"
         # create dir
@@ -144,24 +151,28 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
             sudo mkdir -p "$zones_dir"
         fi
         # check with curl
-        if ! curl -s -f -I --connect-timeout 5 --retry 1 "$source_url" >/dev/null; then
-            echo "URL Down: $source_url"
-            exit 1
-        fi
+        http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+        case "$http_code" in
+            2*|405) ;;
+            000) log "TIMEOUT: $source_url"; exit 1 ;;
+            5*)  log "BUSY: $source_url"; exit 1 ;;
+            *)   log "BROKEN: $source_url"; exit 1 ;;
+        esac
         # download
         if ! $wget_opts "$source_url" -O all-zones.tar.gz; then
-            echo "ERROR: $source_url"
+            log "PARTIAL: $source_url"
             exit 1
         fi
+        log "SAVED: all-zones.tar.gz"
         # extract
         if ! sudo tar -C "$zones_dir" -zxvf all-zones.tar.gz >/dev/null 2>&1; then
-            echo "ERROR: all-zones.tar.gz"
+            log "ERROR: cannot extract all-zones.tar.gz -- abort"
             rm -f all-zones.tar.gz
             exit 1
         fi
         # clean
         rm -f all-zones.tar.gz >/dev/null 2>&1
-        echo "OK"
+        log "OK"
     }
 
     read -r -p "Download and apply IPDeny country zones? [y/N]: " ipdeny_answer
@@ -170,42 +181,44 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     fi
 
     # download blackip
-    echo "Downloading BlackIP..."
+    log "Downloading BlackIP..."
     $wget_opts https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py
     chmod +x gitfolder.py
     python3 gitfolder.py https://github.com/maravento/blackip/bipupdate || {
-        echo "ERROR: gitfolder.py failed to clone the repository."
+        log "ERROR: gitfolder.py failed to clone bipupdate -- abort"
         exit 1
     }
     rm -f gitfolder.py
     if [ -d "$repo_dir" ]; then
         cd "$repo_dir" || {
-            echo "Access Error: $repo_dir"
+            log "ERROR: cannot cd to $(basename "$repo_dir") -- abort"
             exit 1
         }
     else
-        echo "Does not exist: $repo_dir"
+        log "ERROR: $(basename "$repo_dir") does not exist -- abort"
         exit 1
     fi
 
     # downloading blocklists
-    echo "Downloading Blocklists..."
+    log "Downloading Blocklists..."
     blips() {
         local source_url="$1"
-        local source_label
+        local source_label http_code
 
         source_label=$(basename "${source_url%%\?*}" | sed 's/[^a-zA-Z0-9._-]/_/g')
 
-        if ! curl -k -s -f -I --connect-timeout 5 --retry 1 "$source_url" >/dev/null; then
-            echo "URL Down: $source_url"
-            return 1
-        fi
+        http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+        case "$http_code" in
+            2*|405) ;;
+            000) log "TIMEOUT: $source_url"; return 1 ;;
+            5*)  log "BUSY: $source_url"; return 1 ;;
+            *)   log "BROKEN: $source_url"; return 1 ;;
+        esac
 
-        echo -n "$source_label ... "
         if $wget_opts "$source_url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sort -u >> capture.txt; then
-            echo "OK"
+            log "SAVED: $source_label"
         else
-            echo "ERROR: $source_url"
+            log "PARTIAL: $source_url"
             return 1
         fi
     }
@@ -251,20 +264,24 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
-        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$source_url" >/dev/null; then
-            echo "URL Down: $source_url"
-            return 1
-        fi
+        http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+        case "$http_code" in
+            2*|405) ;;
+            000) log "TIMEOUT: $source_url"; return 1 ;;
+            5*)  log "BUSY: $source_url"; return 1 ;;
+            *)   log "BROKEN: $source_url"; return 1 ;;
+        esac
         # Download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            echo "ERROR: $source_url"
+            log "PARTIAL: $source_url"
             return 1
         fi
+        log "SAVED: $download_file"
         # extract
         if ! gunzip -c -f "$download_file" \
              | grep -a -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "ERROR: $download_file"
+            log "ERROR: cannot extract $download_file -- skip"
             rm -f "$download_file"
             return 1
         fi
@@ -282,20 +299,24 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
-        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$source_url" >/dev/null; then
-            echo "URL Down: $source_url"
-            return 1
-        fi
+        http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+        case "$http_code" in
+            2*|405) ;;
+            000) log "TIMEOUT: $source_url"; return 1 ;;
+            5*)  log "BUSY: $source_url"; return 1 ;;
+            *)   log "BROKEN: $source_url"; return 1 ;;
+        esac
         # download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            echo "ERROR: $source_url"
+            log "PARTIAL: $source_url"
             return 1
         fi
+        log "SAVED: $download_file"
         # extract
         if ! unzip -p "$download_file" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "ERROR: $download_file"
+            log "ERROR: cannot extract $download_file -- skip"
             rm -f "$download_file"
             return 1
         fi
@@ -311,20 +332,24 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
-        if ! curl -k -s -I --connect-timeout 5 --retry 1 "$source_url" >/dev/null; then
-            echo "URL Down: $source_url"
-            return 1
-        fi
+        http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
+        case "$http_code" in
+            2*|405) ;;
+            000) log "TIMEOUT: $source_url"; return 1 ;;
+            5*)  log "BUSY: $source_url"; return 1 ;;
+            *)   log "BROKEN: $source_url"; return 1 ;;
+        esac
         # download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            echo "ERROR: $source_url"
+            log "PARTIAL: $source_url"
             return 1
         fi
+        log "SAVED: $download_file"
         # extract
         if ! unzip -p "$download_file" \
              | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" \
              | sort -u >> capture.txt; then
-            echo "ERROR: $download_file"
+            log "ERROR: cannot extract $download_file -- skip"
             rm -f "$download_file"
             return 1
         fi
@@ -334,12 +359,12 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     }
     full_blacklist_database 'https://myip.ms/files/blacklist/general/full_blacklist_database.zip'
     if [ ! -s capture.txt ]; then
-        echo "ERROR: capture.txt is empty. Aborting."
+        log "ERROR: capture.txt is empty -- abort"
         exit 1
     fi
-    echo "OK"
+    log "OK"
 
-    echo "Debugging BlackIP..."
+    log "Debugging BlackIP..."
     # debug
     sed -r '
         /:/d
@@ -354,7 +379,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
     | $sort_uniq > cleancapture.txt
     if [ ! -s cleancapture.txt ]; then
-        echo "ERROR: cleancapture.txt is empty. Aborting."
+        log "ERROR: cleancapture.txt is empty -- abort"
         exit 1
     fi
 
@@ -365,10 +390,10 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     # http_access deny blackip
     grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $sort_uniq > cleancapture2.txt
     if [ ! -s cleancapture2.txt ]; then
-        echo "ERROR: cleancapture2.txt is empty. Aborting."
+        log "ERROR: cleancapture2.txt is empty -- abort"
         exit 1
     fi
-    echo "OK"
+    log "OK"
   else
     cd "$repo_dir"
 fi
@@ -413,10 +438,10 @@ parallel_procs=$(($(nproc) * 4))
 
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
-    echo "1st DNS Lookup..."
+    log "1st DNS Lookup..."
     sed 's/^\.//g' cleancapture2.txt | sort -u > step1.txt
     if [ ! -s step1.txt ]; then
-        echo "ERROR: step1.txt is empty. Aborting."
+        log "ERROR: step1.txt is empty -- abort"
         exit 1
     fi
     total_domains=$(wc -l < step1.txt)
@@ -439,13 +464,13 @@ if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
     sed '/^FAULT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
     sed '/^HIT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
     sort -o fault.txt -u fault.txt
-    echo "OK"
+    log "OK"
 fi
 
 sleep 5
 
 # step 2:
-echo "2nd DNS Lookup..."
+log "2nd DNS Lookup..."
 sed 's/^\.//g' fault.txt | sort -u > step2.txt
 if [ -s step2.txt ]; then
     total_domains=$(wc -l < step2.txt)
@@ -465,19 +490,19 @@ if [ -s step2.txt ]; then
     kill "$progress_pid" 2>/dev/null
     echo
 else
-    echo "No FAULTs pending from STEP 1 - skipping STEP 2 lookups."
+    log "INFO: no FAULTs pending from step 1 -- skip"
 fi
 touch dnslookup2.txt
 
 sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt
 sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt
-echo "OK"
+log "OK"
 
 # ------------------------------------------------------------------------------
 # RELOAD
 # ------------------------------------------------------------------------------
 
-echo "Squid Reload..."
+log "Squid Reload..."
 sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
 sudo cp -f blackip_preview.txt "$acl_dir"/blackip.txt
 check_squid_status
@@ -491,7 +516,7 @@ sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP "$UH_IPV4" | $sort_uniq > blac
 grepcidr -vf lst/iana.txt blackip_tmp.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | $sort_uniq > blackip.txt
 rm -f blackip_tmp.txt
 if [ ! -s blackip.txt ]; then
-    echo "ERROR: blackip.txt is empty. Aborting."
+    log "ERROR: blackip.txt is empty -- abort"
     exit 1
 fi
 
@@ -508,5 +533,5 @@ rm -rf "$repo_dir" >/dev/null 2>&1
 # END
 # ------------------------------------------------------------------------------
 
-echo "BlackIP Done: $(date)"
-echo "Check SquidErrors.txt"
+log "bipupdate done at: $(date)"
+log "Check SquidErrors.txt"
