@@ -388,9 +388,9 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     # And add line:
     # acl blackip dst "/path_to_lst/blackip.txt"
     # http_access deny blackip
-    grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $sort_uniq > cleancapture2.txt
-    if [ ! -s cleancapture2.txt ]; then
-        log "ERROR: cleancapture2.txt is empty -- abort"
+    grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $sort_uniq > dnsinput.txt
+    if [ ! -s dnsinput.txt ]; then
+        log "ERROR: dnsinput.txt is empty -- abort"
         exit 1
     fi
     log "OK"
@@ -439,7 +439,7 @@ parallel_procs=$(($(nproc) * 4))
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
     log "1st DNS Lookup..."
-    sed 's/^\.//g' cleancapture2.txt | sort -u > step1.txt
+    sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt
     if [ ! -s step1.txt ]; then
         log "ERROR: step1.txt is empty -- abort"
         exit 1

@@ -49,7 +49,7 @@ apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 442239 | 6,2 Mb |
+| blackip.txt | 468087 | 6,6 Mb |
 
 ## GIT CLONE
 
