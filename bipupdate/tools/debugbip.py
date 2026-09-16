@@ -9,5 +9,5 @@ try:
     with open("outip.txt", "w") as f:
         f.write("\n".join(sorted(a.difference(b))) + "\n")
 except FileNotFoundError as e:
-    print("Error: %s" % e)
+    print("ERROR: %s -- abort" % e)
     sys.exit(1)
