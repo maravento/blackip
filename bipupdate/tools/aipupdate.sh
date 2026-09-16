@@ -60,13 +60,13 @@ wget_opts='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --
 trap 'rm -f urls.txt out.txt progress.txt; exit 130' INT TERM
 
 log "aipupdate start..."
-log "This process can take a long time. Be patient..."
+log "INFO: This process can take a long time. Be patient..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------------------------
 
-log "Downloading Allow URLs..."
+log "INFO: Downloading Allow URLs..."
 intacls() {
     local source_url="$1" http_code
     http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
@@ -83,10 +83,10 @@ intacls() {
     log "SAVED: $(basename "${source_url%%\?*}")"
 }
 intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/debugwl.txt' && sleep 1
-log "OK"
+log "INFO: OK"
 
 # debbuging allow whiteIP (CIDR)
-log "Debugging AllowIP..."
+log "INFO: Debugging AllowIP..."
 parallel_procs=$(($(nproc) * 4))
 if [ ! -s urls.txt ]; then
     log "ERROR: urls.txt is empty -- abort"
@@ -104,7 +104,11 @@ total_domains=$(wc -l < urls.txt)
 progress_pid=$!
 xargs -I {} -P "$parallel_procs" bash -c 'for host_prefix in "" "www." "ftp."; do host -t a "${host_prefix}$1"; done; echo >> progress.txt' _ {} <urls.txt | grep "has address" | awk '{ print $4 }' > out.txt
 kill "$progress_pid" 2>/dev/null
-log "OK"
+log "INFO: OK"
+if [ ! -s out.txt ]; then
+    log "ERROR: out.txt is empty -- abort"
+    exit 1
+fi
 # Remove conflicts (iana.txt, dns.txt)
 grepcidr -vf "$lst_dir/iana.txt" out.txt | grep -vFxf <(sed '/^#/d' "$lst_dir/dns.txt") | $sort_uniq > "$allowip_file"
 sort -u "$allowip_file" -o "$allowip_file"
@@ -113,7 +117,6 @@ sort -u "$allowip_file" -o "$allowip_file"
 # END
 # ------------------------------------------------------------------------------
 
-log "Copy Allow IP to Squid and eliminate the conflicts"
+log "INFO: Copy Allow IP to Squid and eliminate the conflicts"
 rm -f urls.txt out.txt progress.txt
 log "aipupdate done at: $(date)"
-command -v notify-send &>/dev/null && notify-send "AllowIP Update Done" "$(date)" -i checkbox

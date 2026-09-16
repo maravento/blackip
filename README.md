@@ -26,21 +26,17 @@
 
 ---
 
-**⚠️ WARNING:** Only tested on Ubuntu 24.04 LTS. Other versions or distributions are not tested and are used at your own risk.
+At least one of the following, depending on which enforcement method you use:
 
-- `ipset`
+- `ipset` (for Ipset/Iptables Rules)
+- `squid` (or `squid-openssl`) (for Squid Rule)
 
 ```bash
 apt install -y ipset
-```
 
-### Optional (for `bipupdate.sh`)
+# or
 
-- Python 3.x, Bash 5.x
-- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `grep`, `sed`, `coreutils`, `util-linux`, `sudo`
-
-```bash
-apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils grep sed coreutils util-linux sudo
+apt install -y squid
 ```
 
 ## DATA SHEET
@@ -165,6 +161,14 @@ echo "done"
     </td>
     <td style="width: 50%; vertical-align: top;">
       Puede agregar las siguientes líneas al bash anterior para incluir rangos de IPs completos de países con <a href="https://www.ipdeny.com/ipblocks/" target="_blank">IPDeny</a> agregando los países de su elección.
+    </td>
+  </tr>
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      <b>Note:</b> <code>bipupdate.sh</code> offers to update this list on its own (see <a href="#ipdeny-country-zones-optional">IPDeny Country Zones (Optional)</a>).
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      <b>Nota:</b> <code>bipupdate.sh</code> ofrece actualizar esta lista por su cuenta (ver <a href="#ipdeny-country-zones-optional">IPDeny Country Zones (Optional)</a>).
     </td>
   </tr>
 </table>
@@ -338,7 +342,24 @@ http_access deny direct_ipv6
       Esta sección es únicamente para explicar cómo funciona el proceso de actualización y optimización. No es necesario que el usuario la ejecute. Este proceso puede tardar y consumir muchos recursos de hardware y ancho de banda, por tanto se recomienda usar equipos de pruebas.
     </td>
   </tr>
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      <b>Note:</b> <code>bipupdate.sh</code> tested on Ubuntu 24.04/26.04 LTS. Use on other versions or distributions is at your own risk.
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      <b>Nota:</b> <code>bipupdate.sh</code> ha sido probado en Ubuntu 24.04/26.04 LTS. Su uso en otras versiones o distribuciones queda bajo su propio riesgo.
+    </td>
+  </tr>
 </table>
+
+### Dependencies (for `bipupdate.sh`)
+
+- Python 3.x, Bash 5.x
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `grep`, `sed`, `coreutils`, `util-linux`, `sudo`
+
+```bash
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils grep sed coreutils util-linux sudo
+```
 
 #### Bash Update
 
@@ -371,7 +392,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 </table>
 
 ```bash
-¿Descargar y aplicar zonas de países IPDeny? [s/N]:
+Download and apply IPDeny country zones? [y/N]:
 ```
 
 #### Capture Public Blocklists

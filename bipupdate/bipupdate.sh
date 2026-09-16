@@ -52,7 +52,7 @@ if ! dpkg -s squid &>/dev/null && ! dpkg -s squid-openssl &>/dev/null; then
 fi
 
 # ------------------------------------------------------------------------------
-# STATUS
+# CHECKS
 # ------------------------------------------------------------------------------
 
 squid_conf="/etc/squid/squid.conf"
@@ -128,7 +128,7 @@ acl_dir="/etc/acl"
 if [ ! -d "$acl_dir" ]; then sudo mkdir -p "$acl_dir"; fi
 
 log "bipupdate start..."
-log "This process can take. Be patient..."
+log "INFO: This process can take. Be patient..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
@@ -172,7 +172,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         fi
         # clean
         rm -f all-zones.tar.gz >/dev/null 2>&1
-        log "OK"
+        log "INFO: OK"
     }
 
     read -r -p "Download and apply IPDeny country zones? [y/N]: " ipdeny_answer
@@ -181,7 +181,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     fi
 
     # download blackip
-    log "Downloading BlackIP..."
+    log "INFO: Downloading BlackIP..."
     $wget_opts https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py
     chmod +x gitfolder.py
     python3 gitfolder.py https://github.com/maravento/blackip/bipupdate || {
@@ -200,7 +200,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     fi
 
     # downloading blocklists
-    log "Downloading Blocklists..."
+    log "INFO: Downloading Blocklists..."
     blips() {
         local source_url="$1"
         local source_label http_code
@@ -362,9 +362,9 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         log "ERROR: capture.txt is empty -- abort"
         exit 1
     fi
-    log "OK"
+    log "INFO: OK"
 
-    log "Debugging BlackIP..."
+    log "INFO: Debugging BlackIP..."
     # debug
     sed -r '
         /:/d
@@ -393,7 +393,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         log "ERROR: dnsinput.txt is empty -- abort"
         exit 1
     fi
-    log "OK"
+    log "INFO: OK"
   else
     cd "$repo_dir"
 fi
@@ -438,7 +438,7 @@ parallel_procs=$(($(nproc) * 4))
 
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
-    log "1st DNS Lookup..."
+    log "INFO: 1st DNS Lookup..."
     sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt
     if [ ! -s step1.txt ]; then
         log "ERROR: step1.txt is empty -- abort"
@@ -464,13 +464,13 @@ if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
     sed '/^FAULT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
     sed '/^HIT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
     sort -o fault.txt -u fault.txt
-    log "OK"
+    log "INFO: OK"
 fi
 
 sleep 5
 
 # step 2:
-log "2nd DNS Lookup..."
+log "INFO: 2nd DNS Lookup..."
 sed 's/^\.//g' fault.txt | sort -u > step2.txt
 if [ -s step2.txt ]; then
     total_domains=$(wc -l < step2.txt)
@@ -496,20 +496,23 @@ touch dnslookup2.txt
 
 sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt
 sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt
-log "OK"
+log "INFO: OK"
 
 # ------------------------------------------------------------------------------
 # RELOAD
 # ------------------------------------------------------------------------------
 
-log "Squid Reload..."
+log "INFO: Squid Reload..."
 sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
 sudo cp -f blackip_preview.txt "$acl_dir"/blackip.txt
 check_squid_status
 sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | $sort_uniq | sort -u > cleanip.txt
-python3 tools/debugbip.py
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | grep -oP "$UH_IPV4" | $sort_uniq | sort -u > cleanip.txt
+if ! python3 tools/debugbip.py; then
+    log "ERROR: debugbip.py failed -- abort"
+    exit 1
+fi
 cat lst/blockip.txt >> outip.txt
 sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP "$UH_IPV4" | $sort_uniq > blackip_tmp.txt
 # remove conflicts (iana.txt, dns.txt)
@@ -534,4 +537,4 @@ rm -rf "$repo_dir" >/dev/null 2>&1
 # ------------------------------------------------------------------------------
 
 log "bipupdate done at: $(date)"
-log "Check SquidErrors.txt"
+log "INFO: Check SquidErrors.txt"
