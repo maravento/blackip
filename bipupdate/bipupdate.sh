@@ -4,7 +4,7 @@
 ################################################################################
 #
 # BlackIP Update
-# log: bipupdate.log (generated in the execution directory)
+# LOG: bipupdate.log (generated in the execution directory)
 #
 ################################################################################
 

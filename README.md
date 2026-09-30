@@ -18,10 +18,6 @@
   </tr>
 </table>
 
-### Architecture
-
-📐 [Runtime Architecture Diagram](https://htmlpreview.github.io/?https://raw.githubusercontent.com/maravento/blackip/master/docs/blackip-architecture.html) — visual walkthrough of the update/enforcement pipeline.
-
 ## REQUIREMENTS
 
 ---
@@ -576,11 +572,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [Block IP/CIDR Extra](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [DNS](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
 - [IANA](https://github.com/maravento/blackip/tree/master/bipupdate/lst)
-
-### WORKTOOLS
-
-- [Archify](https://github.com/tt-a1i/archify)
-- [Debug IPs](https://github.com/maravento/blackip/tree/master/bipupdate/tools)
 
 ## NOTICE
 

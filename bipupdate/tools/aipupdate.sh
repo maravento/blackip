@@ -4,7 +4,7 @@
 ################################################################################
 #
 # AllowIP for Reverse Squid
-# log: aipupdate.log (generated in the execution directory)
+# LOG: aipupdate.log (generated in the execution directory)
 # 
 # used:	host -t a / or / dig +short -f
 # dig example.com +nostats +nocomments +nocmd
