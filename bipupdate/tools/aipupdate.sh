@@ -4,10 +4,14 @@
 ################################################################################
 #
 # AllowIP for Reverse Squid
+#
+# DESCRIPTION:
+# Resolves domains from debugwl.txt to IPv4 and writes allowip.txt.
+#
+# USAGE:
+# ./aipupdate.sh
+#
 # LOG: aipupdate.log (generated in the execution directory)
-# 
-# used:	host -t a / or / dig +short -f
-# dig example.com +nostats +nocomments +nocmd
 #
 ################################################################################
 
