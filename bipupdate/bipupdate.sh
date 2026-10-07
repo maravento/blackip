@@ -4,6 +4,14 @@
 ################################################################################
 #
 # BlackIP Update
+#
+# DESCRIPTION:
+# Downloads and filters public IP blocklists into blackip.txt, then
+# reloads Squid.
+#
+# USAGE:
+# ./bipupdate.sh
+#
 # LOG: bipupdate.log (generated in the execution directory)
 #
 ################################################################################
