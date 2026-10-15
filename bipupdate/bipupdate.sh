@@ -12,7 +12,7 @@
 # USAGE:
 # ./bipupdate.sh
 #
-# LOG: bipupdate.log (generated in the execution directory)
+# LOG: bipupdate.log (generated in the script directory)
 #
 ################################################################################
 
@@ -22,17 +22,9 @@ set -uo pipefail
 # REQUIREMENTS
 # ------------------------------------------------------------------------------
 
-# logging
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-log_file="$script_dir/bipupdate.log"
-{ > "$log_file"; } 2>/dev/null || true
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') $1" | tee -a "$log_file" 2>/dev/null || true
-}
-
 # no-root check
 if [ "$(id -u)" == "0" ]; then
-    log "ERROR: This script should not be run as root -- abort"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: This script should not be run as root -- abort" >&2
     exit 1
 fi
 
@@ -41,20 +33,39 @@ script_lock="/var/lock/$(basename "$0" .sh).lock"
 (umask 077; : >> "$script_lock")
 exec 200>"$script_lock"
 if ! flock -n 200; then
-    log "ERROR: script $(basename "$0") is already running -- abort"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: script $(basename "$0") is already running -- abort" >&2
     exit 1
 fi
 
+# logging
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+log_file="$script_dir/bipupdate.log"
+{ > "$log_file"; } 2>/dev/null || true
+log() {
+    local log_msg="$(date '+%Y-%m-%d %H:%M:%S') $1"
+    echo "$log_msg" >> "$log_file" 2>/dev/null || true
+    if [[ "$1" == ERROR:* ]]; then
+        echo "$log_msg" >&2
+    else
+        echo "$log_msg"
+    fi
+}
+
+# Function: Report whether a package is installed, not merely residual
+package_installed() {
+    [ "$(dpkg-query -W -f='${db:Status-Status}' "$1" 2>/dev/null)" = installed ]
+}
+
 # dependencies
 for dep_pkg in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils grep sed coreutils util-linux sudo; do
-    if ! dpkg -s "$dep_pkg" &>/dev/null; then
+    if ! package_installed "$dep_pkg"; then
         log "ERROR: '$dep_pkg' is not installed -- abort"
         exit 1
     fi
 done
 
 # dependencies (squid or squid-openssl)
-if ! dpkg -s squid &>/dev/null && ! dpkg -s squid-openssl &>/dev/null; then
+if ! package_installed squid && ! package_installed squid-openssl; then
     log "ERROR: 'squid' or 'squid-openssl' is not installed -- abort"
     exit 1
 fi
@@ -69,11 +80,11 @@ squid_conf="/etc/squid/squid.conf"
 # acl blackip dst "/path_to/blackip.txt"
 # http_access deny blackip
 check_squid_acl() {
-    if ! grep -qE '^[[:space:]]*acl[[:space:]]+blackip[[:space:]]+dst' "$squid_conf"; then
+    if ! grep -qE '^[[:space:]]*acl[[:space:]]+blackip[[:space:]]+dst([[:space:]]|$)' "$squid_conf"; then
         log "ERROR: 'acl blackip dst' not found -- abort"
         exit 1
     fi
-    if ! grep -qE '^[[:space:]]*http_access[[:space:]]+deny[[:space:]]+blackip' "$squid_conf"; then
+    if ! grep -qE '^[[:space:]]*http_access[[:space:]]+deny[[:space:]]+blackip([[:space:]]|$)' "$squid_conf"; then
         log "ERROR: 'http_access deny blackip' not found -- abort"
         exit 1
     fi
@@ -118,25 +129,23 @@ check_squid_status
 # VARIABLES
 # ------------------------------------------------------------------------------
 
-cd "$script_dir" || { log "ERROR: cannot cd to $(basename "$script_dir") -- abort"; exit 1; }
+cd "$script_dir" || { log "ERROR: cannot enter bipupdate path -- abort"; exit 1; }
 repo_dir="$script_dir/bipupdate"
 # validation -- one variable per thing validated; use directly with =~
-UH_OCT='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
 UH_IPV4='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
-UH_CIDR='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])/(3[0-2]|[12][0-9]|[0-9])$'
-UH_NETMASK='^(0\.0\.0\.0|128\.0\.0\.0|192\.0\.0\.0|224\.0\.0\.0|240\.0\.0\.0|248\.0\.0\.0|252\.0\.0\.0|254\.0\.0\.0|255\.0\.0\.0|255\.128\.0\.0|255\.192\.0\.0|255\.224\.0\.0|255\.240\.0\.0|255\.248\.0\.0|255\.252\.0\.0|255\.254\.0\.0|255\.255\.0\.0|255\.255\.128\.0|255\.255\.192\.0|255\.255\.224\.0|255\.255\.240\.0|255\.255\.248\.0|255\.255\.252\.0|255\.255\.254\.0|255\.255\.255\.0|255\.255\.255\.128|255\.255\.255\.192|255\.255\.255\.224|255\.255\.255\.240|255\.255\.255\.248|255\.255\.255\.252|255\.255\.255\.254|255\.255\.255\.255)$'
-UH_DNS='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])(,(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]))*$'
-UH_UINT='^(0|[1-9][0-9]*)$'
-UH_PREFIX='0.0.0.0:0 128.0.0.0:1 192.0.0.0:2 224.0.0.0:3 240.0.0.0:4 248.0.0.0:5 252.0.0.0:6 254.0.0.0:7 255.0.0.0:8 255.128.0.0:9 255.192.0.0:10 255.224.0.0:11 255.240.0.0:12 255.248.0.0:13 255.252.0.0:14 255.254.0.0:15 255.255.0.0:16 255.255.128.0:17 255.255.192.0:18 255.255.224.0:19 255.255.240.0:20 255.255.248.0:21 255.255.252.0:22 255.255.254.0:23 255.255.255.0:24 255.255.255.128:25 255.255.255.192:26 255.255.255.224:27 255.255.255.240:28 255.255.255.248:29 255.255.255.252:30 255.255.255.254:31 255.255.255.255:32'
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts="wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
 trap 'rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt; exit 130' INT TERM
 # path_to_lst (Change it to the directory of your preference)
 acl_dir="/etc/acl"
-if [ ! -d "$acl_dir" ]; then sudo mkdir -p "$acl_dir"; fi
+if [ ! -d "$acl_dir" ]; then
+    sudo mkdir -p "$acl_dir" || {
+        log "ERROR: cannot create $acl_dir -- abort"
+        exit 1
+    }
+fi
 
 log "bipupdate start..."
-log "INFO: This process can take. Be patient..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
@@ -156,19 +165,22 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         source_url="http://www.ipdeny.com/ipblocks/data/countries/all-zones.tar.gz"
         # create dir
         if [ ! -d "$zones_dir" ]; then
-            sudo mkdir -p "$zones_dir"
+            sudo mkdir -p "$zones_dir" || {
+                log "ERROR: cannot create $zones_dir -- abort"
+                exit 1
+            }
         fi
         # check with curl
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; exit 1 ;;
-            5*)  log "BUSY: $source_url"; exit 1 ;;
-            *)   log "BROKEN: $source_url"; exit 1 ;;
+            000) log "TIMEOUT: all-zones.tar.gz"; exit 1 ;;
+            5*)  log "BUSY: $http_code all-zones.tar.gz"; exit 1 ;;
+            *)   log "BROKEN: $http_code all-zones.tar.gz"; exit 1 ;;
         esac
         # download
         if ! $wget_opts "$source_url" -O all-zones.tar.gz; then
-            log "PARTIAL: $source_url"
+            log "PARTIAL: all-zones.tar.gz"
             exit 1
         fi
         log "SAVED: all-zones.tar.gz"
@@ -180,7 +192,6 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         fi
         # clean
         rm -f all-zones.tar.gz >/dev/null 2>&1
-        log "INFO: OK"
     }
 
     read -r -p "Download and apply IPDeny country zones? [y/N]: " ipdeny_answer
@@ -190,7 +201,11 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
 
     # download blackip
     log "INFO: Downloading BlackIP..."
-    $wget_opts https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py
+    if ! $wget_opts https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py; then
+        log "PARTIAL: gitfolder.py"
+        exit 1
+    fi
+    log "SAVED: gitfolder.py"
     chmod +x gitfolder.py
     python3 gitfolder.py https://github.com/maravento/blackip/bipupdate || {
         log "ERROR: gitfolder.py failed to clone bipupdate -- abort"
@@ -199,7 +214,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     rm -f gitfolder.py
     if [ -d "$repo_dir" ]; then
         cd "$repo_dir" || {
-            log "ERROR: cannot cd to $(basename "$repo_dir") -- abort"
+            log "ERROR: cannot enter bipupdate path -- abort"
             exit 1
         }
     else
@@ -218,15 +233,15 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; return 1 ;;
-            5*)  log "BUSY: $source_url"; return 1 ;;
-            *)   log "BROKEN: $source_url"; return 1 ;;
+            000) log "TIMEOUT: $source_label"; return 1 ;;
+            5*)  log "BUSY: $http_code $source_label"; return 1 ;;
+            *)   log "BROKEN: $http_code $source_label"; return 1 ;;
         esac
 
         if $wget_opts "$source_url" -O - 2>/dev/null | grep -E -o "([0-9]{1,3}\.){3}[0-9]{1,3}" | sort -u >> capture.txt; then
             log "SAVED: $source_label"
         else
-            log "PARTIAL: $source_url"
+            log "PARTIAL: $source_label"
             return 1
         fi
     }
@@ -268,20 +283,20 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
 
     uceprotect() {
         local source_url="$1"
-        local download_file
+        local download_file http_code
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; return 1 ;;
-            5*)  log "BUSY: $source_url"; return 1 ;;
-            *)   log "BROKEN: $source_url"; return 1 ;;
+            000) log "TIMEOUT: $download_file"; return 1 ;;
+            5*)  log "BUSY: $http_code $download_file"; return 1 ;;
+            *)   log "BROKEN: $http_code $download_file"; return 1 ;;
         esac
         # Download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            log "PARTIAL: $source_url"
+            log "PARTIAL: $download_file"
             return 1
         fi
         log "SAVED: $download_file"
@@ -303,20 +318,20 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
 
     listed_ip_180_all() {
         local source_url="$1"
-        local download_file
+        local download_file http_code
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; return 1 ;;
-            5*)  log "BUSY: $source_url"; return 1 ;;
-            *)   log "BROKEN: $source_url"; return 1 ;;
+            000) log "TIMEOUT: $download_file"; return 1 ;;
+            5*)  log "BUSY: $http_code $download_file"; return 1 ;;
+            *)   log "BROKEN: $http_code $download_file"; return 1 ;;
         esac
         # download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            log "PARTIAL: $source_url"
+            log "PARTIAL: $download_file"
             return 1
         fi
         log "SAVED: $download_file"
@@ -336,20 +351,20 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
 
     full_blacklist_database() {
         local source_url="$1"
-        local download_file
+        local download_file http_code
         # filename
         download_file=$(basename "${source_url%%\?*}")
         # check with curl
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; return 1 ;;
-            5*)  log "BUSY: $source_url"; return 1 ;;
-            *)   log "BROKEN: $source_url"; return 1 ;;
+            000) log "TIMEOUT: $download_file"; return 1 ;;
+            5*)  log "BUSY: $http_code $download_file"; return 1 ;;
+            *)   log "BROKEN: $http_code $download_file"; return 1 ;;
         esac
         # download
         if ! $wget_opts "$source_url" -O "$download_file"; then
-            log "PARTIAL: $source_url"
+            log "PARTIAL: $download_file"
             return 1
         fi
         log "SAVED: $download_file"
@@ -370,7 +385,6 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         log "ERROR: capture.txt is empty -- abort"
         exit 1
     fi
-    log "INFO: OK"
 
     log "INFO: Debugging BlackIP..."
     # debug
@@ -386,6 +400,12 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     | grep -oP "$UH_IPV4" \
     | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
     | $sort_uniq > cleancapture.txt
+    pipe_status=("${PIPESTATUS[@]}")
+    if [ "${pipe_status[0]}" -ne 0 ] || [ "${pipe_status[1]}" -gt 1 ] ||
+        [ "${pipe_status[2]}" -ne 0 ] || [ "${pipe_status[3]}" -ne 0 ]; then
+        log "ERROR: cannot debug capture.txt -- abort"
+        exit 1
+    fi
     if [ ! -s cleancapture.txt ]; then
         log "ERROR: cleancapture.txt is empty -- abort"
         exit 1
@@ -397,13 +417,21 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     # acl blackip dst "/path_to_lst/blackip.txt"
     # http_access deny blackip
     grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $sort_uniq > dnsinput.txt
+    pipe_status=("${PIPESTATUS[@]}")
+    if [ "${pipe_status[0]}" -gt 1 ] || [ "${pipe_status[1]}" -ne 0 ] ||
+        [ "${pipe_status[2]}" -ne 0 ]; then
+        log "ERROR: cannot apply allowip.txt to cleancapture.txt -- abort"
+        exit 1
+    fi
     if [ ! -s dnsinput.txt ]; then
         log "ERROR: dnsinput.txt is empty -- abort"
         exit 1
     fi
-    log "INFO: OK"
-  else
-    cd "$repo_dir"
+else
+    cd "$repo_dir" || {
+        log "ERROR: cannot enter bipupdate path -- abort"
+        exit 1
+    }
 fi
 
 # ------------------------------------------------------------------------------
@@ -444,10 +472,19 @@ fi
 # - Desired balance between speed and system load
 parallel_procs=$(($(nproc) * 4))
 
+# Function: Stop the progress indicator before continuing or aborting
+stop_progress() {
+    kill "$progress_pid" 2>/dev/null
+    echo
+}
+
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
     log "INFO: 1st DNS Lookup..."
-    sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt
+    if ! { sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt; }; then
+        log "ERROR: cannot process dnsinput.txt into step1.txt -- abort"
+        exit 1
+    fi
     if [ ! -s step1.txt ]; then
         log "ERROR: step1.txt is empty -- abort"
         exit 1
@@ -461,25 +498,33 @@ if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
         done
     ) &
     progress_pid=$!
-    if [ -s dnslookup1.txt ]; then
+    if ! { if [ -s dnslookup1.txt ]; then
         awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup1.txt step1.txt
     else
         cat step1.txt
-    fi | xargs -I {} -P "$parallel_procs" sh -c 'if host -W 1 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup1.txt
-    kill "$progress_pid" 2>/dev/null
-    echo
+    fi | xargs -I {} -P "$parallel_procs" sh -c 'if host -W 1 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup1.txt; }; then
+        stop_progress
+        log "ERROR: 1st DNS lookup failed -- abort"
+        exit 1
+    fi
+    stop_progress
 
-    sed '/^FAULT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt
-    sed '/^HIT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt
-    sort -o fault.txt -u fault.txt
-    log "INFO: OK"
+    if ! { sed '/^FAULT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u > hit.txt &&
+        sed '/^HIT/d' dnslookup1.txt | awk '{print $2}' | awk '{print "." $1}' | sort -u >> fault.txt &&
+        sort -o fault.txt -u fault.txt; }; then
+        log "ERROR: cannot classify DNS results as hit or fault -- abort"
+        exit 1
+    fi
 fi
 
 sleep 5
 
 # step 2:
 log "INFO: 2nd DNS Lookup..."
-sed 's/^\.//g' fault.txt | sort -u > step2.txt
+if ! { sed 's/^\.//g' fault.txt | sort -u > step2.txt; }; then
+    log "ERROR: cannot prepare step2.txt -- abort"
+    exit 1
+fi
 if [ -s step2.txt ]; then
     total_domains=$(wc -l < step2.txt)
     (
@@ -490,41 +535,92 @@ if [ -s step2.txt ]; then
         done
     ) &
     progress_pid=$!
-    if [ -s dnslookup2.txt ]; then
+    if ! { if [ -s dnslookup2.txt ]; then
         awk 'FNR==NR {seen[$2]=1;next} seen[$1]!=1' dnslookup2.txt step2.txt
     else
         cat step2.txt
-    fi | xargs -I {} -P "$parallel_procs" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2.txt
-    kill "$progress_pid" 2>/dev/null
-    echo
+    fi | xargs -I {} -P "$parallel_procs" sh -c 'if host -W 2 -- "$1" >/dev/null 2>&1; then echo "HIT $1"; else echo "FAULT $1"; fi' _ {} >> dnslookup2.txt; }; then
+        stop_progress
+        log "ERROR: 2nd DNS lookup failed -- abort"
+        exit 1
+    fi
+    stop_progress
 else
-    log "INFO: no FAULTs pending from step 1 -- skip"
+    log "INFO: no unresolved domains from 1st lookup -- skip"
 fi
 touch dnslookup2.txt
 
-sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt
-sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt
-log "INFO: OK"
+if ! { sed '/^FAULT/d' dnslookup2.txt | awk '{print $2}' | sort -u >> hit.txt &&
+    sed '/^HIT/d' dnslookup2.txt | awk '{print $2}' | sort -u > fault.txt; }; then
+    log "ERROR: cannot classify DNS results as hit or fault -- abort"
+    exit 1
+fi
 
 # ------------------------------------------------------------------------------
 # RELOAD
 # ------------------------------------------------------------------------------
 
 log "INFO: Squid Reload..."
-sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
-sudo cp -f blackip_preview.txt "$acl_dir"/blackip.txt
+if ! { sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt; }; then
+    log "ERROR: cannot build blackip_preview.txt -- abort"
+    exit 1
+fi
+sudo cp -f blackip_preview.txt "$acl_dir"/blackip.txt || {
+    log "ERROR: cannot copy blackip_preview.txt to $acl_dir -- abort"
+    exit 1
+}
 check_squid_status
-sudo bash -c 'squid -k reconfigure' 2> sqerror.txt
+sudo bash -c 'squid -k reconfigure' 2> sqerror.txt || {
+    log "ERROR: squid reconfigure failed with preview list -- abort"
+    exit 1
+}
+# a day without entries is normal here; only a read error aborts
 sudo bash -c 'grep "$(date +%Y/%m/%d)" /var/log/squid/cache.log' >> sqerror.txt
+if [ "$?" -gt 1 ]; then
+    log "ERROR: cannot read /var/log/squid/cache.log -- abort"
+    exit 1
+fi
+# a search without matches is normal here; only a real error aborts
 grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | grep -oP "$UH_IPV4" | $sort_uniq | sort -u > cleanip.txt
+pipe_status=("${PIPESTATUS[@]}")
+if [ "${pipe_status[0]}" -gt 1 ] || [ "${pipe_status[1]}" -gt 1 ] ||
+    [ "${pipe_status[2]}" -ne 0 ] || [ "${pipe_status[3]}" -ne 0 ]; then
+    log "ERROR: cannot extract IPs of sqerror.txt -- abort"
+    exit 1
+fi
 if ! python3 tools/debugbip.py; then
     log "ERROR: debugbip.py failed -- abort"
     exit 1
 fi
-cat lst/blockip.txt >> outip.txt
+cat lst/blockip.txt >> outip.txt || {
+    log "ERROR: cannot append blockip.txt to outip.txt -- abort"
+    exit 1
+}
 sed -E '/:/d; s/\/[0-9]+//g' outip.txt | grep -oP "$UH_IPV4" | $sort_uniq > blackip_tmp.txt
+pipe_status=("${PIPESTATUS[@]}")
+if [ "${pipe_status[0]}" -ne 0 ] || [ "${pipe_status[1]}" -gt 1 ] ||
+    [ "${pipe_status[2]}" -ne 0 ]; then
+    log "ERROR: cannot normalize outip.txt -- abort"
+    exit 1
+fi
 # remove conflicts (iana.txt, dns.txt)
-grepcidr -vf lst/iana.txt blackip_tmp.txt | grep -vFxf <(sed '/^#/d' lst/dns.txt) | $sort_uniq > blackip.txt
+dns_filter="$(mktemp)" || {
+    log "ERROR: cannot create dns.txt filter -- abort"
+    exit 1
+}
+if ! sed '/^#/d' lst/dns.txt > "$dns_filter"; then
+    rm -f "$dns_filter"
+    log "ERROR: cannot read dns.txt -- abort"
+    exit 1
+fi
+grepcidr -vf lst/iana.txt blackip_tmp.txt | grep -vFxf "$dns_filter" | $sort_uniq > blackip.txt
+pipe_status=("${PIPESTATUS[@]}")
+rm -f "$dns_filter"
+if [ "${pipe_status[0]}" -gt 1 ] || [ "${pipe_status[1]}" -gt 1 ] ||
+    [ "${pipe_status[2]}" -ne 0 ]; then
+    log "ERROR: cannot remove iana.txt and dns.txt conflicts -- abort"
+    exit 1
+fi
 rm -f blackip_tmp.txt
 if [ ! -s blackip.txt ]; then
     log "ERROR: blackip.txt is empty -- abort"
@@ -532,12 +628,21 @@ if [ ! -s blackip.txt ]; then
 fi
 
 # copy acl to path and log
-sudo cp -f blackip.txt "$acl_dir"/blackip.txt
+sudo cp -f blackip.txt "$acl_dir"/blackip.txt || {
+    log "ERROR: cannot copy blackip.txt to $acl_dir -- abort"
+    exit 1
+}
 check_squid_status
-sudo bash -c 'squid -k reconfigure' 2> "$script_dir/SquidErrors.txt"
+sudo bash -c 'squid -k reconfigure' 2> "$script_dir/SquidErrors.txt" || {
+    log "ERROR: squid reconfigure failed with blackip.txt -- abort"
+    exit 1
+}
 
 # delete repository (optional)
-cd ..
+cd .. || {
+    log "ERROR: cannot enter bipupdate path -- abort"
+    exit 1
+}
 rm -rf "$repo_dir" >/dev/null 2>&1
 
 # ------------------------------------------------------------------------------

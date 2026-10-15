@@ -496,10 +496,10 @@ FAULT 0.0.9.1
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      <code>aipupdate.sh</code> generates <code>allowip.txt</code> from domains in <code>debugwl.txt</code> that resolve to IPv4 addresses. The output is filtered to exclude ranges in <code>iana.txt</code> and addresses in <code>dns.txt</code>.
+      <code>aipupdate.sh</code> generates <code>allowip.txt</code> from domains in <code>debugwl.txt</code> that resolve to IPv4 addresses. The output is filtered to exclude ranges in <code>iana.txt</code> and addresses in <code>dns.txt</code>. If no address survives these exclusions, the script aborts and preserves the previous <code>allowip.txt</code>. The log is written to <code>aipupdate.log</code> in the script directory and cleared at startup.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      <code>aipupdate.sh</code> genera <code>allowip.txt</code> a partir de los dominios de <code>debugwl.txt</code> que resuelven a direcciones IPv4. El resultado se filtra para excluir los rangos de <code>iana.txt</code> y las direcciones de <code>dns.txt</code>.
+      <code>aipupdate.sh</code> genera <code>allowip.txt</code> a partir de los dominios de <code>debugwl.txt</code> que resuelven a direcciones IPv4. El resultado se filtra para excluir los rangos de <code>iana.txt</code> y las direcciones de <code>dns.txt</code>. Si ninguna dirección supera estas exclusiones, el script aborta y conserva el <code>allowip.txt</code> anterior. El registro se escribe en <code>aipupdate.log</code>, junto al script, y se vacía al inicio.
     </td>
   </tr>
 </table>
@@ -574,6 +574,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
       <ul>
         <li>This project includes third-party components.</li>
         <li>Changes must be submitted via Issues. Pull requests are not accepted.</li>
+        <li>This project does not support backward compatibility. New versions may require configuration changes or reinstallation.</li>
         <li>Blackip is not a blacklist service itself. It does not independently verify IP addresses. Its purpose is to consolidate and reformat public blacklist sources to make them compatible with Squid/Iptables/Ipset.</li>
         <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <b>SOURCES</b>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
         <li>The available IPv4 address space is nearly exhausted, which forces increasingly frequent reassignment of addresses. Blackip may therefore contain false positives, and the number of IPv4 addresses worth blocking is expected to keep decreasing. If that trend continues at the current pace, Blackip could eventually stop serving its purpose, simply because no IPv4 addresses would be left to block.</li>
@@ -583,6 +584,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
       <ul>
         <li>Este proyecto incluye componentes de terceros.</li>
         <li>Los cambios deben proponerse mediante Issues. No se aceptan Pull Requests.</li>
+        <li>Este proyecto no soporta retrocompatibilidad. Las nuevas versiones pueden requerir cambios de configuración o una reinstalación.</li>
         <li>Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.</li>
         <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <b>SOURCES</b>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
         <li>El espacio de direcciones IPv4 disponible está casi agotado, lo que obliga a reasignar direcciones cada vez con más frecuencia. Por eso Blackip puede contener falsos positivos, y se espera que la cantidad de direcciones IPv4 que conviene bloquear siga disminuyendo. Si esa tendencia continúa al ritmo actual, Blackip podría dejar de cumplir su objetivo, simplemente porque ya no quedarían direcciones IPv4 que bloquear.</li>
