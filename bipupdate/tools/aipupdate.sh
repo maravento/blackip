@@ -4,9 +4,7 @@
 ################################################################################
 #
 # AllowIP for Reverse Squid
-#
-# DESCRIPTION:
-# Resolves domains from debugwl.txt to IPv4 and writes allowip.txt.
+# FILE: bipupdate/tools/aipupdate.sh
 #
 # USAGE:
 # ./aipupdate.sh
@@ -23,16 +21,19 @@ set -uo pipefail
 
 # no-root check
 if [ "$(id -u)" == "0" ]; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: This script should not be run as root -- abort" >&2
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: This script should not be run as root -abort" >&2
     exit 1
 fi
 
 # prevent overlapping runs
 script_lock="/var/lock/$(basename "$0" .sh).lock"
-(umask 077; : >> "$script_lock")
+(umask 077; : >> "$script_lock") || {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: cannot open $(basename "$script_lock") -abort" >&2
+    exit 1
+}
 exec 200>"$script_lock"
 if ! flock -n 200; then
-    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: script $(basename "$0") is already running -- abort" >&2
+    echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: script $(basename "$0") is already running -abort" >&2
     exit 1
 fi
 
@@ -58,7 +59,7 @@ package_installed() {
 # dependencies
 for dep_pkg in wget curl bind9-host grepcidr findutils grep sed coreutils util-linux; do
     if ! package_installed "$dep_pkg"; then
-        log "ERROR: '$dep_pkg' is not installed -- abort"
+        log "ERROR: dependency '$dep_pkg' is not installed -abort"
         exit 1
     fi
 done
@@ -67,7 +68,7 @@ done
 # VARIABLES
 # ------------------------------------------------------------------------------
 
-cd "$script_dir" || { log "ERROR: cannot enter aipupdate path -- abort"; exit 1; }
+cd "$script_dir" || { log "ERROR: cannot enter aipupdate path -abort"; exit 1; }
 lst_dir="$script_dir/../lst"
 allowip_file="$lst_dir/allowip.txt"
 acl_tmp="$allowip_file.tmp"
@@ -81,33 +82,33 @@ log "aipupdate start..."
 # FUNCTIONS
 # ------------------------------------------------------------------------------
 
-log "INFO: Downloading Allow URLs..."
 intacls() {
     local source_url="$1" http_code
     http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
     case "$http_code" in
         2*|405) ;;
-        000) log "TIMEOUT: $(basename "${source_url%%\?*}")"; return 1 ;;
-        5*)  log "BUSY: $http_code $(basename "${source_url%%\?*}")"; return 1 ;;
-        *)   log "BROKEN: $(basename "${source_url%%\?*}")"; return 1 ;;
+        000) log "TIMEOUT: $source_url"; return 1 ;;
+        5*)  log "BUSY: $http_code $source_url"; return 1 ;;
+        404|410)   log "BROKEN: $source_url"; return 1 ;;
+        *)   log "HTTP_ERROR: $http_code $source_url"; return 1 ;;
     esac
     if ! $wget_opts "$source_url" -O - | sed '/^$/d; /#/d' | sed 's:^\.::' | sort -u > urls.txt; then
-        log "PARTIAL: $(basename "${source_url%%\?*}")"
+        log "PARTIAL: $source_url"
         return 1
     fi
     log "SAVED: $(basename "${source_url%%\?*}")"
 }
 if ! intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupdate/lst/debugwl.txt'; then
-    log "ERROR: cannot download allow list -- abort"
+    log "ERROR: cannot download allow list -abort"
     exit 1
 fi
 sleep 1
 
 # debbuging allow whiteIP (CIDR)
-log "INFO: Debugging AllowIP..."
+log "Debugging AllowIP..."
 parallel_procs=$(($(nproc) * 4))
 if [ ! -s urls.txt ]; then
-    log "ERROR: urls.txt is empty -- abort"
+    log "ERROR: urls.txt is empty -abort"
     exit 1
 fi
 total_domains=$(wc -l < urls.txt)
@@ -124,72 +125,72 @@ xargs -I {} -P "$parallel_procs" bash -c 'for host_prefix in "" "www." "ftp."; d
 pipe_rc=("${PIPESTATUS[@]}")
 kill "$progress_pid" 2>/dev/null
 if [ "${pipe_rc[0]}" -ne 0 ] && [ "${pipe_rc[0]}" -ne 123 ]; then
-    log "ERROR: cannot resolve domain list -- abort"
+    log "ERROR: cannot resolve domain list -abort"
     exit 1
 fi
 if [ "${pipe_rc[1]}" -gt 1 ]; then
-    log "ERROR: cannot filter resolved addresses -- abort"
+    log "ERROR: cannot filter resolved addresses -abort"
     exit 1
 fi
 if [ "${pipe_rc[2]}" -ne 0 ]; then
-    log "ERROR: cannot extract resolved addresses -- abort"
+    log "ERROR: cannot extract resolved addresses -abort"
     exit 1
 fi
 if [ ! -s out.txt ]; then
-    log "ERROR: out.txt is empty -- abort"
+    log "ERROR: out.txt is empty -abort"
     exit 1
 fi
 
 # Remove conflicts (iana.txt, dns.txt)
 for lst_file in "$lst_dir/iana.txt" "$lst_dir/dns.txt"; do
     if [ ! -s "$lst_file" ]; then
-        log "ERROR: $(basename "$lst_file") is missing or empty -- abort"
+        log "ERROR: $(basename "$lst_file") is missing or empty -abort"
         exit 1
     fi
 done
 
 if ! sed '/^#/d' "$lst_dir/dns.txt" > dnsplain.txt; then
-    log "ERROR: cannot read dns.txt -- abort"
+    log "ERROR: cannot read dns.txt -abort"
     exit 1
 fi
 
 grepcidr -vf "$lst_dir/iana.txt" out.txt > ianaok.txt
 filter_rc=$?
 if [ "$filter_rc" -gt 1 ]; then
-    log "ERROR: cannot apply iana.txt exclusions -- abort"
+    log "ERROR: cannot apply iana.txt exclusions -abort"
     exit 1
 fi
 
 grep -vFxf dnsplain.txt ianaok.txt > aclnew.txt
 filter_rc=$?
 if [ "$filter_rc" -gt 1 ]; then
-    log "ERROR: cannot apply dns.txt exclusions -- abort"
+    log "ERROR: cannot apply dns.txt exclusions -abort"
     exit 1
 fi
 
 if [ ! -s aclnew.txt ]; then
-    log "ERROR: no address survived exclusions -- abort"
+    log "ERROR: no address survived exclusions -abort"
     exit 1
 fi
 
 if ! $sort_uniq aclnew.txt > "$acl_tmp"; then
-    log "ERROR: cannot sort new ACL -- abort"
+    log "ERROR: cannot sort new ACL -abort"
     rm -f "$acl_tmp"
     exit 1
 fi
 
 if ! sort -u "$acl_tmp" -o "$acl_tmp"; then
-    log "ERROR: cannot deduplicate new ACL -- abort"
+    log "ERROR: cannot deduplicate new ACL -abort"
     rm -f "$acl_tmp"
     exit 1
 fi
 
 if [ -f "$allowip_file" ] && ! chmod --reference="$allowip_file" "$acl_tmp"; then
-    log "WARNING: cannot preserve $(basename "$allowip_file") mode -- alert"
+    log "WARNING: cannot preserve $(basename "$allowip_file") mode -alert"
 fi
 
 if ! mv -f "$acl_tmp" "$allowip_file"; then
-    log "ERROR: cannot write $(basename "$allowip_file") -- abort"
+    log "ERROR: cannot write $(basename "$allowip_file") -abort"
     rm -f "$acl_tmp"
     exit 1
 fi

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# BlackIP Diff Debug
+# FILE: bipupdate/tools/debugbip.py
 import sys
 
 try:
@@ -9,5 +11,5 @@ try:
     with open("outip.txt", "w") as f:
         f.write("\n".join(sorted(a.difference(b))) + "\n")
 except FileNotFoundError as e:
-    print("ERROR: %s -- abort" % e)
+    print("ERROR: %s -abort" % e)
     sys.exit(1)

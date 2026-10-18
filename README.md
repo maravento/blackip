@@ -1,3 +1,7 @@
+<!--
+BlackIP documentation
+FILE: README.md
+-->
 # [BlackIP](https://www.maravento.com/p/blackip.html)
 
 [![status-maintained](https://img.shields.io/badge/status-maintained-purple.svg)](https://github.com/maravento/blackip)
@@ -41,7 +45,7 @@ apt install -y squid
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 468087 | 6,6 Mb |
+| blackip.txt | 521910 | 7.4 Mb |
 
 ## REPOSITORY STRUCTURE
 
@@ -348,10 +352,10 @@ http_access deny direct_ipv6
   </tr>
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> tested on Ubuntu 24.04/26.04 LTS. Use on other versions or distributions is at your own risk.
+      <code>bipupdate.sh</code> WARNING: Only tested on Ubuntu 24.04/26.04 LTS. Other versions or distributions are not tested and are used at your own risk.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> ha sido probado en Ubuntu 24.04/26.04 LTS. Su uso en otras versiones o distribuciones queda bajo su propio riesgo.
+      <code>bipupdate.sh</code> ADVERTENCIA: Solo probado en Ubuntu 24.04/26.04 LTS. Otras versiones o distribuciones no están probadas y se usan bajo tu responsabilidad.
     </td>
   </tr>
 </table>
@@ -396,7 +400,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 </table>
 
 ```bash
-Download and apply IPDeny country zones? [y/N]:
+Download IPDeny country zones? [y/N]:
 ```
 
 #### Capture Public Blocklists
@@ -456,6 +460,16 @@ FAULT 0.0.9.1
   </tr>
 </table>
 
+> Processing messages keep their timestamp and have no level or flag. `STATUS` is a viewer label, not text written in the log. Three trailing dots are reserved for these lines; other messages have no final period.
+>
+> Los mensajes de procesamiento conservan la fecha y no llevan nivel ni flag. `STATUS` es una etiqueta del visor; no se escribe en el log. Los tres puntos finales se reservan para estas líneas; los demás mensajes no llevan punto final.
+
+```text
+2026-10-17 12:00:00 Debugging BlackIP...
+2026-10-17 12:00:00 1st DNS Lookup...
+2026-10-17 12:00:00 Squid Reload...
+```
+
 #### Download Status
 
 | Tag | Shows | Description | Descripción |
@@ -465,6 +479,7 @@ FAULT 0.0.9.1
 | `BUSY:` | Full URL | The server answered 5xx: it is up but not serving the list right now | El servidor respondió con un error 5xx: está disponible, pero no entrega la lista en ese momento |
 | `TIMEOUT:` | Full URL | The server did not answer at all | El servidor no respondió |
 | `BROKEN:` | Full URL | The server answered 404 or 410: broken or nonexistent URL | El servidor respondió 404 o 410: el recurso no existe o la URL ya no es válida |
+| `HTTP_ERROR:` | HTTP code and full URL | The server returned an HTTP response not covered by the other tags | El servidor devolvió una respuesta HTTP no contemplada por las otras etiquetas |
 
 #### Important about BlackIP Update
 
@@ -571,10 +586,32 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
+      <strong>This repository</strong>
       <ul>
-        <li>This project includes third-party components.</li>
-        <li>Changes must be submitted via Issues. Pull requests are not accepted.</li>
+        <li>May include third-party components.</li>
+        <li>Does not accept Pull Requests. Changes must be proposed via Issues.</li>
         <li>This project does not support backward compatibility. New versions may require configuration changes or reinstallation.</li>
+      </ul>
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      <strong>Este repositorio</strong>
+      <ul>
+        <li>Puede incluir componentes de terceros.</li>
+        <li>No acepta Pull Requests. Los cambios deben proponerse mediante Issues.</li>
+        <li>Este proyecto no soporta retrocompatibilidad. Las nuevas versiones pueden requerir cambios de configuración o una reinstalación.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+## LIMITATIONS
+
+---
+
+<table width="100%">
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      <ul>
         <li>Blackip is not a blacklist service itself. It does not independently verify IP addresses. Its purpose is to consolidate and reformat public blacklist sources to make them compatible with Squid/Iptables/Ipset.</li>
         <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <b>SOURCES</b>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
         <li>The available IPv4 address space is nearly exhausted, which forces increasingly frequent reassignment of addresses. Blackip may therefore contain false positives, and the number of IPv4 addresses worth blocking is expected to keep decreasing. If that trend continues at the current pace, Blackip could eventually stop serving its purpose, simply because no IPv4 addresses would be left to block.</li>
@@ -582,9 +619,6 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
     </td>
     <td style="width: 50%; vertical-align: top;">
       <ul>
-        <li>Este proyecto incluye componentes de terceros.</li>
-        <li>Los cambios deben proponerse mediante Issues. No se aceptan Pull Requests.</li>
-        <li>Este proyecto no soporta retrocompatibilidad. Las nuevas versiones pueden requerir cambios de configuración o una reinstalación.</li>
         <li>Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.</li>
         <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <b>SOURCES</b>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
         <li>El espacio de direcciones IPv4 disponible está casi agotado, lo que obliga a reasignar direcciones cada vez con más frecuencia. Por eso Blackip puede contener falsos positivos, y se espera que la cantidad de direcciones IPv4 que conviene bloquear siga disminuyendo. Si esa tendencia continúa al ritmo actual, Blackip podría dejar de cumplir su objetivo, simplemente porque ya no quedarían direcciones IPv4 que bloquear.</li>
