@@ -39,6 +39,17 @@ apt install -y ipset
 apt install -y squid
 ```
 
+<table width="100%">
+  <tr>
+    <td style="width: 50%; vertical-align: top;">
+      <code>bipupdate.sh</code> Only tested on Ubuntu 24.04/26.04 LTS. Other versions or distributions are not tested and are used at your own risk.
+    </td>
+    <td style="width: 50%; vertical-align: top;">
+      <code>bipupdate.sh</code> Solo probado en Ubuntu 24.04/26.04 LTS. Otras versiones o distribuciones no están probadas y se usan bajo tu responsabilidad.
+    </td>
+  </tr>
+</table>
+
 ## DATA SHEET
 
 ---
@@ -339,8 +350,6 @@ http_access deny direct_ipv6
 
 ---
 
-### ⚠️ WARNING: BEFORE YOU CONTINUE
-
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
@@ -350,14 +359,7 @@ http_access deny direct_ipv6
       Esta sección describe el proceso que sigue <code>bipupdate.sh</code> para generar y actualizar <code>blackip.txt</code>. No es necesario ejecutar el script para usar la lista publicada. La actualización puede tardar y consumir CPU, memoria, ancho de banda y recursos de red; se recomienda ejecutarla primero en un equipo de pruebas.
     </td>
   </tr>
-  <tr>
-    <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> WARNING: Only tested on Ubuntu 24.04/26.04 LTS. Other versions or distributions are not tested and are used at your own risk.
-    </td>
-    <td style="width: 50%; vertical-align: top;">
-      <code>bipupdate.sh</code> ADVERTENCIA: Solo probado en Ubuntu 24.04/26.04 LTS. Otras versiones o distribuciones no están probadas y se usan bajo tu responsabilidad.
-    </td>
-  </tr>
+
 </table>
 
 ### Dependencies (for `bipupdate.sh`)

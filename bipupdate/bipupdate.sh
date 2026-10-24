@@ -139,7 +139,7 @@ trap 'rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.tx
 # path_to_lst (Change it to the directory of your preference)
 acl_dir="/etc/acl"
 if [ ! -d "$acl_dir" ]; then
-    sudo mkdir -p "$acl_dir" || {
+    sudo mkdir -p -m 755 -- "$acl_dir" || {
         log "ERROR: cannot create $acl_dir -abort"
         exit 1
     }
