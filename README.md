@@ -39,6 +39,8 @@ apt install -y ipset
 apt install -y squid
 ```
 
+### Compatibility
+
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">

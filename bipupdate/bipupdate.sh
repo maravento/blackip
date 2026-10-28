@@ -57,7 +57,7 @@ package_installed() {
 }
 
 # dependencies
-for dep_pkg in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils grep sed coreutils util-linux sudo; do
+for dep_pkg in wget git curl tar unzip zip gzip idn2 grepcidr python3 bind9-host findutils grep sed coreutils util-linux sudo iproute2 libc-bin; do
     if ! package_installed "$dep_pkg"; then
         log "ERROR: dependency '$dep_pkg' is not installed -abort"
         exit 1
@@ -69,6 +69,62 @@ if ! package_installed squid && ! package_installed squid-openssl; then
     log "ERROR: 'squid' or 'squid-openssl' is not installed -abort"
     exit 1
 fi
+
+# check ipv4 interfaces
+list_ifaces() {
+    ip -br link show 2>/dev/null | awk '$1 != "lo" {sub(/@.*/, "", $1); printf "%s %s\n", $1, ($2 == "UP") ? "UP" : "DOWN"}'
+}
+
+list_ipv4_ifaces() {
+    local iface state
+    while read -r iface state; do
+        [ "$state" = UP ] || continue
+        if ip -4 -o addr show dev "$iface" scope global 2>/dev/null \
+            | awk '$4 != "" {found=1} END {exit !found}'; then
+            printf '%s\n' "$iface"
+        fi
+    done < <(list_ifaces)
+}
+
+check_ipv4_interfaces() {
+    local max_attempts=24 attempt=1
+
+    while (( attempt <= max_attempts )); do
+        if [ -n "$(list_ipv4_ifaces)" ]; then
+            return 0
+        fi
+        if (( attempt == 1 )); then
+            log "INFO: waiting for an interface with IPv4..."
+        fi
+        attempt=$((attempt + 1))
+        sleep 5
+    done
+
+    log "ERROR: no interface with IPv4 -abort"
+    exit 1
+}
+
+# check internet
+check_internet() {
+    local max_attempts=24 attempt=1
+
+    while (( attempt <= max_attempts )); do
+        if getent hosts www.google.com >/dev/null 2>&1; then
+            return 0
+        fi
+        if (( attempt == 1 )); then
+            log "INFO: waiting for internet..."
+        fi
+        attempt=$((attempt + 1))
+        sleep 5
+    done
+
+    log "ERROR: no internet connection -abort"
+    exit 1
+}
+
+check_ipv4_interfaces
+check_internet
 
 # ------------------------------------------------------------------------------
 # CHECKS
@@ -145,7 +201,7 @@ if [ ! -d "$acl_dir" ]; then
     }
 fi
 
-log "bipupdate start..."
+log "EVENT: bipupdate start..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
@@ -388,7 +444,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         exit 1
     fi
 
-    log "Debugging BlackIP..."
+    log "EVENT: Debugging BlackIP..."
     # debug
     sed -r '
         /:/d
@@ -482,7 +538,7 @@ stop_progress() {
 
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
-    log "1st DNS Lookup..."
+    log "EVENT: 1st DNS Lookup..."
     if ! { sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt; }; then
         log "ERROR: cannot process dnsinput.txt into step1.txt -abort"
         exit 1
@@ -522,7 +578,7 @@ fi
 sleep 5
 
 # step 2:
-log "2nd DNS Lookup..."
+log "EVENT: 2nd DNS Lookup..."
 if ! { sed 's/^\.//g' fault.txt | sort -u > step2.txt; }; then
     log "ERROR: cannot prepare step2.txt -abort"
     exit 1
@@ -562,12 +618,12 @@ fi
 # RELOAD
 # ------------------------------------------------------------------------------
 
-log "Squid Reload..."
+log "EVENT: Squid Reload..."
 if ! { sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt; }; then
     log "ERROR: cannot build blackip_preview.txt -abort"
     exit 1
 fi
-sudo cp -f blackip_preview.txt "$acl_dir"/blackip.txt || {
+sudo install -m 644 -o root -g root blackip_preview.txt "$acl_dir"/blackip.txt || {
     log "ERROR: cannot copy blackip_preview.txt to $acl_dir -abort"
     exit 1
 }
@@ -630,7 +686,7 @@ if [ ! -s blackip.txt ]; then
 fi
 
 # copy acl to path and log
-sudo cp -f blackip.txt "$acl_dir"/blackip.txt || {
+sudo install -m 644 -o root -g root blackip.txt "$acl_dir"/blackip.txt || {
     log "ERROR: cannot copy blackip.txt to $acl_dir -abort"
     exit 1
 }
@@ -649,5 +705,5 @@ cd .. || {
 # END
 # ------------------------------------------------------------------------------
 
-log "bipupdate done at: $(date '+%Y-%m-%d %H:%M:%S')"
+log "EVENT: bipupdate done"
 log "INFO: Check SquidErrors.txt"
