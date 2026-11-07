@@ -130,7 +130,7 @@ allowip_file="$lst_dir/allowip.txt"
 acl_tmp="$allowip_file.tmp"
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
-trap 'rm -f urls.txt out.txt progress.txt dnsplain.txt ianaok.txt aclnew.txt "$acl_tmp"; exit 130' INT TERM
+trap 'kill "${progress_pid:-}" 2>/dev/null; rm -f urls.txt out.txt progress.txt dnsplain.txt ianaok.txt aclnew.txt "$acl_tmp"; exit 130' INT TERM
 
 log "EVENT: aipupdate start..."
 
@@ -160,7 +160,7 @@ if ! intacls 'https://raw.githubusercontent.com/maravento/blackweb/master/bwupda
 fi
 sleep 1
 
-# debbuging allow whiteIP (CIDR)
+# Resolve allow-list domains to IPv4
 log "EVENT: Debugging AllowIP..."
 parallel_procs=$(($(nproc) * 4))
 if [ ! -s urls.txt ]; then
@@ -180,6 +180,7 @@ progress_pid=$!
 xargs -I {} -P "$parallel_procs" bash -c 'for host_prefix in "" "www." "ftp."; do host -t a "${host_prefix}$1"; done; echo >> progress.txt' _ {} <urls.txt | grep "has address" | awk '{ print $4 }' > out.txt
 pipe_rc=("${PIPESTATUS[@]}")
 kill "$progress_pid" 2>/dev/null
+progress_pid=""
 if [ "${pipe_rc[0]}" -ne 0 ] && [ "${pipe_rc[0]}" -ne 123 ]; then
     log "ERROR: cannot resolve domain list -abort"
     exit 1
@@ -245,7 +246,7 @@ if [ -f "$allowip_file" ] && ! chmod --reference="$allowip_file" "$acl_tmp"; the
     log "WARNING: cannot preserve $(basename "$allowip_file") mode -alert"
 fi
 
-if ! mv -f "$acl_tmp" "$allowip_file"; then
+if ! mv -fT -- "$acl_tmp" "$allowip_file"; then
     log "ERROR: cannot write $(basename "$allowip_file") -abort"
     rm -f "$acl_tmp"
     exit 1

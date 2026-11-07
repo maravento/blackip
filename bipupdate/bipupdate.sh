@@ -6,6 +6,9 @@
 # BlackIP Update
 # FILE: bipupdate/bipupdate.sh
 #
+# DESCRIPTION:
+# Updates the BlackIP list.
+#
 # USAGE:
 # ./bipupdate.sh
 #
@@ -191,7 +194,7 @@ repo_dir="$script_dir/bipupdate"
 UH_IPV4='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts="wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
-trap 'rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt; exit 130' INT TERM
+trap 'kill "${progress_pid:-}" 2>/dev/null; rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt; exit 130' INT TERM
 # path_to_lst (Change it to the directory of your preference)
 acl_dir="/etc/acl"
 if [ ! -d "$acl_dir" ]; then
@@ -204,7 +207,7 @@ fi
 log "EVENT: bipupdate start..."
 
 # ------------------------------------------------------------------------------
-# FUNCTIONS
+# DOWNLOAD
 # ------------------------------------------------------------------------------
 
 # check dnslookup1.txt
@@ -300,7 +303,6 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
             return 1
         fi
     }
-    blips 'http://danger.rulez.sk/projects/bruteforceblocker/blist.php' && sleep 1
     blips 'https://blocklist.greensnow.co/greensnow.txt' && sleep 1
     blips 'https://cdn.ellio.tech/community-feed' && sleep 1
     blips 'https://check.torproject.org/torbulkexitlist?ip=1.1.1.1' && sleep 1
@@ -456,11 +458,10 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         s/^0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)\.0*([0-9]+)$/\1.\2.\3.\4/
     ' capture.txt \
     | grep -oP "$UH_IPV4" \
-    | awk -F. '$1 <= 255 && $2 <= 255 && $3 <= 255 && $4 <= 255' \
     | $sort_uniq > cleancapture.txt
     pipe_status=("${PIPESTATUS[@]}")
     if [ "${pipe_status[0]}" -ne 0 ] || [ "${pipe_status[1]}" -gt 1 ] ||
-        [ "${pipe_status[2]}" -ne 0 ] || [ "${pipe_status[3]}" -ne 0 ]; then
+        [ "${pipe_status[2]}" -ne 0 ]; then
         log "ERROR: cannot debug capture.txt -abort"
         exit 1
     fi
@@ -469,11 +470,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         exit 1
     fi
 
-    # DEBBUGGING BLACKIP
-    # First you must edit /etc/squid/squid.conf
-    # And add line:
-    # acl blackip dst "/path_to_lst/blackip.txt"
-    # http_access deny blackip
+    # Remove allowed IPs
     grep -vFxf lst/allowip.txt cleancapture.txt | sed -r 's/^\s+*//;s/\s+*$//' | $sort_uniq > dnsinput.txt
     pipe_status=("${PIPESTATUS[@]}")
     if [ "${pipe_status[0]}" -gt 1 ] || [ "${pipe_status[1]}" -ne 0 ] ||
@@ -533,6 +530,7 @@ parallel_procs=$(($(nproc) * 4))
 # Function: Stop the progress indicator before continuing or aborting
 stop_progress() {
     kill "$progress_pid" 2>/dev/null
+    progress_pid=""
     echo
 }
 
@@ -639,10 +637,10 @@ if [ "$?" -gt 1 ]; then
     exit 1
 fi
 # a search without matches is normal here; only a real error aborts
-grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | grep -oP "$UH_IPV4" | $sort_uniq | sort -u > cleanip.txt
+grep -oP "([0-9]{1,3}\.){3}[0-9]{1,3}" sqerror.txt | grep -oP "$UH_IPV4" | $sort_uniq > cleanip.txt
 pipe_status=("${PIPESTATUS[@]}")
 if [ "${pipe_status[0]}" -gt 1 ] || [ "${pipe_status[1]}" -gt 1 ] ||
-    [ "${pipe_status[2]}" -ne 0 ] || [ "${pipe_status[3]}" -ne 0 ]; then
+    [ "${pipe_status[2]}" -ne 0 ]; then
     log "ERROR: cannot extract IPs of sqerror.txt -abort"
     exit 1
 fi
@@ -705,5 +703,5 @@ cd .. || {
 # END
 # ------------------------------------------------------------------------------
 
-log "EVENT: bipupdate done"
 log "INFO: Check SquidErrors.txt"
+log "EVENT: bipupdate done"

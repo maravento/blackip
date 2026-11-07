@@ -58,7 +58,7 @@ apt install -y squid
 
 | ACL | Blocked IP | File Size |
 | :---: | :---: | :---: |
-| blackip.txt | 521910 | 7.4 Mb |
+| blackip.txt | 521910 | 7.4 MB |
 
 ## REPOSITORY STRUCTURE
 
@@ -76,7 +76,7 @@ bipupdate/
 │   └── iana.txt                    # IANA-reserved ranges excluded from the final list
 └── tools/
     ├── aipupdate.sh             # Generates allowip.txt, an exception list for Squid
-    └── debugbip.py              # Removes IPs that Squid reports as valid in cache.log from the candidate list
+    └── debugbip.py              # Removes IPs that Squid reports in its errors from the candidate list
 ```
 
 ## HOW TO USE
@@ -190,10 +190,6 @@ echo "done"
   
 </table>
 
-> `bipupdate.sh` can also download these zones (see IPDeny Country Zones (Optional)).
->
-> `bipupdate.sh` también puede descargar estas zonas (más detalles en IPDeny Country Zones (Optional)).
-
 ```bash
 # Put these lines at the end of the "variables" section
 # Replace with your path to zones folder
@@ -209,6 +205,10 @@ cat $ips | sort -V -u | while read line; do
 # with (e.g: Russia and China):
 cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 ```
+
+> `bipupdate.sh` can also download these zones (see IPDeny Country Zones (Optional)).
+>
+> `bipupdate.sh` también puede descargar estas zonas (más detalles en IPDeny Country Zones (Optional)).
 
 #### About Ipset/Iptables Rules
 
@@ -367,10 +367,10 @@ http_access deny direct_ipv6
 ### Dependencies (for `bipupdate.sh`)
 
 - Python 3.x, Bash 5.x
-- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `grep`, `sed`, `coreutils`, `util-linux`, `sudo`
+- `wget`, `git`, `curl`, `tar`, `unzip`, `zip`, `gzip`, `idn2`, `grepcidr`, `squid` (or `squid-openssl`), `python3`, `bind9-host`, `findutils`, `grep`, `sed`, `coreutils`, `util-linux`, `sudo`, `iproute2`, `libc-bin`
 
 ```bash
-apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils grep sed coreutils util-linux sudo
+apt install -y wget git curl tar unzip zip gzip idn2 grepcidr squid python3 bind9-host findutils grep sed coreutils util-linux sudo iproute2 libc-bin
 ```
 
 #### Bash Update
@@ -464,14 +464,10 @@ FAULT 0.0.9.1
   </tr>
 </table>
 
-> Processing messages keep their timestamp and have no level or flag. `STATUS` is a viewer label, not text written in the log. Three trailing dots are reserved for these lines; other messages have no final period.
->
-> Los mensajes de procesamiento conservan la fecha y no llevan nivel ni flag. `STATUS` es una etiqueta del visor; no se escribe en el log. Los tres puntos finales se reservan para estas líneas; los demás mensajes no llevan punto final.
-
 ```text
-2026-10-17 12:00:00 Debugging BlackIP...
-2026-10-17 12:00:00 1st DNS Lookup...
-2026-10-17 12:00:00 Squid Reload...
+2026-10-17 12:00:00 EVENT: Debugging BlackIP...
+2026-10-17 12:00:00 EVENT: 1st DNS Lookup...
+2026-10-17 12:00:00 EVENT: Squid Reload...
 ```
 
 #### Download Status
@@ -523,13 +519,13 @@ FAULT 0.0.9.1
   </tr>
 </table>
 
-> Domain resolution uses `host -t a`, provided by `bind9-host`.
->
-> La resolución de dominios usa `host -t a`, del paquete `bind9-host`.
-
 ```bash
 wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/aipupdate.sh && chmod +x aipupdate.sh && ./aipupdate.sh
 ```
+
+> Domain resolution uses `host -t a`, provided by `bind9-host`.
+>
+> La resolución de dominios usa `host -t a`, del paquete `bind9-host`.
 
 ## SOURCES
 
@@ -544,18 +540,18 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [binarydefense - Artillery Threat Intelligence Feed and Banlist Feed](https://www.binarydefense.com/banlist.txt)
 - [blocklist.de - export-ips_all](https://www.blocklist.de/downloads/export-ips_all.txt)
 - [blocklist.de - IPs all](https://lists.blocklist.de/lists/all.txt)
-- [Cinsscore - badguys](http://cinsscore.com/list/ci-badguys.txt)
+- [Cinsscore - badguys](https://cinsscore.com/list/ci-badguys.txt)
 - [CriticalPathSecurity - Public-Intelligence-Feeds](https://github.com/CriticalPathSecurity/Public-Intelligence-Feeds/)
 - [dan.me.uk - TOR Node List](https://www.dan.me.uk/torlist/?exit)
 - [darklist - raw](https://www.darklist.de/raw.php)
 - [dshield.org - block](https://feeds.dshield.org/block.txt)
 - [duggytuxy - Data-Shield_IPv4_Blocklist](https://github.com/duggytuxy/Data-Shield_IPv4_Blocklist)
 - [ellio.tech - Threat List](https://cdn.ellio.tech/community-feed)
-- [Emerging Threats - compromised ips](http://rules.emergingthreats.net/blockrules/compromised-ips.txt)
-- [Emerging Threats Block](http://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
+- [Emerging Threats - compromised ips](https://rules.emergingthreats.net/blockrules/compromised-ips.txt)
+- [Emerging Threats Block](https://rules.emergingthreats.net/fwrules/emerging-Block-IPs.txt)
 - [Firehold - Forus Spam](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/stopforumspam_7d.ipset)
 - [Firehold - level1](https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset)
-- [Greensnow - blocklist](http://blocklist.greensnow.co/greensnow.txt)
+- [Greensnow - blocklist](https://blocklist.greensnow.co/greensnow.txt)
 - [IPDeny - ipblocks](http://www.ipdeny.com/ipblocks/)
 - [Myip - full BL](https://myip.ms/files/blacklist/general/full_blacklist_database.zip)
 - [MyIP - latest BL](https://myip.ms/files/blacklist/general/latest_blacklist.txt)
@@ -563,7 +559,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
 - [opsxcq - proxy-list](https://raw.githubusercontent.com/opsxcq/proxy-list/master/list.txt)
 - [Project Honeypot - list_of_ips](https://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1)
 - [romainmarcoux - malicious-ip](https://github.com/romainmarcoux/malicious-ip/blob/main/full-aa.txt)
-- [Rulez - BruteForceBlocker](http://danger.rulez.sk/projects/bruteforceblocker/blist.php)
+- [Rulez - BruteForceBlocker](https://danger.rulez.sk/projects/bruteforceblocker/blist.php)
 - [Spamhaus - drop-lasso](https://www.spamhaus.org/drop/drop.lasso)
 - [stamparm - ipsum](https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt)
 - [StopForumSpam - 180](https://www.stopforumspam.com/downloads/listed_ip_180_all.zip)
@@ -619,6 +615,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>Blackip is not a blacklist service itself. It does not independently verify IP addresses. Its purpose is to consolidate and reformat public blacklist sources to make them compatible with Squid/Iptables/Ipset.</li>
         <li>If your IP address is listed on Blackip and you believe this is an error, you should check the public sources in <b>SOURCES</b>, identify which one(s) it appears in, and contact the person responsible for that list to request its removal. Once the IP address is removed from the original source, it will automatically disappear from Blackip with the next update.</li>
         <li>The available IPv4 address space is nearly exhausted, which forces increasingly frequent reassignment of addresses. Blackip may therefore contain false positives, and the number of IPv4 addresses worth blocking is expected to keep decreasing. If that trend continues at the current pace, Blackip could eventually stop serving its purpose, simply because no IPv4 addresses would be left to block.</li>
+        <li>Follows a non-standard workflow. Published commits may be rewritten or removed without notice as part of the debugging and improvement process.</li>
       </ul>
     </td>
     <td style="width: 50%; vertical-align: top;">
@@ -626,6 +623,7 @@ wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/
         <li>Blackip no es un servicio de listas negras como tal. No verifica de forma independiente las direcciones IP. Su función es consolidar y formatear listas negras públicas para hacerlas compatibles con Squid/Iptables/Ipset.</li>
         <li>Si su dirección IP aparece en Blackip y considera que esto es un error, debe revisar las fuentes públicas en <b>SOURCES</b>, identificar en cuál(es) aparece, y contactar al responsable de dicha lista para solicitar su eliminación. Una vez que la dirección IP sea eliminada en la fuente original, desaparecerá automáticamente de Blackip en la siguiente actualización.</li>
         <li>El espacio de direcciones IPv4 disponible está casi agotado, lo que obliga a reasignar direcciones cada vez con más frecuencia. Por eso Blackip puede contener falsos positivos, y se espera que la cantidad de direcciones IPv4 que conviene bloquear siga disminuyendo. Si esa tendencia continúa al ritmo actual, Blackip podría dejar de cumplir su objetivo, simplemente porque ya no quedarían direcciones IPv4 que bloquear.</li>
+        <li>Utiliza un flujo de trabajo no convencional. Los commits publicados pueden ser reescritos o eliminados sin previo aviso como parte del proceso de depuración y mejora.</li>
       </ul>
     </td>
   </tr>

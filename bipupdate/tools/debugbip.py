@@ -2,6 +2,7 @@
 # BlackIP Diff Debug
 # FILE: bipupdate/tools/debugbip.py
 import sys
+import time
 
 try:
     with open('blackip_preview.txt') as f:
@@ -11,5 +12,9 @@ try:
     with open("outip.txt", "w") as f:
         f.write("\n".join(sorted(a.difference(b))) + "\n")
 except FileNotFoundError as e:
-    print("ERROR: %s -abort" % e)
+    print(
+        "%s ERROR: debugbip.py: %s not found"
+        % (time.strftime('%Y-%m-%d %H:%M:%S'), e.filename),
+        file=sys.stderr,
+    )
     sys.exit(1)
