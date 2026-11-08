@@ -255,10 +255,10 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      Add the following lines at the indicated location. Replace <code>/path_to/blackip.txt</code> with the actual file path:
+      Add the following lines at the indicated location. Replace <code>/etc/squid/acl/blackip.txt</code> with the actual file path:
     </td>
     <td style="width: 50%; vertical-align: top;">
-      Añadir estas líneas en el punto indicado. En <code>/path_to/blackip.txt</code>, sustituir el ejemplo por la ruta real del archivo:
+      Añadir estas líneas en el punto indicado. En <code>/etc/squid/acl/blackip.txt</code>, sustituir el ejemplo por la ruta real del archivo:
     </td>
   </tr>
 </table>
@@ -267,7 +267,7 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
 # INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS
 
 # Block Rule for BlackIP
-acl blackip dst "/path_to/blackip.txt"
+acl blackip dst "/etc/squid/acl/blackip.txt"
 http_access deny blackip
 ```
 
@@ -317,27 +317,27 @@ http_access deny blackip
 ### INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS ###
 
 # Allow Rule for IP
-acl allowip dst "/path_to/allowip.txt"
+acl allowip dst "/etc/squid/acl/allowip.txt"
 http_access allow allowip
 
 # Allow Rule for IP/CIDR ACL (not included in allowip.txt)
-acl aipextra dst "/path_to/aipextra.txt"
+acl aipextra dst "/etc/squid/acl/aipextra.txt"
 http_access allow aipextra
 
 # Allow Rule for IANA ACL (not included in allowip.txt)
-acl iana dst "/path_to/iana.txt"
+acl iana dst "/etc/squid/acl/iana.txt"
 http_access allow iana
 
 # Allow Rule for DNS ACL (excluded from blackip.txt)
-acl dnslst dst "/path_to/dns.txt"
+acl dnslst dst "/etc/squid/acl/dns.txt"
 http_access allow dnslst # or deny dnslst
 
 # Block Rule for IP/CIDR ACL (not included in blackip.txt)
-acl blackcidr dst "/path_to/blackcidr.txt"
+acl blackcidr dst "/etc/squid/acl/blackcidr.txt"
 http_access deny blackcidr
 
 ## BLOCK RULE FOR BLACKIP
-acl blackip dst "/path_to/blackip.txt"
+acl blackip dst "/etc/squid/acl/blackip.txt"
 http_access deny blackip
 
 # Block: Direct IPv4

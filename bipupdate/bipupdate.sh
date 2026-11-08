@@ -136,7 +136,7 @@ check_internet
 squid_conf="/etc/squid/squid.conf"
 
 # Edit /etc/squid/squid.conf and add lines:
-# acl blackip dst "/path_to/blackip.txt"
+# acl blackip dst "/etc/squid/acl/blackip.txt"
 # http_access deny blackip
 check_squid_acl() {
     if ! grep -qE '^[[:space:]]*acl[[:space:]]+blackip[[:space:]]+dst([[:space:]]|$)' "$squid_conf"; then
@@ -196,7 +196,7 @@ sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts="wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
 trap 'kill "${progress_pid:-}" 2>/dev/null; rm -f blackip_preview.txt blackip_tmp.txt cleanip.txt outip.txt sqerror.txt; exit 130' INT TERM
 # path_to_lst (Change it to the directory of your preference)
-acl_dir="/etc/acl"
+acl_dir="/etc/squid/acl"
 if [ ! -d "$acl_dir" ]; then
     sudo mkdir -p -m 755 -- "$acl_dir" || {
         log "ERROR: cannot create $acl_dir -abort"
