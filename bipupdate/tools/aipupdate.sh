@@ -132,7 +132,7 @@ sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts='wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4'
 trap 'kill "${progress_pid:-}" 2>/dev/null; rm -f urls.txt out.txt progress.txt dnsplain.txt ianaok.txt aclnew.txt "$acl_tmp"; exit 130' INT TERM
 
-log "EVENT: aipupdate start..."
+log "INFO: aipupdate start..."
 
 # ------------------------------------------------------------------------------
 # FUNCTIONS
@@ -161,7 +161,7 @@ fi
 sleep 1
 
 # Resolve allow-list domains to IPv4
-log "EVENT: Debugging AllowIP..."
+log "INFO: Debugging AllowIP..."
 parallel_procs=$(($(nproc) * 4))
 if [ ! -s urls.txt ]; then
     log "ERROR: urls.txt is empty -abort"
@@ -258,4 +258,4 @@ fi
 
 log "INFO: allowip.txt updated"
 rm -f urls.txt out.txt progress.txt dnsplain.txt ianaok.txt aclnew.txt
-log "EVENT: aipupdate done"
+log "INFO: aipupdate done"

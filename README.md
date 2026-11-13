@@ -296,7 +296,7 @@ http_access deny blackip
         <li><code>aipextra.txt</code> adds IP addresses or CIDR ranges to the exception list; it is maintained separately and is not modified by <code>bipupdate.sh</code>.</li>
         <li><code>bipupdate.sh</code> excludes ranges listed in <code>iana.txt</code> when generating <code>blackip.txt</code>. The IANA ACL shown below can be placed before deny rules in Squid to exempt those ranges from blocking.</li>
         <li><code>bipupdate.sh</code> excludes the IPs listed in <code>dns.txt</code> when generating <code>blackip.txt</code>. The DNS ACL shown below can be configured to allow or deny those servers, depending on the chosen rule and its position.</li>
-        <li>To prevent access to sites by literal IP address, the <code>direct_ipv4</code> and <code>direct_ipv6</code> rules shown below can be added.</li>
+        <li>To prevent access to sites by literal IP address, the <code>direct_ipv4</code> and <code>direct_ipv6</code> rules shown below can be added. Replace <code>&lt;LAN_CIDR&gt;</code> with the LAN range, such as <code>192.168.0.0/24</code>, so printers and other LAN devices stay reachable by IP.</li>
       </ul>
     </td>
     <td style="width: 50%; vertical-align: top;">
@@ -307,7 +307,7 @@ http_access deny blackip
         <li><code>aipextra.txt</code> permite añadir direcciones IP o rangos CIDR a la lista de excepciones. Se mantiene por separado y <code>bipupdate.sh</code> no la modifica.</li>
         <li><code>bipupdate.sh</code> excluye los rangos de <code>iana.txt</code> al generar <code>blackip.txt</code>. La ACL de IANA que aparece abajo puede colocarse antes de las reglas de denegación en Squid para excluir esos rangos del bloqueo.</li>
         <li><code>bipupdate.sh</code> excluye las IP de <code>dns.txt</code> al generar <code>blackip.txt</code>. La ACL DNS que aparece abajo puede configurarse para permitir o bloquear esos servidores, según la regla elegida y su posición.</li>
-        <li>Para evitar el acceso directo a sitios mediante una dirección IP, se pueden añadir las reglas <code>direct_ipv4</code> y <code>direct_ipv6</code> que aparecen más abajo.</li>
+        <li>Para evitar el acceso directo a sitios mediante una dirección IP, se pueden añadir las reglas <code>direct_ipv4</code> y <code>direct_ipv6</code> que aparecen más abajo. Reemplace <code>&lt;LAN_CIDR&gt;</code> por el rango de la LAN, como <code>192.168.0.0/24</code>, para que las impresoras y demás equipos de la LAN sigan accesibles por IP.</li>
       </ul>
     </td>
   </tr>
@@ -340,9 +340,11 @@ http_access deny blackcidr
 acl blackip dst "/etc/squid/acl/blackip.txt"
 http_access deny blackip
 
-# Block: Direct IPv4
+# Block: Direct IPv4 (LAN addresses stay reachable)
+acl localnet_dst dst <LAN_CIDR>
 acl direct_ipv4 dstdom_regex -n -i ^([0-9]{1,3}\.){3}[0-9]{1,3}$
-http_access deny direct_ipv4
+http_access deny direct_ipv4 !localnet
+http_access deny direct_ipv4 !localnet_dst
 # Block: Direct IPv6
 acl direct_ipv6 dstdom_regex -n -i ^\[([0-9a-f:]+)\]$
 http_access deny direct_ipv6
@@ -465,9 +467,9 @@ FAULT 0.0.9.1
 </table>
 
 ```text
-2026-10-17 12:00:00 EVENT: Debugging BlackIP...
-2026-10-17 12:00:00 EVENT: 1st DNS Lookup...
-2026-10-17 12:00:00 EVENT: Squid Reload...
+2026-10-17 12:00:00 INFO: Debugging BlackIP...
+2026-10-17 12:00:00 INFO: 1st DNS Lookup...
+2026-10-17 12:00:00 INFO: Squid Reload...
 ```
 
 #### Download Status

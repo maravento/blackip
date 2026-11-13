@@ -204,7 +204,7 @@ if [ ! -d "$acl_dir" ]; then
     }
 fi
 
-log "EVENT: bipupdate start..."
+log "INFO: bipupdate start..."
 
 # ------------------------------------------------------------------------------
 # DOWNLOAD
@@ -446,7 +446,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         exit 1
     fi
 
-    log "EVENT: Debugging BlackIP..."
+    log "INFO: Debugging BlackIP..."
     # debug
     sed -r '
         /:/d
@@ -536,7 +536,7 @@ stop_progress() {
 
 # step 1:
 if [ ! -e "$repo_dir"/dnslookup2.txt ]; then
-    log "EVENT: 1st DNS Lookup..."
+    log "INFO: 1st DNS Lookup..."
     if ! { sed 's/^\.//g' dnsinput.txt | sort -u > step1.txt; }; then
         log "ERROR: cannot process dnsinput.txt into step1.txt -abort"
         exit 1
@@ -576,7 +576,7 @@ fi
 sleep 5
 
 # step 2:
-log "EVENT: 2nd DNS Lookup..."
+log "INFO: 2nd DNS Lookup..."
 if ! { sed 's/^\.//g' fault.txt | sort -u > step2.txt; }; then
     log "ERROR: cannot prepare step2.txt -abort"
     exit 1
@@ -616,7 +616,7 @@ fi
 # RELOAD
 # ------------------------------------------------------------------------------
 
-log "EVENT: Squid Reload..."
+log "INFO: Squid Reload..."
 if ! { sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt; }; then
     log "ERROR: cannot build blackip_preview.txt -abort"
     exit 1
@@ -704,4 +704,4 @@ cd .. || {
 # ------------------------------------------------------------------------------
 
 log "INFO: Check SquidErrors.txt"
-log "EVENT: bipupdate done"
+log "INFO: bipupdate done"
