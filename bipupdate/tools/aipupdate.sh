@@ -3,11 +3,11 @@
 #
 ################################################################################
 #
-# AllowIP for Reverse Squid
+# aipupdate -- AllowIP for reverse Squid
 # FILE: bipupdate/tools/aipupdate.sh
 #
 # USAGE:
-# ./aipupdate.sh
+# bash aipupdate.sh
 #
 # LOG: aipupdate.log (generated in the script directory)
 #

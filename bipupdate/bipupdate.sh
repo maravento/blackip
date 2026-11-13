@@ -3,14 +3,11 @@
 #
 ################################################################################
 #
-# BlackIP Update
+# bipupdate -- BlackIP list update
 # FILE: bipupdate/bipupdate.sh
 #
-# DESCRIPTION:
-# Updates the BlackIP list.
-#
 # USAGE:
-# ./bipupdate.sh
+# bash bipupdate.sh
 #
 # LOG: bipupdate.log (generated in the script directory)
 #
