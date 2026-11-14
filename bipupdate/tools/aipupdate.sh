@@ -7,7 +7,8 @@
 # FILE: bipupdate/tools/aipupdate.sh
 #
 # USAGE:
-# bash aipupdate.sh
+# COMMAND            ACTION
+# bash aipupdate.sh  (no arguments)
 #
 # LOG: aipupdate.log (generated in the script directory)
 #

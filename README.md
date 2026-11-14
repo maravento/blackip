@@ -12,10 +12,10 @@ FILE: README.md
 <table width="100%">
   <tr>
     <td style="width: 50%; vertical-align: top;">
-      <b>BlackIP</b> brings together public IPv4 blocklists and adapts them for use as ACLs in <a href="http://www.squid-cache.org/" target="_blank">Squid</a> or as an IP set in <a href="http://ipset.netfilter.org/" target="_blank">IPset</a>, which can be applied with iptables.
+      <b>BlackIP</b> brings together public IPv4 address blocklists and consolidates them into a single list for use as an access control list (ACL) in <a href="http://www.squid-cache.org/" target="_blank">Squid</a> or as an address set in <a href="http://ipset.netfilter.org/" target="_blank">IPset</a> for filtering with iptables.
     </td>
     <td style="width: 50%; vertical-align: top;">
-      <b>BlackIP</b> reúne listas públicas de direcciones IPv4 y las adapta para usarlas como ACL en Squid o como conjunto de IP en IPset, que puede aplicarse mediante reglas de iptables.
+      <b>BlackIP</b> reúne listas públicas de bloqueo de direcciones IPv4 y las consolida en una única lista para su uso como lista de control de acceso (ACL) en Squid o como conjunto de direcciones en IPset para filtrado mediante iptables.
     </td>
   </tr>
 </table>
@@ -216,7 +216,7 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
   <tr>
     <td style="width: 50%; vertical-align: top;">
       <ul>
-        <li>Ipset allows mass filtering, at a much higher processing speed than other solutions (check <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>).</li>
+        <li>IPset allows IP addresses to be grouped into sets and used in filtering rules. Performance reference: <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>.</li>
         <li><code>blackip.txt</code> contains hundreds of thousands of IPv4 addresses. The example sets <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> to <code>10000000</code> to allow large sets; this value should be sized according to the list and available resources. For more information, see <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">ipset's hashsize and maxelem parameters</a>.</li>
         <li>IPset documents that when iptables adds entries through the <code>SET</code> target, the hash table size is not increased automatically; an entry may fail to be added even while the rule remains active. See the <a href="https://ipset.netfilter.org/ipset.man.html" target="_blank">IPset manual</a> for details and limitations.</li>
         <li>A large set can increase memory use and affect performance. Test the configuration and check available resources before applying it in production.</li>
@@ -225,7 +225,7 @@ cat $zones/{cn,ru}.zone $ips | sort -V -u | while read line; do
     </td>
     <td style="width: 50%; vertical-align: top;">
       <ul>
-        <li>Ipset permite realizar filtrado masivo a una velocidad de procesamiento muy superior a otras soluciones, como muestra este <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>).</li>
+        <li>IPset permite agrupar direcciones IP en conjuntos y utilizarlos en reglas de filtrado. Referencia de rendimiento: <a href="https://web.archive.org/web/20161014210553/http://daemonkeeper.net/781/mass-blocking-ip-addresses-with-ipset/" target="_blank">benchmark</a>.</li>
         <li><code>blackip.txt</code> contiene cientos de miles de direcciones IPv4. En el ejemplo de IPset, <a href="https://ipset.netfilter.org/ipset.man.html#:~:text=hash%3Aip%20hashsize%201536-,maxelem,-This%20parameter%20is" target="_blank">maxelem</a> se fija en <code>10000000</code> para permitir conjuntos grandes; este valor debe dimensionarse según la lista y los recursos disponibles. Para más información, pueden consultarse <a href="https://www.odi.ch/weblog/posting.php?posting=738" target="_blank">los parámetros hashsize y maxelem de IPset</a>.</li>
         <li>IPset advierte que, cuando iptables añade entradas mediante el objetivo <code>SET</code>, el tamaño de la tabla hash no se amplía automáticamente; una entrada podría no agregarse aunque la regla siga activa. El <a href="https://ipset.netfilter.org/ipset.man.html" target="_blank">manual de IPset</a> describe este comportamiento y sus límites.</li>
         <li>Un conjunto grande puede aumentar el consumo de memoria y afectar el rendimiento. Conviene probar la configuración y comprobar los recursos disponibles antes de aplicarla en producción.</li>

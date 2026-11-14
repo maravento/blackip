@@ -7,7 +7,8 @@
 # FILE: bipupdate/bipupdate.sh
 #
 # USAGE:
-# bash bipupdate.sh
+# COMMAND            ACTION
+# bash bipupdate.sh  (no arguments)
 #
 # LOG: bipupdate.log (generated in the script directory)
 #
