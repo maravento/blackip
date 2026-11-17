@@ -8,7 +8,7 @@
 #
 # USAGE:
 # COMMAND            ACTION
-# bash aipupdate.sh  (no arguments)
+# bash aipupdate.sh  Run (no arguments)
 #
 # LOG: aipupdate.log (generated in the script directory)
 #

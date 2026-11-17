@@ -8,7 +8,7 @@
 #
 # USAGE:
 # COMMAND            ACTION
-# bash bipupdate.sh  (no arguments)
+# bash bipupdate.sh  Run (no arguments)
 #
 # LOG: bipupdate.log (generated in the script directory)
 #
