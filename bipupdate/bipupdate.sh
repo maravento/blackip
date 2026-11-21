@@ -26,6 +26,9 @@ if [ "$(id -u)" == "0" ]; then
     exit 1
 fi
 
+# awk is a command, not a package: check it before its first use
+command -v awk >/dev/null 2>&1 || { echo "$(date '+%Y-%m-%d %H:%M:%S') ERROR: awk not found -abort" >&2; exit 1; }
+
 # prevent overlapping runs
 script_lock="/var/lock/$(basename "$0" .sh).lock"
 (umask 077; : >> "$script_lock") || {
@@ -165,7 +168,6 @@ check_squid_status() {
     }
 
     if ! squid_is_active; then
-        log "INFO: squid is not active, starting it"
         squid_start
         for wait_attempt in $(seq 1 30); do
             squid_is_active && break
@@ -188,7 +190,7 @@ check_squid_status
 
 cd "$script_dir" || { log "ERROR: cannot enter bipupdate path -abort"; exit 1; }
 repo_dir="$script_dir/bipupdate"
-# validation -- one variable per thing validated; use directly with =~
+# validation - one variable per thing validated; use directly with =~
 UH_IPV4='^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])$'
 sort_uniq="sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n -u"
 wget_opts="wget -q -c --no-check-certificate --retry-connrefused --timeout=10 --tries=4"
@@ -230,14 +232,15 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
         http_code=$(curl -k -s -o /dev/null -w '%{http_code}' -I -L --connect-timeout 5 --max-time 15 --retry 1 "$source_url")
         case "$http_code" in
             2*|405) ;;
-            000) log "TIMEOUT: $source_url"; exit 1 ;;
-            5*)  log "BUSY: $http_code $source_url"; exit 1 ;;
-            404|410)   log "BROKEN: $http_code $source_url"; exit 1 ;;
-            *)   log "HTTP_ERROR: $http_code $source_url"; exit 1 ;;
+            000) log "TIMEOUT: $source_url"; log "ERROR: all-zones.tar.gz not available -abort"; exit 1 ;;
+            5*)  log "BUSY: $http_code $source_url"; log "ERROR: all-zones.tar.gz not available -abort"; exit 1 ;;
+            404|410)   log "BROKEN: $http_code $source_url"; log "ERROR: all-zones.tar.gz not available -abort"; exit 1 ;;
+            *)   log "HTTP_ERROR: $http_code $source_url"; log "ERROR: all-zones.tar.gz not available -abort"; exit 1 ;;
         esac
         # download
         if ! $wget_opts "$source_url" -O all-zones.tar.gz; then
             log "PARTIAL: $source_url"
+            log "ERROR: all-zones.tar.gz not available -abort"
             exit 1
         fi
         log "SAVED: all-zones.tar.gz"
@@ -259,6 +262,7 @@ if [ ! -e "$repo_dir"/dnslookup1.txt ]; then
     # download blackip
     if ! $wget_opts https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py -O gitfolder.py; then
         log "PARTIAL: https://raw.githubusercontent.com/maravento/vault/master/scripts/python/gitfolder.py"
+        log "ERROR: gitfolder.py not available -abort"
         exit 1
     fi
     log "SAVED: gitfolder.py"
@@ -619,6 +623,24 @@ if ! { sed '/^$/d; /#/d' hit.txt | sed 's/^\.//' | sort -u > blackip_preview.txt
     log "ERROR: cannot build blackip_preview.txt -abort"
     exit 1
 fi
+# Keep the active list: an abort before the final copy restores it
+acl_backup=""
+if [ -f "$acl_dir"/blackip.txt ]; then
+    sudo cp -p "$acl_dir"/blackip.txt "$acl_dir"/blackip.txt.bak || {
+        log "ERROR: cannot back up $acl_dir/blackip.txt -abort"
+        exit 1
+    }
+    acl_backup="$acl_dir/blackip.txt.bak"
+fi
+restore_acl() {
+    [ -n "$acl_backup" ] || return 0
+    if sudo mv -f "$acl_backup" "$acl_dir"/blackip.txt && sudo bash -c 'squid -k reconfigure' >/dev/null 2>&1; then
+        log "INFO: previous blackip.txt restored -fixed"
+    else
+        log "WARNING: cannot restore previous blackip.txt -alert"
+    fi
+}
+trap restore_acl EXIT
 sudo install -m 644 -o root -g root blackip_preview.txt "$acl_dir"/blackip.txt || {
     log "ERROR: cannot copy blackip_preview.txt to $acl_dir -abort"
     exit 1
@@ -691,11 +713,14 @@ sudo bash -c 'squid -k reconfigure' 2> "$script_dir/SquidErrors.txt" || {
     log "ERROR: squid reconfigure failed with blackip.txt -abort"
     exit 1
 }
+trap - EXIT
+[ -z "$acl_backup" ] || sudo rm -f "$acl_backup"
 
 cd .. || {
-    log "ERROR: cannot enter bipupdate path -abort"
+    log "ERROR: cannot return to the script directory -abort"
     exit 1
 }
+rm -rf "$repo_dir"
 
 # ------------------------------------------------------------------------------
 # END

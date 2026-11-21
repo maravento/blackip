@@ -13,7 +13,7 @@ try:
         f.write("\n".join(sorted(a.difference(b))) + "\n")
 except FileNotFoundError as e:
     print(
-        "%s ERROR: debugbip.py: %s not found"
+        "%s ERROR: debugbip.py: %s not found -abort"
         % (time.strftime('%Y-%m-%d %H:%M:%S'), e.filename),
         file=sys.stderr,
     )
