@@ -478,9 +478,9 @@ FAULT 0.0.9.1
 |---|---|---|---|
 | `SAVED:` | File name | The transfer completed and the file was written | La descarga terminó y el archivo se guardó |
 | `PARTIAL:` | Full URL | The download started and was cut off before finishing | La descarga comenzó, pero se interrumpió antes de terminar |
-| `BUSY:` | Full URL | The server answered 5xx: it is up but not serving the list right now | El servidor respondió con un error 5xx: está disponible, pero no entrega la lista en ese momento |
-| `TIMEOUT:` | Full URL | The server did not answer at all | El servidor no respondió |
-| `BROKEN:` | Full URL | The server answered 404 or 410: broken or nonexistent URL | El servidor respondió 404 o 410: el recurso no existe o la URL ya no es válida |
+| `BUSY:` | HTTP code and full URL | The server answered 5xx: it is up but not serving the list right now | El servidor respondió con un error 5xx: está disponible, pero no entrega la lista en ese momento |
+| `TIMEOUT:` | Full URL | No HTTP code was obtained | No se obtuvo un código HTTP |
+| `BROKEN:` | HTTP code and full URL | The server answered 404 or 410: broken or nonexistent URL | El servidor respondió 404 o 410: el recurso no existe o la URL ya no es válida |
 | `HTTP_ERROR:` | HTTP code and full URL | The server returned an HTTP response not covered by the other tags | El servidor devolvió una respuesta HTTP no contemplada por las otras etiquetas |
 
 #### Important about BlackIP Update
@@ -522,12 +522,13 @@ FAULT 0.0.9.1
 </table>
 
 ```bash
-wget -q -N https://raw.githubusercontent.com/maravento/blackip/master/bipupdate/tools/aipupdate.sh && chmod +x aipupdate.sh && ./aipupdate.sh
+git clone --depth 1 https://github.com/maravento/blackip.git
+bash blackip/bipupdate/tools/aipupdate.sh
 ```
 
-> Domain resolution uses `host -t a`, provided by `bind9-host`.
+> `aipupdate.sh` reads `iana.txt` and `dns.txt` and writes `allowip.txt` in `bipupdate/lst`, so it runs from `bipupdate/tools` inside a copy of the repository. Domain resolution uses `host -t a`, provided by `bind9-host`.
 >
-> La resolución de dominios usa `host -t a`, del paquete `bind9-host`.
+> `aipupdate.sh` lee `iana.txt` y `dns.txt` y escribe `allowip.txt` en `bipupdate/lst`, así que se ejecuta desde `bipupdate/tools` dentro de una copia del repositorio. La resolución de dominios usa `host -t a`, del paquete `bind9-host`.
 
 ## SOURCES
 
